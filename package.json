@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "echo \"Lint is not configured yet\"",
-    "format": "echo \"Format is not configured yet\"",
-    "test:e2e": "echo \"E2E tests are not configured yet\""
+    "typecheck": "echo \"TypeScript is not configured yet\"",
+    "test": "echo \"Tests are not configured yet\""
   }
 }
