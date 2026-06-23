@@ -1,9 +1,10 @@
 # Личный сайт-портфолио Кирилла Арзамастцева
 
-[![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs\&logoColor=white)](https://nextjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite\&logoColor=white)](https://vite.dev/)
 [![React](https://img.shields.io/badge/React-61DAFB?logo=react\&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript\&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss\&logoColor=white)](https://tailwindcss.com/)
+[![npm](https://img.shields.io/badge/npm-CB3837?logo=npm\&logoColor=white)](https://www.npmjs.com/)
 
 
 ---
@@ -56,7 +57,7 @@
 
 ### Основной стек
 
-* **Next.js** — фреймворк, маршрутизация, SEO и серверные возможности;
+* **Vite** — сборка, dev-сервер и базовая архитектура фронтенд-приложения;
 * **React** — компонентный подход к разработке интерфейса;
 * **TypeScript** — типизация и надёжность кода;
 * **Tailwind CSS** — стилизация и адаптивная вёрстка;
@@ -107,14 +108,14 @@ npm run dev
 После запуска сайт будет доступен по адресу:
 
 ```text
-http://localhost:3000
+http://localhost:5173
 ```
 
 ### 4. Соберите production-версию
 
 ```bash
 npm run build
-npm run start
+npm run preview
 ```
 
 ---
@@ -128,8 +129,8 @@ npm run dev
 # Production-сборка
 npm run build
 
-# Запуск production-сервера
-npm run start
+# Локальный просмотр production-сборки
+npm run preview
 
 # Проверка кода
 npm run lint
@@ -148,20 +149,46 @@ npm run test:e2e
 ## Структура проекта
 
 ```text
-src/
-├── app/                 # Страницы и маршруты Next.js
-├── components/          # Переиспользуемые UI-компоненты
-├── features/            # Крупные функциональные блоки сайта
-├── content/             # Данные проектов, тексты и MDX-материалы
-├── lib/                 # Утилиты и общая логика
-├── styles/              # Глобальные стили и дизайн-токены
-└── types/               # TypeScript-типы
-
-public/
-├── images/              # Изображения и превью проектов
-├── sprites/             # Пиксельные персонажи и элементы офиса
-├── fonts/               # Локальные шрифты при необходимости
-└── resume/              # PDF-версия резюме
+kirillarz/
+├── README.md                    # Обзор проекта
+├── AGENTS.md                    # Инструкции для AI-агентов
+├── package.json                 # Скрипты и зависимости проекта
+├── package-lock.json            # Lockfile npm
+├── vite.config.ts               # Конфигурация Vite
+├── tsconfig.json                # Конфигурация TypeScript
+│
+├── docs/                        # Проектная документация
+│   ├── brief.md
+│   ├── content.md
+│   ├── design-spec.md
+│   ├── acceptance-criteria.md
+│   ├── decisions.md
+│   └── assets.md
+│
+├── src/                         # Исходный код приложения
+│   ├── app/                     # Инициализация приложения и маршрутизация
+│   ├── components/              # Переиспользуемые UI-компоненты
+│   ├── sections/                # Крупные секции страниц
+│   ├── data/                    # Структурированные данные и контент
+│   ├── styles/                  # Глобальные стили и дизайн-токены
+│   └── assets/                  # Локальные ассеты приложения
+│
+├── public/                      # Статические файлы
+│   ├── resume/                  # PDF-версия резюме
+│   └── images/                  # Изображения и превью проектов
+│
+├── tests/                       # Тесты проекта
+│
+├── .agents/
+│   └── skills/                  # Локальные навыки и инструкции агентов
+│
+├── .codex/
+│   ├── config.toml              # Локальная конфигурация Codex
+│   └── agents/                  # Настройки и материалы для Codex-агентов
+│
+└── .github/
+    └── workflows/
+        └── ci.yml               # Конфигурация GitHub Actions
 ```
 
 ---
