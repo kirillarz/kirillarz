@@ -55,7 +55,7 @@
       "name": "Lego-style hero layout",
       "description": "Реализовать responsive hero на главной странице по `docs/site-brief.md` и референсам из `examples/` без сложной transition-анимации.",
       "dependencies": ["portfolio-001"],
-      "status": "not-started",
+      "status": "passing",
       "scope": [
         "Desktop: минифигурка по пояс слева, имя/описание/лента навыков/кнопка справа",
         "Mobile: минифигурка сверху, затем имя/описание/лента навыков/кнопка",
@@ -73,7 +73,7 @@
         "npm test",
         "npm run build"
       ],
-      "evidence": ""
+      "evidence": "2026-06-28: responsive Lego-style hero implemented on `/` with generated local asset `src/assets/hero-minifigure.png`; desktop layout uses waist-up minifigure left and confirmed name/description/skill tape/button right; mobile stacks minifigure above name/description/skill tape/button; routes `/`, `/employer` and `*` preserved; npm.cmd run lint passed; npm.cmd run typecheck passed; npm.cmd test passed (1 file, 1 test); npm.cmd run build passed; final powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\init.ps1 passed end-to-end after harness updates; dev server served `/` and `/employer` with HTTP 200 at http://127.0.0.1:5173/."
     },
     {
       "id": "portfolio-003",

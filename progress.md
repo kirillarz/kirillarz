@@ -24,20 +24,25 @@ Last Updated: 2026-06-28
   следующая Codex-сессия находила `docs/site-brief.md` без контекста из чата.
 - `feature_list.json` разбит на небольшие будущие фичи: hero layout, hero
   transition animation, Обо мне, Навыки, Проекты, Хобби и Контакты.
+- Реализован `portfolio-002`: responsive Lego-style hero на главной странице с
+  минифигуркой, подтвержденным текстом, лентой направлений и кнопкой на
+  `/employer`.
+- Добавлен локальный generated bitmap asset `src/assets/hero-minifigure.png`
+  без логотипов, текста, официальных наборов или защищенных персонажей.
 
 ## В работе
 
-- Активной работы нет. `portfolio-001` имеет статус `passing` и закрывает
-  документацию Lego-концепции.
+- Активной работы нет. `portfolio-002` имеет статус `passing` и закрывает
+  базовый hero layout без transition-анимации.
 
 ## Дальше (Next)
 
 1. Следующей Codex-сессии выбрать ровно одну `not-started` фичу из
    `feature_list.json`.
-2. Рекомендуемый следующий шаг: `portfolio-002` - Lego-style hero layout.
-3. Перед реализацией hero прочитать `docs/site-brief.md`,
-   `docs/content.md` и посмотреть `examples/hero-screen-desktop.jpg` /
-   `examples/hero-screen-mobile.jpg`.
+2. Рекомендуемый следующий шаг: `portfolio-003` - hero transition animation.
+3. Перед реализацией transition прочитать `docs/site-brief.md`,
+   `docs/content.md`, проверить текущий hero в `src/pages/HomePage.tsx` и
+   `src/pages/Page.module.css`.
 4. Если пользователь даст email, обновить `docs/content.md` и фичу
    `portfolio-008`.
 
@@ -49,6 +54,9 @@ Last Updated: 2026-06-28
   `docs/content.md`.
 - Сложная hero-анимация может потребовать отдельного решения по ассетам и
   проверке reduced motion.
+- Hero transition из `portfolio-003` должен использовать neutral naming:
+  `световой гаджет`, `вспышка`, `переход`; не копировать узнаваемые
+  кино-гаджеты или защищенный дизайн.
 
 ## Решения
 
@@ -69,30 +77,34 @@ Last Updated: 2026-06-28
 
 ## Измененные файлы этой сессии (Files Modified This Session)
 
-- `AGENTS.md` - добавлен маршрут к `docs/site-brief.md` и правила Lego-style
-  scope.
-- `README.md` - добавлены ссылки на brief, content source и hero-референсы.
-- `docs/content.md` - добавлены структура сайта, hero-сценарий, хобби, контакты
-  и TODO по email.
-- `docs/site-brief.md` - новый продуктово-дизайнерский brief для Lego-style
-  портфолио.
-- `docs/harness-cheat-sheet.md` - добавлена карта текущего harness.
-- `feature_list.json` - `portfolio-001` закрыт как документационная фича,
-  будущая реализация разбита на отдельные фичи.
-- `progress.md` - обновлено текущее состояние.
+- `src/pages/HomePage.tsx` - главная страница переведена на Lego-style hero:
+  minifigure asset, имя, подтвержденное описание, лента направлений, кнопка
+  `/employer`.
+- `src/pages/Page.module.css` - добавлены home-specific стили responsive hero,
+  skill tape, dark background и mobile layout без изменения общего маршрута
+  `/employer` и 404.
+- `src/assets/hero-minifigure.png` - generated bitmap asset для hero.
+- `feature_list.json` - `portfolio-002` закрыт как `passing` с evidence.
+- `progress.md` - обновлено текущее состояние, evidence и следующий шаг.
 - `session-handoff.md` - обновлен restart path для следующей сессии.
 
 ## Evidence
 
-- Baseline before documentation edits:
+- Baseline before `portfolio-002` edits:
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
+  end-to-end: lint, typecheck, test, build. Direct `.\init.ps1` was blocked by
+  local PowerShell Execution Policy.
+- Implementation checks after hero edits:
+  `npm.cmd run lint` passed.
+- Implementation checks after hero edits:
+  `npm.cmd run typecheck` passed.
+- Implementation checks after hero edits:
+  `npm.cmd test` passed: 1 test file, 1 test.
+- Implementation checks after hero edits:
+  `npm.cmd run build` passed; Vite emitted `dist/assets/hero-minifigure-*.png`.
+- Runtime smoke check:
+  dev server PID `16716` served `/` and `/employer` with HTTP 200 at
+  `http://127.0.0.1:5173/`.
+- Final verification after harness updates:
   `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
   end-to-end: lint, typecheck, test, build.
-- Baseline before documentation edits:
-  `node .skills/harness-creator/scripts/validate-harness.mjs --target .`
-  passed, overall 100/100.
-- Final verification after documentation edits:
-  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
-  end-to-end: lint, typecheck, test, build.
-- Final verification after documentation edits:
-  `node .skills/harness-creator/scripts/validate-harness.mjs --target .`
-  passed, overall 100/100.
