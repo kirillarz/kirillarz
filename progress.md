@@ -13,24 +13,42 @@ Last Updated: 2026-06-28
 - Добавлены стандартные точки проверки: `init.sh` и `init.ps1`.
 - Добавлен `session-handoff.md` для restart context.
 - Структура harness проверена на 100/100.
-- Полная проверка проекта прошла успешно.
+- Полная проверка проекта проходила успешно.
 - Harness переведен на русский язык там, где это не ломает команды, пути,
   JSON-ключи и machine-readable статусы.
+- Добавлен `docs/site-brief.md` с Lego-style структурой главной страницы,
+  hero-сценарием, блоками, картой хобби, контактами и будущими фичами.
+- Обновлен `docs/content.md`: добавлены новые требования к структуре сайта,
+  хобби, карта локаций, email TODO и ссылка на `docs/site-brief.md`.
+- Обновлены `AGENTS.md`, `README.md` и `docs/harness-cheat-sheet.md`, чтобы
+  следующая Codex-сессия находила `docs/site-brief.md` без контекста из чата.
+- `feature_list.json` разбит на небольшие будущие фичи: hero layout, hero
+  transition animation, Обо мне, Навыки, Проекты, Хобби и Контакты.
 
 ## В работе
 
-- Активной работы нет. `harness-001` имеет статус `passing`.
+- Активной работы нет. `portfolio-001` имеет статус `passing` и закрывает
+  документацию Lego-концепции.
 
 ## Дальше (Next)
 
-1. Когда начнется работа над контентом, активировать `portfolio-001` в
+1. Следующей Codex-сессии выбрать ровно одну `not-started` фичу из
    `feature_list.json`.
-2. Перед изменением публичного текста портфолио прочитать `docs/content.md`.
-3. Привязывать verification evidence к активной фиче.
+2. Рекомендуемый следующий шаг: `portfolio-002` - Lego-style hero layout.
+3. Перед реализацией hero прочитать `docs/site-brief.md`,
+   `docs/content.md` и посмотреть `examples/hero-screen-desktop.jpg` /
+   `examples/hero-screen-mobile.jpg`.
+4. Если пользователь даст email, обновить `docs/content.md` и фичу
+   `portfolio-008`.
 
 ## Блокеры / риски
 
-- Сейчас неизвестны.
+- Email для блока контактов пока не подтвержден: использовать
+  `TODO: добавить email`.
+- Ссылки и ассеты проектов остаются `TODO`, если они не указаны в
+  `docs/content.md`.
+- Сложная hero-анимация может потребовать отдельного решения по ассетам и
+  проверке reduced motion.
 
 ## Решения
 
@@ -42,28 +60,39 @@ Last Updated: 2026-06-28
   запускается в PowerShell.
 - Сохранить английские маркеры в скобках в нескольких заголовках, потому что их
   ожидает `validate-harness.mjs`.
+- Разделить источники: `docs/content.md` отвечает за факты и тексты,
+  `docs/site-brief.md` отвечает за структуру, визуальный стиль и interaction
+  brief.
+- Не использовать логотип LEGO, официальные наборы, защищенных персонажей или
+  чужие брендированные ассеты; держать стиль как конструкторный/brick-toy
+  inspired.
 
 ## Измененные файлы этой сессии (Files Modified This Session)
 
-- `AGENTS.md` - стартовый контракт Codex и правила проекта.
-- `feature_list.json` - активная harness-фича и следующая фича портфолио.
-- `progress.md` - текущее состояние и следующие verification-шаги.
-- `session-handoff.md` - инструкции для продолжения в следующих сессиях.
-- `init.sh` - Bash entrypoint для проверки.
-- `init.ps1` - PowerShell entrypoint для проверки.
+- `AGENTS.md` - добавлен маршрут к `docs/site-brief.md` и правила Lego-style
+  scope.
+- `README.md` - добавлены ссылки на brief, content source и hero-референсы.
+- `docs/content.md` - добавлены структура сайта, hero-сценарий, хобби, контакты
+  и TODO по email.
+- `docs/site-brief.md` - новый продуктово-дизайнерский brief для Lego-style
+  портфолио.
+- `docs/harness-cheat-sheet.md` - добавлена карта текущего harness.
+- `feature_list.json` - `portfolio-001` закрыт как документационная фича,
+  будущая реализация разбита на отдельные фичи.
+- `progress.md` - обновлено текущее состояние.
+- `session-handoff.md` - обновлен restart path для следующей сессии.
 
 ## Evidence
 
-- `node .skills/harness-creator/scripts/validate-harness.mjs --target .`:
-  passed, overall 100/100.
-- `npm run lint`: passed.
-- `npm run typecheck`: passed.
-- `npm test`: passed, 1 test file and 1 test.
-- `npm run build`: passed.
-- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1`:
-  passed end-to-end.
-- После перевода harness на русский:
+- Baseline before documentation edits:
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
+  end-to-end: lint, typecheck, test, build.
+- Baseline before documentation edits:
   `node .skills/harness-creator/scripts/validate-harness.mjs --target .`
-  снова passed, overall 100/100.
-- После перевода `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1`
-  снова passed end-to-end.
+  passed, overall 100/100.
+- Final verification after documentation edits:
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
+  end-to-end: lint, typecheck, test, build.
+- Final verification after documentation edits:
+  `node .skills/harness-creator/scripts/validate-harness.mjs --target .`
+  passed, overall 100/100.

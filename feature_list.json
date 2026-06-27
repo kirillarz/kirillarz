@@ -29,18 +29,192 @@
     },
     {
       "id": "portfolio-001",
-      "name": "Реализация контента портфолио",
-      "description": "Заменить placeholder-контент главной страницы и страницы работодателя проверенным контентом из docs/content.md.",
+      "name": "Документация Lego-концепции портфолио",
+      "description": "Зафиксировать структуру главной страницы, Lego-style визуальную концепцию, hero-референсы, хобби-карту, контакты и будущие фичи так, чтобы следующая Codex-сессия могла работать без контекста из чата.",
       "dependencies": ["harness-001"],
-      "status": "not-started",
+      "status": "passing",
       "scope": [
-        "Использовать только подтвержденные факты из docs/content.md",
-        "Оставлять неподтвержденные ссылки и ассеты как TODO",
-        "Сохранить покрытие маршрутов и адаптивную верстку"
+        "Создать `docs/site-brief.md` как продуктово-дизайнерский brief",
+        "Обновить `docs/content.md` новыми подтвержденными блоками, хобби и TODO",
+        "Связать `docs/site-brief.md` из `AGENTS.md`, `README.md`, `progress.md` и `session-handoff.md`",
+        "Разбить будущую реализацию на небольшие фичи в `feature_list.json`"
       ],
       "out_of_scope": [
-        "Придумывание метрик или опыта",
-        "Публикация deployment-секретов или приватных материалов"
+        "Изменение React-компонентов и CSS текущего приложения",
+        "Создание финальных изображений, 3D-сцен или видео",
+        "Придумывание email, проектных ссылок, домена или новых фактов"
+      ],
+      "verification": [
+        "node .skills/harness-creator/scripts/validate-harness.mjs --target .",
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\init.ps1"
+      ],
+      "evidence": "2026-06-28: docs/site-brief.md added; docs/content.md updated with Lego-style structure, hobbies map and email TODO; AGENTS.md/README.md/docs/harness-cheat-sheet.md/session-handoff.md/progress.md routed to site brief; feature_list.json split future implementation into small features; baseline before edits passed via init.ps1 and harness validation 100/100; final init.ps1 passed lint, typecheck, test, build; final harness validation passed overall 100/100."
+    },
+    {
+      "id": "portfolio-002",
+      "name": "Lego-style hero layout",
+      "description": "Реализовать responsive hero на главной странице по `docs/site-brief.md` и референсам из `examples/` без сложной transition-анимации.",
+      "dependencies": ["portfolio-001"],
+      "status": "not-started",
+      "scope": [
+        "Desktop: минифигурка по пояс слева, имя/описание/лента навыков/кнопка справа",
+        "Mobile: минифигурка сверху, затем имя/описание/лента навыков/кнопка",
+        "Использовать подтвержденный текст из `docs/content.md`",
+        "Сохранить маршруты `/`, `/employer` и `*`"
+      ],
+      "out_of_scope": [
+        "Анимация светового гаджета и вспышки",
+        "Блоки Обо мне, Навыки, Проекты, Хобби и Контакты",
+        "Новые frontend-библиотеки без отдельного обоснования"
+      ],
+      "verification": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ],
+      "evidence": ""
+    },
+    {
+      "id": "portfolio-003",
+      "name": "Hero transition animation",
+      "description": "Добавить переход из hero: минифигурка оживает, достает световой гаджет, направляет в камеру, щелчок, вспышка, открытие следующего блока.",
+      "dependencies": ["portfolio-002"],
+      "status": "not-started",
+      "scope": [
+        "Реализовать trigger по кнопке или скроллу",
+        "Добавить `prefers-reduced-motion` fallback",
+        "Не копировать защищенные кино-гаджеты или брендированные предметы",
+        "Проверить отсутствие неконтролируемой вспышки и layout shift"
+      ],
+      "out_of_scope": [
+        "Полная 3D-сцена без отдельного решения",
+        "Изменение контента проектов и контактов"
+      ],
+      "verification": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ],
+      "evidence": ""
+    },
+    {
+      "id": "portfolio-004",
+      "name": "Блок Обо мне с ролями",
+      "description": "Реализовать блок Обо мне: текст слева, минифигурка в полный рост справа, циклическое выделение ролей и смена костюма.",
+      "dependencies": ["portfolio-001"],
+      "status": "not-started",
+      "scope": [
+        "Использовать расширенное описание из `docs/content.md`",
+        "Роли: Product Manager, Project Manager, Backend Developer, Business Analyst",
+        "Визуальные активности: ведение мероприятий, организация мероприятий, презентации",
+        "Добавить reduced motion поведение для циклических эффектов"
+      ],
+      "out_of_scope": [
+        "Hero-анимация",
+        "Интерактивная карта хобби",
+        "Новые неподтвержденные роли"
+      ],
+      "verification": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ],
+      "evidence": ""
+    },
+    {
+      "id": "portfolio-005",
+      "name": "Блок Навыки",
+      "description": "Реализовать компактный Lego-style список навыков с иконками и группировкой.",
+      "dependencies": ["portfolio-001"],
+      "status": "not-started",
+      "scope": [
+        "Группы: разработка, продукт и управление, коммуникация и организация",
+        "Иконка в конструкторном стиле плюс название навыка",
+        "Не показывать числовые самооценки",
+        "Не выводить весь длинный стек одним блоком"
+      ],
+      "out_of_scope": [
+        "Придумывание новых навыков",
+        "Подробные рейтинги или проценты"
+      ],
+      "verification": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ],
+      "evidence": ""
+    },
+    {
+      "id": "portfolio-006",
+      "name": "Блок Проекты",
+      "description": "Реализовать чередующуюся витрину проектов с медиа-зоной, кратким текстом, ролью, стеком и TODO-ссылками там, где материалы не подтверждены.",
+      "dependencies": ["portfolio-001"],
+      "status": "not-started",
+      "scope": [
+        "Проекты: AI-агент для подбора помещений, BotNetSchool, PM Simulator",
+        "Desktop: попеременно медиа/текст и текст/медиа",
+        "Использовать только ссылки и факты из `docs/content.md`",
+        "Отсутствующие медиа и ссылки оставлять как `TODO`"
+      ],
+      "out_of_scope": [
+        "Фиктивные URL",
+        "Новые метрики или коммерческие утверждения",
+        "Полноценные проектные страницы без отдельной фичи"
+      ],
+      "verification": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ],
+      "evidence": ""
+    },
+    {
+      "id": "portfolio-007",
+      "name": "Интерактивная карта хобби",
+      "description": "Реализовать Lego/voxel-style карту хобби с горами, озером, аэропортом, сценой, бассейном и hotspots.",
+      "dependencies": ["portfolio-001"],
+      "status": "not-started",
+      "scope": [
+        "Левый верхний угол: горы и горнолыжка",
+        "Под горами: озеро и рыбалка",
+        "Правый верхний угол: аэропорт и путешествия",
+        "Отдельные зоны: сцена для мероприятий и бассейн для плавания",
+        "Hotspot по каждой локации открывает короткую подпись"
+      ],
+      "out_of_scope": [
+        "Новые хобби без подтверждения",
+        "Использование чужих Minecraft/LEGO ассетов",
+        "Сложная 3D-сцена без отдельного решения и визуальной проверки"
+      ],
+      "verification": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ],
+      "evidence": ""
+    },
+    {
+      "id": "portfolio-008",
+      "name": "Блок Контакты",
+      "description": "Реализовать Lego-style блок контактов с GitHub, Telegram и email TODO.",
+      "dependencies": ["portfolio-001"],
+      "status": "not-started",
+      "scope": [
+        "GitHub: `https://github.com/nickname123456`",
+        "Telegram: `https://t.me/kirillarz`",
+        "Email показывать как `TODO: добавить email`, пока пользователь не даст адрес",
+        "Не добавлять новые контакты или домены"
+      ],
+      "out_of_scope": [
+        "Форма обратной связи",
+        "Новые социальные сети",
+        "Публикация неподтвержденного email"
       ],
       "verification": [
         "npm run lint",
