@@ -1,0 +1,54 @@
+{
+  "features": [
+    {
+      "id": "harness-001",
+      "name": "Harness репозитория для Codex",
+      "description": "Создать минимальный Codex-oriented harness со стартовыми инструкциями, состоянием фич, скриптами проверки, progress-логом и handoff-заметками.",
+      "dependencies": [],
+      "status": "passing",
+      "scope": [
+        "AGENTS.md описывает стартовый путь и правила проекта",
+        "feature_list.json отслеживает одну активную фичу и будущую работу над портфолио",
+        "progress.md фиксирует текущее состояние и verification evidence",
+        "init.sh и init.ps1 запускают стандартную npm-последовательность проверок",
+        "session-handoff.md дает следующей Codex-сессии restart path"
+      ],
+      "out_of_scope": [
+        "Изменение поведения приложения",
+        "Переписывание контента портфолио",
+        "Добавление новых зависимостей или deployment-конфигурации"
+      ],
+      "verification": [
+        "node .skills/harness-creator/scripts/validate-harness.mjs --target .",
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ],
+      "evidence": "2026-06-28: harness validation 100/100; npm run lint passed; npm run typecheck passed; npm test passed (1 file, 1 test); npm run build passed; init.ps1 passed end-to-end. Harness translated to Russian where safe; commands, paths, JSON keys, and machine-readable statuses preserved."
+    },
+    {
+      "id": "portfolio-001",
+      "name": "Реализация контента портфолио",
+      "description": "Заменить placeholder-контент главной страницы и страницы работодателя проверенным контентом из docs/content.md.",
+      "dependencies": ["harness-001"],
+      "status": "not-started",
+      "scope": [
+        "Использовать только подтвержденные факты из docs/content.md",
+        "Оставлять неподтвержденные ссылки и ассеты как TODO",
+        "Сохранить покрытие маршрутов и адаптивную верстку"
+      ],
+      "out_of_scope": [
+        "Придумывание метрик или опыта",
+        "Публикация deployment-секретов или приватных материалов"
+      ],
+      "verification": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ],
+      "evidence": ""
+    }
+  ]
+}
