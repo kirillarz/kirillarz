@@ -131,6 +131,37 @@
       "evidence": ""
     },
     {
+      "id": "portfolio-009",
+      "name": "Hero visual alignment with reference",
+      "description": "Приблизить текущий hero к `examples/hero-screen-desktop.jpg`: темная сцена, крупная обрезанная минифигурка, короткий текст, автопрокручиваемая лента навыков с точками и кнопка в стиле референса.",
+      "dependencies": ["portfolio-002"],
+      "status": "passing",
+      "scope": [
+        "Заменить CSS-фон hero на темную сцену с мягким свечением",
+        "Удалить декоративный прямоугольник с цветными кругами",
+        "Удалить роль над заголовком и заменить описание на заданную пользователем фразу",
+        "Сделать навыки компактными, с точками-разделителями и медленной бесконечной прокруткой",
+        "Увеличить и обрезать минифигурку ближе к waist-up reference",
+        "Приблизить кнопку к синей кнопке из desktop/mobile референсов"
+      ],
+      "out_of_scope": [
+        "Hero transition animation из `portfolio-003`",
+        "Новые frontend-библиотеки",
+        "Новые факты портфолио, ссылки, метрики или неподтвержденный контент",
+        "Изменения маршрутов `/`, `/employer` и `*`"
+      ],
+      "verification": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build",
+        "npm run visual:smoke",
+        "view_image artifacts/home-desktop.png",
+        "view_image artifacts/home-mobile.png"
+      ],
+      "evidence": "2026-06-29: hero visual updated to match `examples/hero-screen-desktop.jpg` more closely; old colored-dot rectangle removed; role kicker removed; description replaced with `Разрабатываю цифровые продукты, объединяю backend, AI и управление командой.`; skills changed to Backend / AI Products / Project Management / Systems Analysis with dot separators and slow infinite CSS marquee plus reduced-motion fallback; minifigure enlarged and clipped toward a waist-up crop; button changed to `Узнать обо мне` with larger blue reference-style treatment; `npm.cmd run lint` passed; `npm.cmd run typecheck` passed; `npm.cmd test` passed (1 file, 1 test); `npm.cmd run build` passed; `npm.cmd run visual:smoke` passed and generated desktop/mobile screenshots; both screenshots opened with `view_image`."
+    },
+    {
       "id": "portfolio-004",
       "name": "Блок Обо мне с ролями",
       "description": "Реализовать блок Обо мне: текст слева, минифигурка в полный рост справа, циклическое выделение ролей и смена костюма.",

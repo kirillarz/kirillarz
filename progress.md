@@ -31,11 +31,15 @@ Last Updated: 2026-06-29
   без логотипов, текста, официальных наборов или защищенных персонажей.
 - Реализован `harness-002`: добавлен Playwright visual smoke для desktop/mobile
   скриншотов главной страницы, которые агенты могут открывать через `view_image`.
+- Реализован `portfolio-009`: hero визуально приближен к
+  `examples/hero-screen-desktop.jpg` без новых зависимостей и без изменения
+  маршрутов.
 
 ## В работе
 
-- Активной работы нет. `portfolio-002` имеет статус `passing` и закрывает
-  базовый hero layout без transition-анимации.
+- Активной работы нет. `portfolio-009` имеет статус `passing` и закрывает
+  визуальное приближение текущего hero к desktop/mobile референсам без
+  transition-анимации.
 
 ## Дальше (Next)
 
@@ -187,6 +191,47 @@ Evidence:
   `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test`,
   `npm.cmd run build`, `npm.cmd run visual:smoke`, and
   `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed.
+
+Next step:
+
+- Continue with exactly one `not-started` feature from `feature_list.json`;
+  recommended next feature remains `portfolio-003` hero transition animation.
+
+## 2026-06-29 Hero Visual Alignment
+
+Changed files:
+
+- `src/pages/HomePage.tsx` - удален hero kicker, заменено описание на заданную
+  пользователем фразу, список навыков сокращен до reference-направлений,
+  добавлена дублированная marquee-структура для бесконечной прокрутки и
+  изменен текст кнопки на `Узнать обо мне`.
+- `src/pages/Page.module.css` - заменен фон hero на темную сцену с мягким
+  свечением, удален прямоугольник с цветными кругами, настроены крупный
+  cropped minifigure, reference-style типографика, кнопка и skill marquee с
+  точками-разделителями и `prefers-reduced-motion` fallback.
+- `feature_list.json` - добавлена и закрыта фича `portfolio-009` с evidence.
+- `progress.md` - recorded current-session evidence and changed files.
+- `session-handoff.md` - updated restart context for the current hero state.
+
+Evidence:
+
+- Baseline before edits:
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
+  end-to-end: lint, typecheck, test, build.
+- Visual baseline before edits:
+  `npm.cmd run visual:smoke` passed and generated desktop/mobile screenshots,
+  both opened through `view_image`.
+- After hero visual edits:
+  `npm.cmd run lint` passed.
+- After hero visual edits:
+  `npm.cmd run typecheck` passed.
+- After hero visual edits:
+  `npm.cmd test` passed: 1 test file, 1 test.
+- After hero visual edits:
+  `npm.cmd run build` passed.
+- Visual verification:
+  `npm.cmd run visual:smoke` passed; `artifacts/home-desktop.png` and
+  `artifacts/home-mobile.png` were opened through `view_image`.
 
 Next step:
 

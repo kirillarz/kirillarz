@@ -4,12 +4,10 @@ import heroMinifigure from "../assets/hero-minifigure.png";
 import styles from "./Page.module.css";
 
 const heroSkills = [
-  "Product Management",
-  "Project Management",
   "Backend",
-  "React + TypeScript",
-  "FastAPI",
-  "AI-интеграции",
+  "AI Products",
+  "Project Management",
+  "Systems Analysis",
 ];
 
 export function HomePage() {
@@ -25,27 +23,30 @@ export function HomePage() {
         </div>
 
         <div className={styles.heroContent}>
-          <p className={styles.kicker}>Начинающий product manager и разработчик</p>
           <h1 id="home-title">Кирилл Арзамасцев</h1>
-          <p className={styles.heroSlogan}>
-            Собираю AI-продукты, команды и работающие решения.
-          </p>
-          <p className={styles.lead}>
-            Кирилл Арзамасцев — студент, который совмещает разработку,
-            управление и организацию. Умеет превращать идеи в работающие
-            проекты, координировать команду, общаться с заказчиком и защищать
-            результат.
+          <p className={styles.heroDescription}>
+            Разрабатываю цифровые продукты, объединяю backend, AI и управление
+            командой.
           </p>
 
-          <ul className={styles.skillTape} aria-label="Ключевые направления">
-            {heroSkills.map((skill) => (
-              <li key={skill}>{skill}</li>
-            ))}
-          </ul>
+          <div className={styles.skillMarquee}>
+            <span className={styles.srOnly}>Ключевые направления: {heroSkills.join(", ")}</span>
+            <div className={styles.skillTrack} aria-hidden="true">
+              {[0, 1].map((group) => (
+                <div className={styles.skillGroup} key={group}>
+                  {heroSkills.map((skill) => (
+                    <span className={styles.skillPill} key={`${group}-${skill}`}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className={styles.actions}>
             <Link className={styles.primaryLink} to="/employer">
-              Для работодателя
+              Узнать обо мне
               <span aria-hidden="true">→</span>
             </Link>
           </div>

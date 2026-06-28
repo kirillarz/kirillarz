@@ -6,7 +6,8 @@
   вести реализацию Lego-style сайта по маленьким проверяемым фичам.
 - Статус: harness создан; Lego-style документация портфолио добавлена;
   `portfolio-001` закрыта как документационная фича; `portfolio-002` закрыта
-  как responsive hero layout.
+  как responsive hero layout; `portfolio-009` закрыта как визуальное
+  приближение hero к desktop/mobile референсам.
 - Ветка: `try-new-harness`.
 
 ## Форма репозитория
@@ -25,6 +26,10 @@
 - Текущий hero реализован в `src/pages/HomePage.tsx` и
   `src/pages/Page.module.css`; локальный generated asset лежит в
   `src/assets/hero-minifigure.png`.
+- Актуальный hero: темная CSS-сцена с мягким свечением, крупная cropped
+  minifigure, короткое описание `Разрабатываю цифровые продукты, объединяю
+  backend, AI и управление командой.`, skills marquee с точками и кнопка
+  `Узнать обо мне`.
 - Visual smoke-проверка находится в `tests/visual/home.spec.ts`; команда
   `npm run visual:smoke` поднимает или переиспользует Vite dev-server через
   Playwright и сохраняет скриншоты в `artifacts/home-desktop.png` и
@@ -50,6 +55,9 @@
 | Visual smoke | `npm.cmd run visual:smoke` | Passed | Generated `artifacts/home-desktop.png` and `artifacts/home-mobile.png` |
 | Screenshot inspection | `view_image artifacts/home-desktop.png` and `view_image artifacts/home-mobile.png` | Passed | Both PNGs opened successfully |
 | Final startup after visual smoke harness | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` | Passed | lint, typecheck, test, build |
+| Baseline before hero visual alignment | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` | Passed | lint, typecheck, test, build |
+| Hero visual alignment checks | `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test`, `npm.cmd run build` | Passed | Vitest: 1 file, 1 test |
+| Hero visual smoke | `npm.cmd run visual:smoke` plus `view_image artifacts/home-desktop.png` and `view_image artifacts/home-mobile.png` | Passed | Screenshots inspected after CSS/markup edits |
 
 ## Старт следующей сессии (Next Session Startup)
 
