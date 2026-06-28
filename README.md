@@ -52,7 +52,8 @@ Lego-style сайт с минифигурками, интерактивными 
 
 * **TypeScript** — проверка типов;
 * **ESLint** — проверка качества кода;
-* **Vitest** — быстрые unit/smoke-тесты для стабильных контрактов приложения.
+* **Vitest** — быстрые unit/smoke-тесты для стабильных контрактов приложения;
+* **Playwright** — визуальный smoke-тест главной страницы со скриншотами для проверки вёрстки.
 
 ### Развёртывание
 
@@ -121,9 +122,14 @@ npm run typecheck
 
 # Запуск тестов
 npm run test
+
+# Скриншоты главной страницы для visual smoke-проверки
+npm run visual:smoke
 ```
 
 Эти же проверки запускаются в GitHub Actions: `typecheck`, `lint`, `test`, `build`.
+Скриншоты visual smoke-проверки сохраняются в `artifacts/home-desktop.png` и
+`artifacts/home-mobile.png`; агент может открыть их через `view_image`.
 
 ---
 

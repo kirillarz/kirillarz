@@ -29,6 +29,8 @@ Last Updated: 2026-06-29
   `/employer`.
 - Добавлен локальный generated bitmap asset `src/assets/hero-minifigure.png`
   без логотипов, текста, официальных наборов или защищенных персонажей.
+- Реализован `harness-002`: добавлен Playwright visual smoke для desktop/mobile
+  скриншотов главной страницы, которые агенты могут открывать через `view_image`.
 
 ## В работе
 
@@ -57,6 +59,8 @@ Last Updated: 2026-06-29
 - Hero transition из `portfolio-003` должен использовать neutral naming:
   `световой гаджет`, `вспышка`, `переход`; не копировать узнаваемые
   кино-гаджеты или защищенный дизайн.
+- Visual smoke сохраняет PNG в `artifacts/`, эта папка намеренно игнорируется
+  git и служит локальным рабочим артефактом для агентов.
 
 ## Решения
 
@@ -140,3 +144,51 @@ Next step:
 
 - Continue with exactly one `not-started` feature from `feature_list.json`; recommended next feature remains
   `portfolio-003` hero transition animation.
+
+## 2026-06-29 Visual Smoke Screenshots
+
+Changed files:
+
+- `package.json` - added `@playwright/test` dev dependency and `visual:smoke`
+  script.
+- `package-lock.json` - locked Playwright packages.
+- `playwright.config.ts` - added Playwright config with Vite webServer,
+  `baseURL`, Chromium-compatible defaults and trace-on-failure.
+- `tests/visual/home.spec.ts` - added desktop and mobile smoke test for `/`
+  that saves `artifacts/home-desktop.png` and `artifacts/home-mobile.png`.
+- `vite.config.ts` - excluded `tests/visual/**` from Vitest so `npm test`
+  remains a Vitest-only check.
+- `.gitignore` - ignored generated `artifacts/` screenshots.
+- `README.md` - documented `npm run visual:smoke` and screenshot paths.
+- `AGENTS.md` - documented the visual smoke workflow for future Codex sessions.
+- `feature_list.json` - added and closed `harness-002` with evidence.
+- `progress.md` - recorded current-session evidence and changed files.
+
+Evidence:
+
+- Baseline before edits:
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
+  end-to-end: lint, typecheck, test, build.
+- Dependency setup:
+  `npm.cmd install -D @playwright/test` passed after escalation for npm registry access.
+- Browser setup:
+  `npx.cmd playwright install chromium` passed after escalation and downloaded Chromium,
+  headless shell, FFmpeg and Winldd to the local Playwright cache.
+- Visual smoke:
+  `npm.cmd run visual:smoke` passed and generated `artifacts/home-desktop.png`
+  and `artifacts/home-mobile.png`.
+- Screenshot inspection:
+  both generated PNG files were opened through `view_image`.
+- Runner separation:
+  initial `init.ps1` after adding Playwright showed Vitest picking up
+  `tests/visual/home.spec.ts`; `vite.config.ts` now excludes `tests/visual/**`,
+  and `npm.cmd test` passed again with 1 Vitest file and 1 test.
+- Final checks:
+  `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test`,
+  `npm.cmd run build`, `npm.cmd run visual:smoke`, and
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed.
+
+Next step:
+
+- Continue with exactly one `not-started` feature from `feature_list.json`;
+  recommended next feature remains `portfolio-003` hero transition animation.

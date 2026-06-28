@@ -12,7 +12,8 @@
 ## Форма репозитория
 
 - Приложение на Vite + React + TypeScript.
-- npm scripts: `lint`, `typecheck`, `test`, `build`, `dev`, `preview`.
+- npm scripts: `lint`, `typecheck`, `test`, `build`, `dev`, `preview`,
+  `visual:smoke`.
 - Маршруты описаны в `src/routes.tsx`.
 - Точка входа приложения: `src/main.tsx`.
 - Страницы находятся в `src/pages/`.
@@ -24,6 +25,10 @@
 - Текущий hero реализован в `src/pages/HomePage.tsx` и
   `src/pages/Page.module.css`; локальный generated asset лежит в
   `src/assets/hero-minifigure.png`.
+- Visual smoke-проверка находится в `tests/visual/home.spec.ts`; команда
+  `npm run visual:smoke` поднимает или переиспользует Vite dev-server через
+  Playwright и сохраняет скриншоты в `artifacts/home-desktop.png` и
+  `artifacts/home-mobile.png` для открытия через `view_image`.
 
 ## Доказательства проверки (Verification Evidence)
 
@@ -40,6 +45,11 @@
 | Hero build | `npm.cmd run build` | Passed | Vite emitted hero image asset |
 | Runtime smoke | Vite dev server | Passed | PID `16716`; `/` and `/employer` returned HTTP 200 at `http://127.0.0.1:5173/` |
 | Final startup after harness updates | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` | Passed | lint, typecheck, test, build |
+| Playwright dependency | `npm.cmd install -D @playwright/test` | Passed | Required escalation for npm registry access |
+| Playwright browser setup | `npx.cmd playwright install chromium` | Passed | Downloaded Chromium/headless shell/FFmpeg/Winldd to local Playwright cache |
+| Visual smoke | `npm.cmd run visual:smoke` | Passed | Generated `artifacts/home-desktop.png` and `artifacts/home-mobile.png` |
+| Screenshot inspection | `view_image artifacts/home-desktop.png` and `view_image artifacts/home-mobile.png` | Passed | Both PNGs opened successfully |
+| Final startup after visual smoke harness | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` | Passed | lint, typecheck, test, build |
 
 ## Старт следующей сессии (Next Session Startup)
 
@@ -49,7 +59,9 @@
 4. Перед UI/design работой прочитать `docs/site-brief.md`.
 5. Посмотреть hero-референсы в `examples/`.
 6. Запустить `./init.ps1` в PowerShell или `./init.sh` в Bash.
-7. Работать ровно над одной незавершенной фичей.
+7. Для проверки верстки запустить `npm run visual:smoke` и открыть
+   `artifacts/*.png` через `view_image`.
+8. Работать ровно над одной незавершенной фичей.
 
 ## Рекомендуемый следующий шаг (Recommended Next Step)
 

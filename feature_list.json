@@ -28,6 +28,37 @@
       "evidence": "2026-06-28: harness validation 100/100; npm run lint passed; npm run typecheck passed; npm test passed (1 file, 1 test); npm run build passed; init.ps1 passed end-to-end. Harness translated to Russian where safe; commands, paths, JSON keys, and machine-readable statuses preserved."
     },
     {
+      "id": "harness-002",
+      "name": "Visual smoke screenshots for agents",
+      "description": "Добавить Playwright-based visual smoke-проверку, чтобы Codex-агенты могли генерировать desktop/mobile скриншоты сайта и открывать их через view_image при работе над версткой.",
+      "dependencies": ["harness-001"],
+      "status": "passing",
+      "scope": [
+        "Добавить `@playwright/test` как dev-зависимость",
+        "Добавить npm-скрипт `visual:smoke`",
+        "Добавить Playwright config, который поднимает или переиспользует Vite dev-server",
+        "Добавить smoke-тест главной страницы для desktop и mobile viewport",
+        "Сохранять скриншоты в `artifacts/home-desktop.png` и `artifacts/home-mobile.png`",
+        "Задокументировать команду для следующих Codex-сессий"
+      ],
+      "out_of_scope": [
+        "Исправление визуальных дефектов, найденных скриншотами",
+        "Добавление pixel-perfect snapshot assertions",
+        "Изменение публичного контента портфолио"
+      ],
+      "verification": [
+        "npm run visual:smoke",
+        "view_image artifacts/home-desktop.png",
+        "view_image artifacts/home-mobile.png",
+        "npm run lint",
+        "npm run typecheck",
+        "npm test",
+        "npm run build",
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\init.ps1"
+      ],
+      "evidence": "2026-06-29: installed @playwright/test and Chromium; added `visual:smoke` script, `playwright.config.ts`, `tests/visual/home.spec.ts`, and ignored generated `artifacts/`; `npm.cmd run visual:smoke` passed and generated `artifacts/home-desktop.png` plus `artifacts/home-mobile.png`; both screenshots were opened through `view_image`; Vitest was configured to exclude Playwright specs; npm.cmd run lint passed; npm.cmd run typecheck passed; npm.cmd test passed (1 file, 1 test); npm.cmd run build passed; final powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\init.ps1 passed end-to-end."
+    },
+    {
       "id": "portfolio-001",
       "name": "Документация Lego-концепции портфолио",
       "description": "Зафиксировать структуру главной страницы, Lego-style визуальную концепцию, hero-референсы, хобби-карту, контакты и будущие фичи так, чтобы следующая Codex-сессия могла работать без контекста из чата.",

@@ -74,6 +74,11 @@ npm run build
 
 `./init.sh` и `./init.ps1` запускают ту же последовательность.
 
+Для визуальной smoke-проверки главной страницы используй `npm run visual:smoke`.
+Команда запускает Playwright, поднимает или переиспользует Vite dev-server и
+сохраняет скриншоты в `artifacts/home-desktop.png` и
+`artifacts/home-mobile.png`; их можно открыть через `view_image`.
+
 ## Критерий готовности (Definition of Done)
 
 Фича считается готовой только когда:
