@@ -2,7 +2,7 @@
 
 ## Текущее состояние (Current State)
 
-Last Updated: 2026-06-28
+Last Updated: 2026-06-29
 Активная фича: нет
 
 ## Готово
@@ -108,3 +108,35 @@ Last Updated: 2026-06-28
 - Final verification after harness updates:
   `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
   end-to-end: lint, typecheck, test, build.
+
+## 2026-06-29 Hero Layout Repair
+
+Changed files:
+
+- `src/pages/Page.module.css` - repaired hero image sizing after `src/assets/hero-minifigure.png`
+  changed from wide 1672x941 to portrait 1024x1536. The image now uses `object-fit: contain`,
+  responsive width constraints, and stable visual-block `min-height` values instead of a fixed
+  image height plus `object-fit: cover` crop.
+- `feature_list.json` - added `portfolio-002` regression-fix evidence.
+- `progress.md` - recorded current-session evidence and changed files.
+
+Evidence:
+
+- Baseline before repair:
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed end-to-end:
+  lint, typecheck, test, build.
+- After CSS edits:
+  `npm.cmd run lint` passed.
+- After CSS edits:
+  `npm.cmd run typecheck` passed.
+- After CSS edits:
+  `npm.cmd test` passed: 1 test file, 1 test.
+- After CSS edits:
+  `npm.cmd run build` passed.
+- Runtime smoke check:
+  dev server PID `19712` served `/` and `/employer` with HTTP 200 at `http://127.0.0.1:5173/`.
+
+Next step:
+
+- Continue with exactly one `not-started` feature from `feature_list.json`; recommended next feature remains
+  `portfolio-003` hero transition animation.
