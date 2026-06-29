@@ -237,3 +237,40 @@ Next step:
 
 - Continue with exactly one `not-started` feature from `feature_list.json`;
   recommended next feature remains `portfolio-003` hero transition animation.
+
+## 2026-06-29 Hero Image Crop Repair
+
+Changed files:
+
+- `src/pages/HomePage.tsx` - added a dedicated crop frame around the hero
+  minifigure image.
+- `src/pages/Page.module.css` - replaced direct image `clip-path` sizing with a
+  responsive frame that clips only the bottom of the figure; desktop and mobile
+  sizes now show the minifigure around waist/torso level without exposing legs.
+- `feature_list.json` - appended `portfolio-009` evidence for this regression
+  repair.
+- `progress.md` - recorded current-session evidence and changed files.
+- `session-handoff.md` - updated restart context for the repaired crop behavior.
+
+Evidence:
+
+- Baseline before edits:
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
+  end-to-end: lint, typecheck, test, build.
+- Visual verification:
+  `npm.cmd run visual:smoke` Playwright test reported `ok` and regenerated
+  `artifacts/home-desktop.png` and `artifacts/home-mobile.png`; the npm wrapper
+  timed out waiting for process exit in this shell, so the command did not
+  return a clean shell exit code.
+- Screenshot inspection:
+  both regenerated PNG files were opened through `view_image`; desktop and
+  mobile crops were inspected visually against `examples/hero-screen-desktop.jpg`
+  and `examples/hero-screen-mobile.jpg`.
+- Final checks:
+  `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test`, and
+  `npm.cmd run build` passed. Vitest result: 1 file, 1 test.
+
+Next step:
+
+- Continue with exactly one `not-started` feature from `feature_list.json`;
+  recommended next feature remains `portfolio-003` hero transition animation.

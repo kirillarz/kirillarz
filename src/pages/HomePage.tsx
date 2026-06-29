@@ -15,11 +15,13 @@ export function HomePage() {
     <main className={`${styles.page} ${styles.homePage}`}>
       <section className={styles.homeHero} aria-labelledby="home-title">
         <div className={styles.heroVisual}>
-          <img
-            className={styles.heroImage}
-            src={heroMinifigure}
-            alt="Стилизованная конструкторная минифигурка Кирилла в костюме"
-          />
+          <div className={styles.heroImageFrame}>
+            <img
+              className={styles.heroImage}
+              src={heroMinifigure}
+              alt="Стилизованная конструкторная минифигурка Кирилла в костюме"
+            />
+          </div>
         </div>
 
         <div className={styles.heroContent}>

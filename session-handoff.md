@@ -26,10 +26,11 @@
 - Текущий hero реализован в `src/pages/HomePage.tsx` и
   `src/pages/Page.module.css`; локальный generated asset лежит в
   `src/assets/hero-minifigure.png`.
-- Актуальный hero: темная CSS-сцена с мягким свечением, крупная cropped
-  minifigure, короткое описание `Разрабатываю цифровые продукты, объединяю
-  backend, AI и управление командой.`, skills marquee с точками и кнопка
-  `Узнать обо мне`.
+- Актуальный hero: темная CSS-сцена с мягким свечением, крупная minifigure в
+  отдельной crop-рамке, которая режет изображение только снизу примерно по
+  пояс/корпус на desktop и mobile; короткое описание `Разрабатываю цифровые
+  продукты, объединяю backend, AI и управление командой.`, skills marquee с
+  точками и кнопка `Узнать обо мне`.
 - Visual smoke-проверка находится в `tests/visual/home.spec.ts`; команда
   `npm run visual:smoke` поднимает или переиспользует Vite dev-server через
   Playwright и сохраняет скриншоты в `artifacts/home-desktop.png` и
@@ -58,6 +59,9 @@
 | Baseline before hero visual alignment | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` | Passed | lint, typecheck, test, build |
 | Hero visual alignment checks | `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test`, `npm.cmd run build` | Passed | Vitest: 1 file, 1 test |
 | Hero visual smoke | `npm.cmd run visual:smoke` plus `view_image artifacts/home-desktop.png` and `view_image artifacts/home-mobile.png` | Passed | Screenshots inspected after CSS/markup edits |
+| Hero image crop repair baseline | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` | Passed | lint, typecheck, test, build |
+| Hero image crop repair checks | `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test`, `npm.cmd run build` | Passed | Vitest: 1 file, 1 test |
+| Hero image crop repair visual smoke | `npm.cmd run visual:smoke` plus `view_image artifacts/home-desktop.png` and `view_image artifacts/home-mobile.png` | Partial shell exit; visual passed | Playwright reported `ok` and regenerated screenshots; npm wrapper timed out waiting for process exit in this shell; screenshots inspected visually |
 
 ## Старт следующей сессии (Next Session Startup)
 
