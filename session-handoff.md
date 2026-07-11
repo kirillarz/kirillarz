@@ -4,8 +4,8 @@
 
 - Цель: повторно довести hero до максимально близкого визуального совпадения с
   `examples/hero-screen-desktop.jpg`.
-- Статус: `portfolio-009` переоткрыта как `not-started` после пользовательской
-  приемки. Анализ и документация готовы; implementation не начат.
+- Статус: `portfolio-009` завершена со статусом `passing`; canonical,
+  desktop и mobile кадры обновлены и проверены.
 - Ветка: `dev`.
 
 ## Форма репозитория
@@ -70,6 +70,9 @@
 | 2026-07-12 planning checks | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` before and after docs | Passed | lint, typecheck, 1 Vitest test, build |
 | 2026-07-12 canonical capture | System Chrome at `1680 × 838` plus `view_image` | Passed | Confirmed measured layout gaps documented in `docs/hero-reference-alignment.md` |
 | 2026-07-12 standard visual smoke | `npm run visual:smoke` | Blocked by local browser cache | Missing Playwright `chromium_headless_shell-1228`; production code unaffected |
+| 2026-07-12 hero realignment checks | `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test`, `npm.cmd run build` | Passed | Vitest: 1 file, 1 test; Vite build passed |
+| 2026-07-12 hero visual test | `npm.cmd run visual:smoke` | Visual test passed; wrapper timed out | System Chrome test reported `ok` in about 2.3s and wrote canonical/desktop/mobile screenshots; wrapper remained alive |
+| 2026-07-12 final image inspection | `view_image` on both references and three generated screenshots | Passed | Canonical landmarks and mobile overflow acceptance checked |
 
 ## Старт следующей сессии (Next Session Startup)
 
@@ -82,20 +85,14 @@
 7. Запустить `./init.ps1` в PowerShell или `./init.sh` в Bash.
 8. Для проверки верстки запустить `npm run visual:smoke` и открыть
    `artifacts/*.png` через `view_image`.
-9. Работать только над незавершенной `portfolio-009`.
+9. Перед новой реализацией выбрать ровно одну незавершенную фичу.
 
 ## Рекомендуемый следующий шаг (Recommended Next Step)
 
-- Продолжить только `portfolio-009` по
-  `docs/hero-reference-alignment.md`; `portfolio-003` пока не начинать.
-- Сначала снять canonical baseline `1680 × 838`, затем исправить full-bleed
-  высоту, grid и crop. После этого настроить typography, skills, CTA и только
-  затем декоративные детали.
-- Не менять `src/assets/hero-minifigure.png`, тексты, маршруты и зависимости.
-- Проверить canonical desktop, `1440 × 900`, `390 × 844`, reduced motion и
-  полный набор `lint/typecheck/test/build`.
-- После визуальной приемки вернуть `portfolio-009` в `passing` с новыми
-  screenshot evidence.
+- Показать пользователю новые кадры `portfolio-009`; если будут точечные
+  замечания, продолжить эту же фичу, не смешивая ее с transition-анимацией.
+- Если визуальная приемка подтверждена, выбрать следующую незавершенную фичу
+  по `feature_list.json` отдельной сессией.
 
 ## Открытые TODO
 

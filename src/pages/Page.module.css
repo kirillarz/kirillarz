@@ -10,12 +10,15 @@
 
 .homePage {
   position: relative;
+  display: block;
+  min-height: 100svh;
+  padding: 0;
   overflow-x: hidden;
   color: #f8fafc;
   background:
-    radial-gradient(circle at 28% 53%, rgb(76 147 220 / 0.42) 0 7%, rgb(38 89 153 / 0.2) 18%, transparent 36%),
-    radial-gradient(circle at 70% 74%, rgb(30 64 175 / 0.18) 0 8%, transparent 25%),
-    linear-gradient(110deg, #07111f 0%, #050a14 47%, #03060d 100%);
+    radial-gradient(ellipse 42% 72% at 29% 51%, rgb(86 148 211 / 0.36), rgb(35 70 110 / 0.2) 42%, transparent 72%),
+    radial-gradient(ellipse 48% 54% at 66% 50%, rgb(45 62 85 / 0.16), transparent 70%),
+    linear-gradient(112deg, #080d16 0%, #0c1420 35%, #080d16 69%, #040811 100%);
 }
 
 .homePage::before {
@@ -24,9 +27,8 @@
   pointer-events: none;
   content: "";
   background:
-    radial-gradient(circle at 29% 48%, transparent 0 22%, rgb(2 6 23 / 0.32) 43%, transparent 66%),
-    linear-gradient(90deg, rgb(3 7 18 / 0.16) 0%, transparent 34%, rgb(0 0 0 / 0.26) 100%),
-    linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 0.2) 100%);
+    radial-gradient(ellipse at center, transparent 35%, rgb(1 4 10 / 0.3) 100%),
+    linear-gradient(180deg, rgb(1 4 10 / 0.08), transparent 45%, rgb(1 4 10 / 0.48) 100%);
 }
 
 .hero {
@@ -38,12 +40,13 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(360px, 0.94fr) minmax(0, 1.06fr);
-  gap: 46px;
-  align-items: center;
-  width: min(100%, 1220px);
-  min-height: calc(100vh - 96px);
+  grid-template-columns: 650px minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+  width: min(calc(100% - 48px), 1380px);
+  min-height: 100svh;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .heroVisual {
@@ -52,15 +55,15 @@
   place-items: start center;
   align-self: stretch;
   min-width: 0;
-  min-height: calc(100vh - 96px);
+  min-height: 100svh;
   overflow: visible;
 }
 
 .heroImageFrame {
-  width: clamp(720px, 55vw, 800px);
-  height: min(770px, calc(100vh - 96px));
+  width: 768px;
+  height: 100svh;
   overflow: hidden;
-  transform: translateX(-105px);
+  transform: translateX(-72px);
 }
 
 .heroImage {
@@ -71,11 +74,13 @@
   object-fit: contain;
   object-position: top center;
   filter: drop-shadow(0 28px 42px rgb(0 0 0 / 0.5));
+  transform: translateY(45px);
 }
 
 .heroContent {
+  position: relative;
   min-width: 0;
-  padding-top: 8px;
+  padding-top: 136px;
 }
 
 .kicker {
@@ -104,15 +109,14 @@
 }
 
 .homeHero h1 {
-  max-width: 680px;
+  max-width: 690px;
   margin: 0;
   color: #ffffff;
   font-family: Arial, var(--font-sans);
-  font-size: clamp(4.4rem, 7vw, 6.5rem);
-  font-weight: 900;
-  line-height: 0.92;
-  letter-spacing: 0;
-  text-wrap: balance;
+  font-size: 6.8rem;
+  font-weight: 700;
+  line-height: 0.96;
+  letter-spacing: -0.035em;
 }
 
 .lead {
@@ -132,59 +136,56 @@
 }
 
 .heroDescription {
-  max-width: 640px;
-  margin: 28px 0 0;
+  max-width: 660px;
+  margin: 24px 0 0;
   color: #e5e7eb;
-  font-size: clamp(1.35rem, 1.75vw, 1.6rem);
+  font-size: 1.55rem;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.58;
 }
 
 .skillMarquee {
-  width: min(100%, 690px);
+  width: min(100%, 700px);
   margin-top: 32px;
-  overflow: hidden;
-  mask-image: linear-gradient(90deg, #000 0, #000 91%, transparent 100%);
+  overflow: visible;
 }
 
 .skillTrack {
   display: flex;
-  width: max-content;
-  animation: skill-scroll 30s linear infinite;
-}
-
-.skillGroup {
-  display: flex;
   align-items: center;
-  gap: 34px;
-  padding-right: 34px;
+  gap: 30px;
+  width: max-content;
 }
 
 .skillPill {
   position: relative;
   flex: 0 0 auto;
-  padding: 14px 18px;
+  padding: 15px 20px;
   color: #f7f7f8;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 1.05rem;
+  font-weight: 400;
   line-height: 1;
   white-space: nowrap;
-  border: 1px solid rgb(148 163 184 / 0.38);
-  border-radius: 7px;
-  background: rgb(3 7 18 / 0.28);
+  border: 1px solid rgb(148 163 184 / 0.34);
+  border-radius: 6px;
+  background: rgb(3 7 18 / 0.2);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
 }
 
 .skillPill::after {
   position: absolute;
   top: 50%;
-  right: -22px;
-  width: 5px;
-  height: 5px;
+  right: -18px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   content: "";
   background: rgb(226 232 240 / 0.72);
   transform: translateY(-50%);
+}
+
+.skillPill:last-child::after {
+  display: none;
 }
 
 .srOnly {
@@ -199,21 +200,12 @@
   clip: rect(0 0 0 0);
 }
 
-@keyframes skill-scroll {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 .actions {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 45px;
 }
 
 .primaryLink,
@@ -249,9 +241,9 @@
 .homeHero .primaryLink {
   gap: 30px;
   min-width: 336px;
-  min-height: 76px;
+  min-height: 84px;
   padding: 0 38px;
-  border-radius: 12px;
+  border-radius: 11px;
   color: #ffffff;
   font-size: 1.22rem;
   font-weight: 800;
@@ -265,6 +257,54 @@
     background-color 160ms ease;
 }
 
+.ctaHint {
+  position: absolute;
+  top: 109px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: rgb(203 213 225 / 0.38);
+  font-size: 1rem;
+  font-weight: 400;
+  pointer-events: none;
+}
+
+.ctaHint span {
+  display: inline-block;
+  font-size: 1.7rem;
+  transform: rotate(-20deg);
+}
+
+.lightMark {
+  position: absolute;
+  top: 584px;
+  left: 421px;
+  width: 46px;
+  height: 46px;
+  border: 2px solid rgb(219 234 254 / 0.78);
+  border-radius: 8px;
+  pointer-events: none;
+  filter: drop-shadow(0 0 12px rgb(96 165 250 / 0.75));
+  transform: rotate(42deg) skew(-5deg, -5deg);
+}
+
+.lightMark::after {
+  position: absolute;
+  top: 38px;
+  left: 37px;
+  width: 5px;
+  height: 5px;
+  content: "";
+  background: white;
+  border-radius: 50%;
+  box-shadow:
+    0 0 8px 4px rgb(255 255 255 / 0.9),
+    0 0 28px 10px rgb(96 165 250 / 0.48),
+    28px 0 42px 1px rgb(147 197 253 / 0.42),
+    -28px 0 42px 1px rgb(147 197 253 / 0.42);
+}
+
 .homeHero .primaryLink:focus-visible,
 .homeHero .skillPill:focus-visible {
   outline: 3px solid #facc15;
@@ -276,10 +316,17 @@
 }
 
 @media (max-width: 980px) {
+  .homePage {
+    min-height: 100svh;
+    padding: 0 24px 44px;
+  }
+
   .homeHero {
     grid-template-columns: 1fr;
     gap: 30px;
+    width: min(100%, 720px);
     min-height: auto;
+    overflow: visible;
   }
 
   .heroVisual {
@@ -294,13 +341,37 @@
     transform: none;
   }
 
+  .heroImage {
+    transform: none;
+  }
+
   .heroContent {
     order: 1;
     width: min(100%, 720px);
+    padding-top: 0;
   }
 
   .homeHero h1 {
     font-size: clamp(3.4rem, 12vw, 5.2rem);
+  }
+
+  .desktopBreak {
+    display: none;
+  }
+
+  .skillMarquee {
+    width: calc(100% + 24px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .skillMarquee::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lightMark,
+  .ctaHint {
+    display: none;
   }
 }
 
@@ -312,7 +383,7 @@
 
   .homePage {
     align-items: start;
-    padding: 26px 20px 42px;
+    padding: 0 20px 42px;
   }
 
   .homeHero {
@@ -377,5 +448,9 @@
 @media (prefers-reduced-motion: reduce) {
   .skillTrack {
     animation: none;
+  }
+
+  .homeHero .primaryLink {
+    transition: none;
   }
 }

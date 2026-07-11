@@ -3,8 +3,8 @@
 ## Текущее состояние (Current State)
 
 Last Updated: 2026-07-12
-Активная фича: `portfolio-009` — переоткрыта после пользовательской приемки;
-implementation еще не начат
+Активная фича: `portfolio-009` — `passing`; повторное визуальное выравнивание
+реализовано и проверено
 
 ## Готово
 
@@ -38,23 +38,14 @@ implementation еще не начат
 
 ## В работе
 
-- `portfolio-009` переоткрыта как `not-started`: пользователь считает текущий
-  hero визуально далеким от `examples/hero-screen-desktop.jpg`.
-- Подготовлен `docs/hero-reference-alignment.md` с canonical viewport,
-  измеримыми расхождениями, implementation order и acceptance checklist.
-- В этой сессии разрешены только анализ и документация; React/CSS-код должен
-  изменить следующий агент.
+- Активных незавершенных изменений нет. `portfolio-009` завершена без начала
+  `portfolio-003` или других секций.
 
 ## Дальше (Next)
 
-1. Следующему агенту продолжить только `portfolio-009`; не выбирать
-   `portfolio-003`, пока повторная визуальная приемка hero не завершена.
-2. Прочитать `docs/hero-reference-alignment.md` и сначала исправить full-bleed
-   геометрию, grid и crop, затем типографику, skills, CTA и декор.
-3. После каждой крупной группы CSS-изменений снимать canonical кадр
-   `1680 × 838` и сравнивать с desktop-референсом.
-4. После визуального совпадения проверить `390 × 844`, полный verification и
-   записать новые screenshot paths в evidence.
+1. Получить визуальную приемку пользователя по новым canonical/desktop/mobile
+   кадрам.
+2. Следующую фичу выбирать отдельно; `portfolio-003` в этой сессии не начата.
 
 ## Блокеры / риски
 
@@ -319,3 +310,38 @@ Next step:
 
 - Continue with exactly one `not-started` feature from `feature_list.json`;
   recommended next feature remains `portfolio-003` hero transition animation.
+
+## 2026-07-12 Hero Reference Realignment
+
+Changed files:
+
+- `src/pages/HomePage.tsx` — deterministic skill row, canonical description
+  break, low-contrast CTA hint and decorative light mark.
+- `src/pages/Page.module.css` — full-bleed viewport scene, corrected desktop
+  grid and figure crop, reference-aligned typography, background, skills, CTA,
+  responsive overflow, focus and reduced-motion behavior.
+- `tests/visual/home.spec.ts` — canonical `1680 × 838` capture plus CTA route
+  and mobile page-overflow assertions.
+- `playwright.config.ts` — visual smoke uses installed system Chrome because
+  the bundled `chromium_headless_shell-1228` is unavailable.
+- `feature_list.json`, `progress.md`, `session-handoff.md` — completion state,
+  evidence and restart context.
+
+Evidence:
+
+- Baseline `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1`
+  passed: lint, typecheck, 1 Vitest test and build.
+- Playwright reported the visual test `ok` in about 2.3 seconds and regenerated
+  `artifacts/home-desktop-reference-viewport.png`,
+  `artifacts/home-desktop.png` and `artifacts/home-mobile.png`; the npm wrapper
+  stayed alive after completion and was terminated by the shell timeout.
+- Both JPG references and all three final PNGs were opened through
+  `view_image`; canonical geometry matches the acceptance landmarks and the
+  mobile test confirms no page-level horizontal overflow at `390 × 844`.
+- Final `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test` and
+  `npm.cmd run build` passed. Vitest: 1 file, 1 test.
+
+Next step:
+
+- Request visual acceptance for these screenshots. Do not begin
+  `portfolio-003` in the same work item.

@@ -27,21 +27,17 @@ export function HomePage() {
         <div className={styles.heroContent}>
           <h1 id="home-title">Кирилл Арзамасцев</h1>
           <p className={styles.heroDescription}>
-            Разрабатываю цифровые продукты, объединяю backend, AI и управление
+            Разрабатываю цифровые продукты,<br className={styles.desktopBreak} /> объединяю backend, AI и управление
             командой.
           </p>
 
           <div className={styles.skillMarquee}>
             <span className={styles.srOnly}>Ключевые направления: {heroSkills.join(", ")}</span>
             <div className={styles.skillTrack} aria-hidden="true">
-              {[0, 1].map((group) => (
-                <div className={styles.skillGroup} key={group}>
-                  {heroSkills.map((skill) => (
-                    <span className={styles.skillPill} key={`${group}-${skill}`}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+              {heroSkills.map((skill) => (
+                <span className={styles.skillPill} key={skill}>
+                  {skill}
+                </span>
               ))}
             </div>
           </div>
@@ -51,7 +47,12 @@ export function HomePage() {
               Узнать обо мне
               <span aria-hidden="true">→</span>
             </Link>
+            <span className={styles.ctaHint} aria-hidden="true">
+              <span>↖</span> Нажми — будет эффектно
+            </span>
           </div>
+
+          <span className={styles.lightMark} aria-hidden="true" />
         </div>
       </section>
     </main>
