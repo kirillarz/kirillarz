@@ -27,6 +27,7 @@ pnpm-debug.log*
 coverage/
 test-results/
 playwright-report/
+artifacts/
 .nyc_output/
 
 # Local editor and OS files
