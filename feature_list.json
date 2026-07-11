@@ -133,19 +133,23 @@
     {
       "id": "portfolio-009",
       "name": "Hero visual alignment with reference",
-      "description": "Приблизить текущий hero к `examples/hero-screen-desktop.jpg`: темная сцена, крупная обрезанная минифигурка, короткий текст, автопрокручиваемая лента навыков с точками и кнопка в стиле референса.",
+      "description": "Повторно выровнять текущий hero по принятому эталону `examples/hero-screen-desktop.jpg`: исправить full-bleed геометрию, масштаб и crop минифигурки, вертикальный ритм, типографику, переносы, skills, CTA, фон и декоративные детали.",
       "dependencies": ["portfolio-002"],
-      "status": "passing",
+      "status": "not-started",
       "scope": [
-        "Заменить CSS-фон hero на темную сцену с мягким свечением",
-        "Удалить декоративный прямоугольник с цветными кругами",
-        "Удалить роль над заголовком и заменить описание на заданную пользователем фразу",
-        "Сделать навыки компактными, с точками-разделителями и медленной бесконечной прокруткой",
-        "Увеличить и обрезать минифигурку ближе к waist-up reference",
-        "Приблизить кнопку к синей кнопке из desktop/mobile референсов"
+        "Следовать измеримому brief из `docs/hero-reference-alignment.md`",
+        "Убрать нижнюю полосу page padding и сделать сцену full-bleed по высоте viewport",
+        "Исправить desktop grid, масштаб, позицию и crop существующей минифигурки",
+        "Приблизить типографику, точные переносы описания и вертикальный ритм к desktop-референсу",
+        "Показывать все четыре skills в первом широком desktop-кадре и сохранить безопасный mobile overflow",
+        "Приблизить CTA к референсу и добавить легкие статические reference-декорации",
+        "Сохранить accessibility, focus-visible и prefers-reduced-motion поведение",
+        "Проверить canonical 1680x838, smoke desktop 1440x900 и mobile 390x844"
       ],
       "out_of_scope": [
         "Hero transition animation из `portfolio-003`",
+        "Мобильная navigation header и menu без отдельного подтверждения scope",
+        "Замена или повторная генерация `src/assets/hero-minifigure.png`",
         "Новые frontend-библиотеки",
         "Новые факты портфолио, ссылки, метрики или неподтвержденный контент",
         "Изменения маршрутов `/`, `/employer` и `*`"
@@ -156,10 +160,12 @@
         "npm test",
         "npm run build",
         "npm run visual:smoke",
+        "view_image examples/hero-screen-desktop.jpg",
+        "view_image artifacts/home-desktop-reference-viewport.png",
         "view_image artifacts/home-desktop.png",
         "view_image artifacts/home-mobile.png"
       ],
-      "evidence": "2026-06-29: hero visual updated to match `examples/hero-screen-desktop.jpg` more closely; old colored-dot rectangle removed; role kicker removed; description replaced with `Разрабатываю цифровые продукты, объединяю backend, AI и управление командой.`; skills changed to Backend / AI Products / Project Management / Systems Analysis with dot separators and slow infinite CSS marquee plus reduced-motion fallback; minifigure enlarged and clipped toward a waist-up crop; button changed to `Узнать обо мне` with larger blue reference-style treatment; `npm.cmd run lint` passed; `npm.cmd run typecheck` passed; `npm.cmd test` passed (1 file, 1 test); `npm.cmd run build` passed; `npm.cmd run visual:smoke` passed and generated desktop/mobile screenshots; both screenshots opened with `view_image`. 2026-06-29 later: hero minifigure crop repaired with a dedicated image frame in `src/pages/HomePage.tsx` and `src/pages/Page.module.css`; PNG now scales inside the frame while the frame clips only the bottom at waist/torso level on desktop and mobile; `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\init.ps1` passed before edits; after edits `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test` (1 file, 1 test), and `npm.cmd run build` passed; `npm.cmd run visual:smoke` Playwright test reported ok and regenerated desktop/mobile screenshots, but the npm wrapper timed out waiting for process exit in this shell; both screenshots were opened with `view_image`."
+      "evidence": "2026-06-29: first visual alignment and later crop repair were implemented and verified, but the result is no longer accepted as passing. 2026-07-12: user explicitly reported that the hero still looks wrong and designated `examples/hero-screen-desktop.jpg` as the gold standard; feature reopened as `not-started`. Planning-only session added `docs/hero-reference-alignment.md` with canonical 1680x838 comparison geometry, mismatch inventory, implementation order and acceptance checklist. No React, CSS, asset or route code changed. `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\init.ps1` passed before and after documentation edits: lint, typecheck, 1 Vitest test and build. Current 1680x838 and 390x844 screenshots were captured through installed system Chrome and inspected with `view_image`. Standard `npm run visual:smoke` is currently blocked by a missing Playwright `chromium_headless_shell-1228`; see planning doc for the non-production workaround."
     },
     {
       "id": "portfolio-004",

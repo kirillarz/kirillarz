@@ -2,13 +2,11 @@
 
 ## Текущая цель (Current Objective)
 
-- Цель: поддерживать небольшой и практичный Codex harness для портфолио и
-  вести реализацию Lego-style сайта по маленьким проверяемым фичам.
-- Статус: harness создан; Lego-style документация портфолио добавлена;
-  `portfolio-001` закрыта как документационная фича; `portfolio-002` закрыта
-  как responsive hero layout; `portfolio-009` закрыта как визуальное
-  приближение hero к desktop/mobile референсам.
-- Ветка: `try-new-harness`.
+- Цель: повторно довести hero до максимально близкого визуального совпадения с
+  `examples/hero-screen-desktop.jpg`.
+- Статус: `portfolio-009` переоткрыта как `not-started` после пользовательской
+  приемки. Анализ и документация готовы; implementation не начат.
+- Ветка: `dev`.
 
 ## Форма репозитория
 
@@ -21,6 +19,8 @@
 - Публичные факты портфолио должны браться из `docs/content.md`.
 - Структура, визуальный стиль и interaction brief находятся в
   `docs/site-brief.md`.
+- Точный план повторного визуального выравнивания находится в
+  `docs/hero-reference-alignment.md`; его нужно прочитать целиком до правок.
 - Hero-референсы находятся в `examples/hero-screen-desktop.jpg` и
   `examples/hero-screen-mobile.jpg`.
 - Текущий hero реализован в `src/pages/HomePage.tsx` и
@@ -31,6 +31,11 @@
   пояс/корпус на desktop и mobile; короткое описание `Разрабатываю цифровые
   продукты, объединяю backend, AI и управление командой.`, skills marquee с
   точками и кнопка `Узнать обо мне`.
+- Пользователь не принял эту версию как достаточно близкую к референсу.
+  Подтвержденные baseline-дефекты: нижняя полоса около `48 px`, фигура
+  смещена вправо, правая колонка опущена примерно на `35 px`, заголовок шире
+  эталона, описание переносится не после `продукты,`, последний skill
+  обрезается, CTA ниже эталонной высоты, отсутствуют helper и световой декор.
 - Visual smoke-проверка находится в `tests/visual/home.spec.ts`; команда
   `npm run visual:smoke` поднимает или переиспользует Vite dev-server через
   Playwright и сохраняет скриншоты в `artifacts/home-desktop.png` и
@@ -62,6 +67,9 @@
 | Hero image crop repair baseline | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` | Passed | lint, typecheck, test, build |
 | Hero image crop repair checks | `npm.cmd run lint`, `npm.cmd run typecheck`, `npm.cmd test`, `npm.cmd run build` | Passed | Vitest: 1 file, 1 test |
 | Hero image crop repair visual smoke | `npm.cmd run visual:smoke` plus `view_image artifacts/home-desktop.png` and `view_image artifacts/home-mobile.png` | Partial shell exit; visual passed | Playwright reported `ok` and regenerated screenshots; npm wrapper timed out waiting for process exit in this shell; screenshots inspected visually |
+| 2026-07-12 planning checks | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` before and after docs | Passed | lint, typecheck, 1 Vitest test, build |
+| 2026-07-12 canonical capture | System Chrome at `1680 × 838` plus `view_image` | Passed | Confirmed measured layout gaps documented in `docs/hero-reference-alignment.md` |
+| 2026-07-12 standard visual smoke | `npm run visual:smoke` | Blocked by local browser cache | Missing Playwright `chromium_headless_shell-1228`; production code unaffected |
 
 ## Старт следующей сессии (Next Session Startup)
 
@@ -69,24 +77,31 @@
 2. Прочитать `feature_list.json` и `progress.md`.
 3. Прочитать `docs/content.md`.
 4. Перед UI/design работой прочитать `docs/site-brief.md`.
-5. Посмотреть hero-референсы в `examples/`.
-6. Запустить `./init.ps1` в PowerShell или `./init.sh` в Bash.
-7. Для проверки верстки запустить `npm run visual:smoke` и открыть
+5. Прочитать `docs/hero-reference-alignment.md` целиком.
+6. Посмотреть hero-референсы в `examples/`.
+7. Запустить `./init.ps1` в PowerShell или `./init.sh` в Bash.
+8. Для проверки верстки запустить `npm run visual:smoke` и открыть
    `artifacts/*.png` через `view_image`.
-8. Работать ровно над одной незавершенной фичей.
+9. Работать только над незавершенной `portfolio-009`.
 
 ## Рекомендуемый следующий шаг (Recommended Next Step)
 
-- Выбрать `portfolio-003` и реализовать только hero transition animation:
-  оживание минифигурки, нейтральный световой гаджет, щелчок, короткая вспышка,
-  открытие следующего блока или fallback-состояние.
-- Обязательно добавить `prefers-reduced-motion` поведение и не копировать
-  узнаваемые кино-гаджеты, защищенный дизайн, официальные наборы или логотипы.
-- Не начинать блоки Обо мне, Навыки, Проекты, Хобби или Контакты, пока
-  `portfolio-003` не получит статус `passing` или `blocked` с evidence.
+- Продолжить только `portfolio-009` по
+  `docs/hero-reference-alignment.md`; `portfolio-003` пока не начинать.
+- Сначала снять canonical baseline `1680 × 838`, затем исправить full-bleed
+  высоту, grid и crop. После этого настроить typography, skills, CTA и только
+  затем декоративные детали.
+- Не менять `src/assets/hero-minifigure.png`, тексты, маршруты и зависимости.
+- Проверить canonical desktop, `1440 × 900`, `390 × 844`, reduced motion и
+  полный набор `lint/typecheck/test/build`.
+- После визуальной приемки вернуть `portfolio-009` в `passing` с новыми
+  screenshot evidence.
 
 ## Открытые TODO
 
+- Подтвердить у пользователя, нужно ли расширять эту же фичу мобильной шапкой
+  `KA. / меню` или реальной transition-анимацией. По умолчанию оба пункта вне
+  scope, чтобы не смешивать visual repair и `portfolio-003`.
 - Email для контактов не подтвержден: использовать `TODO: добавить email`.
 - Проектные ссылки, скриншоты, GIF, видео и презентации брать только из
   `docs/content.md`; отсутствующее оставлять как `TODO`.

@@ -2,8 +2,9 @@
 
 ## Текущее состояние (Current State)
 
-Last Updated: 2026-06-29
-Активная фича: нет
+Last Updated: 2026-07-12
+Активная фича: `portfolio-009` — переоткрыта после пользовательской приемки;
+implementation еще не начат
 
 ## Готово
 
@@ -37,20 +38,23 @@ Last Updated: 2026-06-29
 
 ## В работе
 
-- Активной работы нет. `portfolio-009` имеет статус `passing` и закрывает
-  визуальное приближение текущего hero к desktop/mobile референсам без
-  transition-анимации.
+- `portfolio-009` переоткрыта как `not-started`: пользователь считает текущий
+  hero визуально далеким от `examples/hero-screen-desktop.jpg`.
+- Подготовлен `docs/hero-reference-alignment.md` с canonical viewport,
+  измеримыми расхождениями, implementation order и acceptance checklist.
+- В этой сессии разрешены только анализ и документация; React/CSS-код должен
+  изменить следующий агент.
 
 ## Дальше (Next)
 
-1. Следующей Codex-сессии выбрать ровно одну `not-started` фичу из
-   `feature_list.json`.
-2. Рекомендуемый следующий шаг: `portfolio-003` - hero transition animation.
-3. Перед реализацией transition прочитать `docs/site-brief.md`,
-   `docs/content.md`, проверить текущий hero в `src/pages/HomePage.tsx` и
-   `src/pages/Page.module.css`.
-4. Если пользователь даст email, обновить `docs/content.md` и фичу
-   `portfolio-008`.
+1. Следующему агенту продолжить только `portfolio-009`; не выбирать
+   `portfolio-003`, пока повторная визуальная приемка hero не завершена.
+2. Прочитать `docs/hero-reference-alignment.md` и сначала исправить full-bleed
+   геометрию, grid и crop, затем типографику, skills, CTA и декор.
+3. После каждой крупной группы CSS-изменений снимать canonical кадр
+   `1680 × 838` и сравнивать с desktop-референсом.
+4. После визуального совпадения проверить `390 × 844`, полный verification и
+   записать новые screenshot paths в evidence.
 
 ## Блокеры / риски
 
@@ -65,6 +69,12 @@ Last Updated: 2026-06-29
   кино-гаджеты или защищенный дизайн.
 - Visual smoke сохраняет PNG в `artifacts/`, эта папка намеренно игнорируется
   git и служит локальным рабочим артефактом для агентов.
+- На 2026-07-12 штатный `npm run visual:smoke` не запускает bundled Chromium:
+  отсутствует `chromium_headless_shell-1228`. Baseline можно снять системным
+  Chrome; для штатного runner потребуется `npx playwright install chromium`
+  с разрешением на загрузку.
+- Без отдельного подтверждения не добавлять мобильную шапку/menu и не начинать
+  сценарную transition-анимацию.
 
 ## Решения
 
@@ -85,16 +95,11 @@ Last Updated: 2026-06-29
 
 ## Измененные файлы этой сессии (Files Modified This Session)
 
-- `src/pages/HomePage.tsx` - главная страница переведена на Lego-style hero:
-  minifigure asset, имя, подтвержденное описание, лента направлений, кнопка
-  `/employer`.
-- `src/pages/Page.module.css` - добавлены home-specific стили responsive hero,
-  skill tape, dark background и mobile layout без изменения общего маршрута
-  `/employer` и 404.
-- `src/assets/hero-minifigure.png` - generated bitmap asset для hero.
-- `feature_list.json` - `portfolio-002` закрыт как `passing` с evidence.
-- `progress.md` - обновлено текущее состояние, evidence и следующий шаг.
-- `session-handoff.md` - обновлен restart path для следующей сессии.
+- `docs/hero-reference-alignment.md` — новый измеримый implementation brief.
+- `docs/site-brief.md` — ссылка на detailed brief и уточнение hero scope.
+- `feature_list.json` — `portfolio-009` переоткрыта как `not-started`.
+- `progress.md` — зафиксированы baseline, риски и следующий шаг.
+- `session-handoff.md` — обновлен restart path для агента-исполнителя.
 
 ## Evidence
 
@@ -196,6 +201,46 @@ Next step:
 
 - Continue with exactly one `not-started` feature from `feature_list.json`;
   recommended next feature remains `portfolio-003` hero transition animation.
+
+## 2026-07-12 Hero Reference Replanning
+
+Scope of this session:
+
+- Planning and documentation only. No React, CSS, asset, route or test code
+  was changed.
+- `portfolio-009` was reopened because the user rejected the previous visual
+  result and designated `examples/hero-screen-desktop.jpg` as the gold
+  standard.
+
+Changed files:
+
+- `docs/hero-reference-alignment.md` — canonical `1680 × 838` comparison,
+  measured mismatch inventory, target behavior, implementation order and
+  acceptance checklist.
+- `docs/site-brief.md` — linked the detailed plan and clarified static hero
+  alignment versus `portfolio-003` animation scope.
+- `feature_list.json` — returned `portfolio-009` to `not-started` and replaced
+  its scope/evidence with the new acceptance contract.
+- `progress.md` and `session-handoff.md` — updated restart context.
+
+Evidence:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\init.ps1` passed
+  before and after documentation edits: lint, typecheck, 1 Vitest test and
+  build.
+- Reference desktop/mobile JPGs were opened through `view_image`.
+- Current hero was captured at `1680 × 838`, `1440 × 900` and `390 × 844`
+  through installed system Chrome; all current screenshots were inspected
+  through `view_image`.
+- `npm run visual:smoke` could not launch because the Playwright cache lacks
+  `chromium_headless_shell-1228`; this environment issue and workaround are
+  documented in `docs/hero-reference-alignment.md`.
+
+Next step:
+
+- Continue only `portfolio-009` and implement
+  `docs/hero-reference-alignment.md`. Do not start `portfolio-003` until the
+  static hero has passed a new visual review.
 
 ## 2026-06-29 Hero Visual Alignment
 
