@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="KA">
+  <rect width="64" height="64" rx="14" fill="#081a3a"/>
+  <rect x="4" y="8" width="56" height="52" rx="12" fill="#1565d8"/>
+  <circle cx="18" cy="9" r="6" fill="#f5b700"/>
+  <circle cx="46" cy="9" r="6" fill="#f5b700"/>
+  <text x="32" y="43" fill="#fff" font-family="Arial, sans-serif" font-size="26" font-weight="800" text-anchor="middle">KA</text>
+</svg>

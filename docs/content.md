@@ -36,6 +36,12 @@
 
 Кирилл Арзамасцев — студент, который совмещает разработку, управление и организацию. Умеет превращать идеи в работающие проекты, координировать команду, общаться с заказчиком и защищать результат.
 
+### Текст под именем в hero
+
+> Студент, который совмещает разработку, управление и организацию. Умеет
+> превращать идеи в работающие проекты, координировать команду, общаться с
+> заказчиком и защищать результат.
+
 ### Расширенное описание для блока «О себе»
 
 Мне интересно создавать продукты на стыке разработки, управления и AI-интеграций. Я беру на себя не только технические задачи, но и организацию работы: помогаю команде двигаться к результату, распределяю задачи, общаюсь с заказчиком, готовлю презентации и защищаю решения.
@@ -102,7 +108,7 @@
 
 ### GitHub
 
-* Профиль: https://github.com/nickname123456
+* Профиль: https://github.com/kirillarz
 
 ### Telegram
 
@@ -111,14 +117,26 @@
 
 ### Email
 
-* Email: `TODO: добавить email`
+> Не публиковать.
+
+Не выводить email и не оставлять для него placeholder или публичный `TODO`.
 
 ### Резюме
 
-* PDF-резюме существует.
-* Публичный путь к файлу: `TODO: добавить путь после загрузки PDF в public/resume/`.
-* Текст кнопки: **Скачать резюме**
+> Не публиковать.
 
+Не добавлять кнопку скачивания резюме и не утверждать публично, что
+PDF-резюме доступно.
+
+### Домен и метаданные
+
+* Целевой canonical URL: https://kirillarz.ru/
+* `og:url`: https://kirillarz.ru/
+* Favicon: `/favicon.svg`, PNG fallback: `/favicon-64.png`.
+* Open Graph image: `/og/kirill-arzamastsev.jpg`, 1200×630.
+* Площадка публикации пока не выбрана. Нельзя утверждать, что сайт уже
+  опубликован: перед релизом нужно привязать домен, включить HTTPS, проверить
+  сертификат и редирект с HTTP.
 
 ---
 
@@ -273,14 +291,28 @@ Product / Project Manager и Frontend-разработчик.
 * команда: 6 человек;
 * оценка: 99/100;
 * стек: React, TypeScript, FastAPI, PostgreSQL, Docker;
-* кнопки: «Открыть GitHub», «Смотреть демо», «Открыть презентацию».
+* кнопки: «Открыть репозиторий», «Открыть презентацию»;
+* видео-демо показывается последним слайдом карусели.
 
 ### Ссылки
 
-* GitHub: `TODO: добавить ссылку на репозиторий`
-* Видео-демо: `TODO: добавить ссылку`
-* Презентация: `TODO: добавить ссылку`
-* Скриншоты: `TODO: добавить путь к изображениям`
+* GitVerse: https://gitverse.ru/name-later-urfu/monorepo
+* Видео-демо: `src/assets/screens/ai-agent-search-premises/demo-search-premises.mp4`
+* Презентация: `src/assets/screens/ai-agent-search-premises/name-later-presentation.pdf`
+* Медиа в порядке показа:
+  1. `src/assets/screens/ai-agent-search-premises/login-screen.webp` —
+     `Экран входа в систему подбора помещений`;
+  2. `src/assets/screens/ai-agent-search-premises/search-results.webp` —
+     `Результаты поиска помещений и диалог с AI-агентом`;
+  3. `src/assets/screens/ai-agent-search-premises/map.webp` —
+     `Найденные помещения и отделения банков на карте`;
+  4. `src/assets/screens/ai-agent-search-premises/email-composer.webp` —
+     `Редактор письма владельцу выбранного помещения`;
+  5. `src/assets/screens/ai-agent-search-premises/admin-metrics.webp` —
+     `Дашборд с метриками работы AI-системы`.
+  6. `src/assets/screens/ai-agent-search-premises/demo-search-premises.mp4` —
+     `Видео-демо AI-агента для подбора помещений`; постер —
+     `src/assets/screens/ai-agent-search-premises/search-results.webp`.
 
 ### Не использовать в описании
 
@@ -377,12 +409,27 @@ Product / Project Manager и Frontend-разработчик.
 * формат: индивидуальный проект;
 * платформы: Telegram + VK;
 * стек: Python, aiogram, vkbottle, MongoDB, SQLAlchemy;
-* кнопки: «Открыть GitHub», «Посмотреть скриншоты».
+* кнопка: «Открыть репозиторий»;
+* отдельная кнопка галереи не нужна: скриншоты показываются в карусели.
 
 ### Ссылки
 
-* GitHub: `TODO: добавить ссылку на репозиторий`
-* Скриншоты: `TODO: добавить путь к изображениям`
+* GitHub: https://github.com/kirillarz/BotNetSchool
+* Скриншоты в порядке показа:
+  1. `src/assets/screens/botnetschool/main-menu.webp` —
+     `Главное меню бота электронного дневника во ВКонтакте`;
+  2. `src/assets/screens/botnetschool/schedule-and-homework.webp` —
+     `Выбор предмета и сообщение бота с расписанием и домашними заданиями`;
+  3. `src/assets/screens/botnetschool/reports.webp` —
+     `Меню отчётов, средний балл и итоговые оценки в боте`.
+
+### Источники материалов
+
+* https://vk.ru/@botnetschool-spravka-po-ispolzovaniu-bota
+* https://vk.ru/@botnetschool-obnovlenie-dz-i-raspisaniya
+* https://vk.ru/@botnetschool-kak-polzovatsya
+* https://vk.ru/@botnetschool-kak-dobavit-bota-v-svou-besedu
+* https://vk.ru/@botnetschool-otchety
 
 ### Не использовать в описании
 
@@ -462,13 +509,18 @@ MVP готов.
 * формат: индивидуальный экзаменационный проект;
 * стек: Python, pygame;
 * ключевая фраза: «Управляй не кодом, а хаосом перед релизом»;
-* кнопки: «Открыть GitHub», «Смотреть видео».
+* кнопка: «Открыть репозиторий»;
+* видео показывается непосредственно в карусели без отдельной кнопки.
 
 ### Ссылки
 
-* GitHub: `TODO: добавить ссылку на репозиторий`
-* Видео: `TODO: добавить ссылку`
-* Скриншоты / GIF: `TODO: добавить путь к изображениям`
+* GitHub: https://github.com/kirillarz/PM-sumulator
+* Видео: `src/assets/screens/pm-simulator/demo-pm-simulator.mp4`
+* Постер: `src/assets/screens/pm-simulator/poster.webp` —
+  `Игровая сцена PM Simulator с офисом и сотрудниками`.
+
+Видео показывать без autoplay, с `controls`, `preload="metadata"` и
+`playsInline`.
 
 ### Допустимый юмор
 
@@ -580,20 +632,8 @@ MVP готов.
 
 ---
 
-## 12. Контентные TODO
+## 11. Материалы, которые не публикуются в первой версии
 
-Перед публикацией сайта необходимо добавить:
-
-* `TODO`: точный путь к PDF-резюме;
-* `TODO`: ссылку на GitHub AI-агента по подбору помещений;
-* `TODO`: ссылку на видео-демо AI-агента;
-* `TODO`: ссылку на презентацию AI-агента;
-* `TODO`: изображения или скриншоты AI-агента;
-* `TODO`: ссылку на GitHub BotNetSchool;
-* `TODO`: скриншоты BotNetSchool;
-* `TODO`: ссылку на GitHub PM Simulator;
-* `TODO`: ссылку на видео PM Simulator;
-* `TODO`: GIF или скриншоты PM Simulator;
-* `TODO`: пути к сертификатам, если они будут опубликованы;
-* `TODO`: финально проверить GitHub username перед деплоем.
-* `TODO`: добавить email для блока контактов.
+* Email и резюме не публиковать и не заменять заглушками.
+* Сертификаты не показывать, пока для них не будут отдельно подтверждены
+  публичные файлы или ссылки.

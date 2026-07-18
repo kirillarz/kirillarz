@@ -1,10 +1,21 @@
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 
+import aiAgentAdminMetrics from "../assets/screens/ai-agent-search-premises/admin-metrics.webp";
+import aiAgentDemo from "../assets/screens/ai-agent-search-premises/demo-search-premises.mp4";
+import aiAgentEmailComposer from "../assets/screens/ai-agent-search-premises/email-composer.webp";
 import aiAgentLoginScreen from "../assets/screens/ai-agent-search-premises/login-screen.webp";
+import aiAgentMap from "../assets/screens/ai-agent-search-premises/map.webp";
+import aiAgentPresentation from "../assets/screens/ai-agent-search-premises/name-later-presentation.pdf";
+import aiAgentSearchResults from "../assets/screens/ai-agent-search-premises/search-results.webp";
+import botNetSchoolMainMenu from "../assets/screens/botnetschool/main-menu.webp";
+import botNetSchoolReports from "../assets/screens/botnetschool/reports.webp";
+import botNetSchoolSchedule from "../assets/screens/botnetschool/schedule-and-homework.webp";
+import pmSimulatorDemo from "../assets/screens/pm-simulator/demo-pm-simulator.mp4";
+import pmSimulatorPoster from "../assets/screens/pm-simulator/poster.webp";
 import styles from "./Page.module.css";
 
 type ProjectFactIcon = "briefcase" | "people" | "platform" | "result" | "status" | "user";
-type ProjectActionIcon = "external" | "file" | "github" | "images" | "play";
+type ProjectActionIcon = "external" | "file";
 
 type ProjectSlide =
   | {
@@ -13,14 +24,16 @@ type ProjectSlide =
       alt: string;
     }
   | {
-      kind: "placeholder";
+      kind: "video";
+      src: string;
+      poster: string;
       label: string;
     };
 
 type ProjectAction = {
   label: string;
   icon: ProjectActionIcon;
-  href?: string;
+  href: string;
 };
 
 type Project = {
@@ -58,15 +71,38 @@ const projects: readonly Project[] = [
       {
         kind: "image",
         src: aiAgentLoginScreen,
-        alt: "Экран входа в AI-систему подбора помещений",
+        alt: "Экран входа в систему подбора помещений",
       },
-      { kind: "placeholder", label: "Экран поиска и карты" },
-      { kind: "placeholder", label: "Сравнение и итоговый отчёт" },
+      {
+        kind: "image",
+        src: aiAgentSearchResults,
+        alt: "Результаты поиска помещений и диалог с AI-агентом",
+      },
+      {
+        kind: "image",
+        src: aiAgentMap,
+        alt: "Найденные помещения и отделения банков на карте",
+      },
+      {
+        kind: "image",
+        src: aiAgentEmailComposer,
+        alt: "Редактор письма владельцу выбранного помещения",
+      },
+      {
+        kind: "image",
+        src: aiAgentAdminMetrics,
+        alt: "Дашборд с метриками работы AI-системы",
+      },
+      {
+        kind: "video",
+        src: aiAgentDemo,
+        poster: aiAgentSearchResults,
+        label: "Видео-демо AI-агента для подбора помещений",
+      },
     ],
     actions: [
-      { label: "Открыть GitHub", icon: "github" },
-      { label: "Смотреть демо", icon: "external" },
-      { label: "Презентация", icon: "file" },
+      { label: "Открыть репозиторий", icon: "external", href: "https://gitverse.ru/name-later-urfu/monorepo" },
+      { label: "Открыть презентацию", icon: "file", href: aiAgentPresentation },
     ],
   },
   {
@@ -84,13 +120,24 @@ const projects: readonly Project[] = [
     ],
     technologies: ["Python", "aiogram", "vkbottle", "MongoDB", "SQLAlchemy"],
     slides: [
-      { kind: "placeholder", label: "Главное меню бота" },
-      { kind: "placeholder", label: "Расписание и задания" },
-      { kind: "placeholder", label: "Оценки и успеваемость" },
+      {
+        kind: "image",
+        src: botNetSchoolMainMenu,
+        alt: "Главное меню бота электронного дневника во ВКонтакте",
+      },
+      {
+        kind: "image",
+        src: botNetSchoolSchedule,
+        alt: "Выбор предмета и сообщение бота с расписанием и домашними заданиями",
+      },
+      {
+        kind: "image",
+        src: botNetSchoolReports,
+        alt: "Меню отчётов, средний балл и итоговые оценки в боте",
+      },
     ],
     actions: [
-      { label: "Открыть GitHub", icon: "github" },
-      { label: "Скриншоты", icon: "images" },
+      { label: "Открыть репозиторий", icon: "external", href: "https://github.com/kirillarz/BotNetSchool" },
     ],
   },
   {
@@ -108,13 +155,15 @@ const projects: readonly Project[] = [
     ],
     technologies: ["Python", "pygame"],
     slides: [
-      { kind: "placeholder", label: "Игровая сцена и офис" },
-      { kind: "placeholder", label: "Канбан-доска" },
-      { kind: "placeholder", label: "Кризисы и экран результата" },
+      {
+        kind: "video",
+        src: pmSimulatorDemo,
+        poster: pmSimulatorPoster,
+        label: "Игровая сцена PM Simulator с офисом и сотрудниками",
+      },
     ],
     actions: [
-      { label: "Открыть GitHub", icon: "github" },
-      { label: "Смотреть видео", icon: "play" },
+      { label: "Открыть репозиторий", icon: "external", href: "https://github.com/kirillarz/PM-sumulator" },
     ],
   },
 ] as const;
@@ -201,26 +250,6 @@ function ProjectActionIconView({ name }: { name: ProjectActionIcon }) {
           <path d="M6 3h8l4 4v14H6zM14 3v5h5M9 13h6M9 17h6" />
         </svg>
       );
-    case "github":
-      return (
-        <svg {...commonProps}>
-          <path d="M9 19c-4.5 1.4-4.5-2.5-6-3m12 6v-3.4a3 3 0 0 0-.8-2.3c2.7-.3 5.5-1.3 5.5-6a4.7 4.7 0 0 0-1.3-3.2A4.4 4.4 0 0 0 18.3 4S17.3 3.7 15 5.2a11 11 0 0 0-6 0C6.7 3.7 5.7 4 5.7 4a4.4 4.4 0 0 0-.1 3.1A4.7 4.7 0 0 0 4.3 10c0 4.7 2.8 5.7 5.5 6a3 3 0 0 0-.8 2.3V22" />
-        </svg>
-      );
-    case "images":
-      return (
-        <svg {...commonProps}>
-          <rect x="3" y="5" width="15" height="14" rx="2" />
-          <path d="m6 16 3.5-4 2.5 2.5 2-2 4 4M15 5V3h6v14h-3" />
-        </svg>
-      );
-    case "play":
-      return (
-        <svg {...commonProps}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="m10 8 6 4-6 4z" />
-        </svg>
-      );
   }
 }
 
@@ -234,6 +263,8 @@ function ProjectCarousel({ project }: { project: Project }) {
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (slideCount <= 1 || (event.target as HTMLElement).closest("video")) return;
+
     if (event.key === "ArrowLeft") {
       event.preventDefault();
       showSlide(activeIndex - 1);
@@ -247,7 +278,7 @@ function ProjectCarousel({ project }: { project: Project }) {
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (!event.isPrimary) return;
-    if ((event.target as HTMLElement).closest("button, a")) return;
+    if ((event.target as HTMLElement).closest("button, a, video")) return;
     pointerStart.current = { id: event.pointerId, x: event.clientX };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -281,54 +312,68 @@ function ProjectCarousel({ project }: { project: Project }) {
       <div className={styles.projectMediaFrame}>
         <div className={styles.projectSlide} aria-live="polite">
           {activeSlide.kind === "image" ? (
-            <img className={styles.projectScreenshot} src={activeSlide.src} alt={activeSlide.alt} />
+            <img
+              className={styles.projectScreenshot}
+              src={activeSlide.src}
+              alt={activeSlide.alt}
+              loading="lazy"
+              decoding="async"
+            />
           ) : (
-            <div className={styles.projectPlaceholder} role="img" aria-label={`${activeSlide.label}. Изображение скоро появится.`}>
-              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" aria-hidden="true">
-                <rect x="9" y="12" width="46" height="38" rx="5" />
-                <circle cx="23" cy="25" r="5" />
-                <path d="m14 45 12-12 8 7 6-6 10 11" />
-              </svg>
-              <strong>{activeSlide.label}</strong>
-              <span>Скриншот скоро появится</span>
-            </div>
+            <video
+              className={styles.projectVideo}
+              src={activeSlide.src}
+              poster={activeSlide.poster}
+              aria-label={activeSlide.label}
+              controls
+              preload="metadata"
+              playsInline
+            />
           )}
         </div>
 
-        <button
-          className={`${styles.projectCarouselArrow} ${styles.projectCarouselArrowPrevious}`}
-          type="button"
-          aria-label={`Предыдущий слайд проекта «${project.title}»`}
-          onClick={() => showSlide(activeIndex - 1)}
-        >
-          ←
-        </button>
-        <button
-          className={`${styles.projectCarouselArrow} ${styles.projectCarouselArrowNext}`}
-          type="button"
-          aria-label={`Следующий слайд проекта «${project.title}»`}
-          onClick={() => showSlide(activeIndex + 1)}
-        >
-          →
-        </button>
+        {slideCount > 1 ? (
+          <>
+            <button
+              className={`${styles.projectCarouselArrow} ${styles.projectCarouselArrowPrevious}`}
+              type="button"
+              aria-label={`Предыдущий слайд проекта «${project.title}»`}
+              onClick={() => showSlide(activeIndex - 1)}
+            >
+              ←
+            </button>
+            <button
+              className={`${styles.projectCarouselArrow} ${styles.projectCarouselArrowNext}`}
+              type="button"
+              aria-label={`Следующий слайд проекта «${project.title}»`}
+              onClick={() => showSlide(activeIndex + 1)}
+            >
+              →
+            </button>
+          </>
+        ) : null}
 
-        <span className={styles.projectSlideCount} aria-hidden="true">
-          {String(activeIndex + 1).padStart(2, "0")} / {String(slideCount).padStart(2, "0")}
-        </span>
+        {slideCount > 1 ? (
+          <span className={styles.projectSlideCount} aria-hidden="true">
+            {String(activeIndex + 1).padStart(2, "0")} / {String(slideCount).padStart(2, "0")}
+          </span>
+        ) : null}
       </div>
 
-      <div className={styles.projectCarouselDots} aria-label={`Выбор слайда проекта «${project.title}»`}>
-        {project.slides.map((slide, index) => (
-          <button
-            className={styles.projectCarouselDot}
-            type="button"
-            aria-label={`Показать слайд ${index + 1}: ${slide.kind === "image" ? slide.alt : slide.label}`}
-            aria-current={index === activeIndex ? "true" : undefined}
-            onClick={() => showSlide(index)}
-            key={slide.kind === "image" ? slide.alt : slide.label}
-          />
-        ))}
-      </div>
+      {slideCount > 1 ? (
+        <div className={styles.projectCarouselDots} aria-label={`Выбор слайда проекта «${project.title}»`}>
+          {project.slides.map((slide, index) => (
+            <button
+              className={styles.projectCarouselDot}
+              type="button"
+              aria-label={`Показать слайд ${index + 1}: ${slide.kind === "image" ? slide.alt : slide.label}`}
+              aria-current={index === activeIndex ? "true" : undefined}
+              onClick={() => showSlide(index)}
+              key={slide.kind === "image" ? slide.alt : slide.label}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -337,15 +382,7 @@ function ProjectActions({ actions }: { actions: readonly ProjectAction[] }) {
   return (
     <div className={styles.projectActions}>
       {actions.map((action, index) => {
-        const content = (
-          <>
-            <ProjectActionIconView name={action.icon} />
-            <span>{action.label}</span>
-            {action.href ? <span aria-hidden="true">→</span> : <small>Скоро</small>}
-          </>
-        );
-
-        return action.href ? (
+        return (
           <a
             className={`${styles.projectAction} ${index === 0 ? styles.projectActionPrimary : ""}`}
             href={action.href}
@@ -353,12 +390,10 @@ function ProjectActions({ actions }: { actions: readonly ProjectAction[] }) {
             rel="noreferrer"
             key={action.label}
           >
-            {content}
+            <ProjectActionIconView name={action.icon} />
+            <span>{action.label}</span>
+            <span aria-hidden="true">→</span>
           </a>
-        ) : (
-          <span className={styles.projectAction} aria-disabled="true" key={action.label}>
-            {content}
-          </span>
         );
       })}
     </div>
