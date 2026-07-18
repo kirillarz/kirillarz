@@ -662,7 +662,6 @@
 .skillCard::before,
 .skillCard::after {
   position: absolute;
-  top: 50px;
   width: 28px;
   height: 112px;
   pointer-events: none;
@@ -676,6 +675,7 @@
 }
 
 .skillCard::before {
+  top: 50px;
   left: -29px;
   border-right: 0;
   border-radius: 28px 0 0 28px;
@@ -683,6 +683,7 @@
 
 .skillCard::after {
   right: -29px;
+  bottom: 50px;
   border-left: 0;
   border-radius: 0 28px 28px 0;
 }
@@ -1114,7 +1115,6 @@
 
   .skillCard::before,
   .skillCard::after {
-    top: 42px;
     width: 21px;
     height: 94px;
     background:
@@ -1124,11 +1124,13 @@
   }
 
   .skillCard::before {
+    top: 42px;
     left: -22px;
   }
 
   .skillCard::after {
     right: -22px;
+    bottom: 42px;
   }
 
   .skillCardImage {
