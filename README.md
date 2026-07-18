@@ -45,8 +45,8 @@ Lego-style сайт с минифигурками, интерактивными 
   требования к hero, карте хобби и контактам;
 * `examples/hero-screen-desktop.jpg` и `examples/hero-screen-mobile.jpg` —
   визуальные референсы hero-экрана;
-* `AGENTS.md`, `feature_list.json`, `progress.md` и `session-handoff.md` —
-  harness для Codex-сессий.
+* `AGENTS.md` — короткие рабочие правила для Codex;
+* `CURRENT.md` — актуальная задача, блокер, следующий шаг и последняя проверка.
 
 ### Качество кода
 
@@ -122,6 +122,9 @@ npm run typecheck
 
 # Запуск тестов
 npm run test
+
+# Полная проверка проекта
+npm run check
 
 # Скриншоты главной страницы для visual smoke-проверки
 npm run visual:smoke
