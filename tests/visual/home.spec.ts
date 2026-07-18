@@ -2,6 +2,12 @@ import { mkdir } from "node:fs/promises";
 
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+const artifactsDir = "artifacts/visual-smoke";
+
+test.beforeAll(async () => {
+  await mkdir(artifactsDir, { recursive: true });
+});
+
 async function scrollToSection(section: Locator) {
   await section.evaluate((element) => {
     const root = document.documentElement;
@@ -38,8 +44,6 @@ async function captureScreenshot(page: Page, path: string, fullPage = false) {
 }
 
 test("home renders on desktop and mobile", async ({ page }) => {
-  await mkdir("artifacts", { recursive: true });
-
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
@@ -51,13 +55,13 @@ test("home renders on desktop and mobile", async ({ page }) => {
     "https://kirillarz.ru/og/kirill-arzamastsev.jpg",
   );
   await expectImagesReady(page.locator("section").first());
-  await captureScreenshot(page, "artifacts/home-desktop-reference-viewport.png");
+  await captureScreenshot(page, `${artifactsDir}/home-desktop-reference-viewport.png`);
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
   await expectImagesReady(page.locator("section").first());
-  await captureScreenshot(page, "artifacts/home-desktop.png");
+  await captureScreenshot(page, `${artifactsDir}/home-desktop.png`);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -67,11 +71,10 @@ test("home renders on desktop and mobile", async ({ page }) => {
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
   await expectImagesReady(page.locator("section").first());
-  await captureScreenshot(page, "artifacts/home-mobile.png");
+  await captureScreenshot(page, `${artifactsDir}/home-mobile.png`);
 });
 
 test("about section switches roles and supports keyboard navigation", async ({ page }) => {
-  await mkdir("artifacts", { recursive: true });
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
 
@@ -109,7 +112,7 @@ test("about section switches roles and supports keyboard navigation", async ({ p
   const aboutSection = page.getByRole("region", { name: /Создаю продукты/ });
   await scrollToSection(aboutSection);
   await expectImagesReady(aboutSection);
-  await captureScreenshot(page, "artifacts/about-desktop.png");
+  await captureScreenshot(page, `${artifactsDir}/about-desktop.png`);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -118,11 +121,10 @@ test("about section switches roles and supports keyboard navigation", async ({ p
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
-  await captureScreenshot(page, "artifacts/about-mobile.png");
+  await captureScreenshot(page, `${artifactsDir}/about-mobile.png`);
 });
 
 test("skills section renders its groups without viewport overflow", async ({ page }) => {
-  await mkdir("artifacts", { recursive: true });
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
 
@@ -136,7 +138,7 @@ test("skills section renders its groups without viewport overflow", async ({ pag
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
-  await captureScreenshot(page, "artifacts/skills-desktop.png");
+  await captureScreenshot(page, `${artifactsDir}/skills-desktop.png`);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -146,11 +148,10 @@ test("skills section renders its groups without viewport overflow", async ({ pag
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
-  await captureScreenshot(page, "artifacts/skills-mobile.png");
+  await captureScreenshot(page, `${artifactsDir}/skills-mobile.png`);
 });
 
 test("projects section renders confirmed media and working actions", async ({ page }) => {
-  await mkdir("artifacts", { recursive: true });
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
 
@@ -196,16 +197,16 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await scrollToSection(projectsSection);
   await expectImagesReady(firstProject);
   await page.mouse.move(0, 0);
-  await captureScreenshot(page, "artifacts/projects-desktop.png");
+  await captureScreenshot(page, `${artifactsDir}/projects-desktop.png`);
 
   const botNetSchoolProject = projectsSection.getByRole("article").nth(1);
   await scrollToSection(botNetSchoolProject);
   await expectImagesReady(botNetSchoolProject);
-  await captureScreenshot(page, "artifacts/projects-botnetschool-desktop.png");
+  await captureScreenshot(page, `${artifactsDir}/projects-botnetschool-desktop.png`);
 
   await scrollToSection(pmProject);
   await expectVideoMetadataReady(pmVideo);
-  await captureScreenshot(page, "artifacts/projects-pm-simulator-desktop.png");
+  await captureScreenshot(page, `${artifactsDir}/projects-pm-simulator-desktop.png`);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -215,7 +216,7 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
-  await captureScreenshot(page, "artifacts/projects-mobile.png");
+  await captureScreenshot(page, `${artifactsDir}/projects-mobile.png`);
 });
 
 test("contacts and employer page contain only confirmed public contact actions", async ({ page }) => {
@@ -234,5 +235,5 @@ test("contacts and employer page contain only confirmed public contact actions",
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
-  await captureScreenshot(page, "artifacts/employer-desktop.png", true);
+  await captureScreenshot(page, `${artifactsDir}/employer-desktop.png`, true);
 });
