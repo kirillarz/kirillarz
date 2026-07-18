@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import heroMinifigure from "../assets/hero-minifigure.png";
 import { AboutSection } from "./AboutSection";
 import styles from "./Page.module.css";
+import { ProjectsSection } from "./ProjectsSection";
 import { SkillsSection } from "./SkillsSection";
 
 const heroSkills = [
@@ -60,6 +61,7 @@ export function HomePage() {
 
       <AboutSection />
       <SkillsSection />
+      <ProjectsSection />
     </main>
   );
 }
