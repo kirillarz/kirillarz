@@ -320,10 +320,11 @@
   z-index: 1;
   min-height: 100svh;
   overflow: hidden;
-  color: #f8fafc;
+  color: #0b1733;
   background:
-    radial-gradient(ellipse 37% 56% at 72% 47%, rgb(22 105 226 / 0.2), transparent 72%),
-    linear-gradient(108deg, #050a12 0%, #09111d 52%, #050a12 100%);
+    radial-gradient(ellipse 42% 54% at 73% 46%, rgb(219 234 254 / 0.72), transparent 74%),
+    radial-gradient(ellipse 38% 30% at 12% 15%, rgb(224 231 255 / 0.4), transparent 76%),
+    linear-gradient(180deg, #f8faff 0%, #ffffff 38%, #f7f9fd 100%);
 }
 
 .aboutSection::before {
@@ -332,8 +333,10 @@
   pointer-events: none;
   content: "";
   background:
-    radial-gradient(ellipse at center, transparent 38%, rgb(1 4 10 / 0.32) 100%),
-    linear-gradient(180deg, rgb(1 4 10 / 0.24), transparent 18%, rgb(1 4 10 / 0.38) 100%);
+    linear-gradient(90deg, rgb(15 23 42 / 0.025) 1px, transparent 1px),
+    linear-gradient(180deg, rgb(15 23 42 / 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.34), transparent 23%, transparent 78%, rgb(0 0 0 / 0.2));
 }
 
 .aboutInner {
@@ -358,20 +361,21 @@
 
 .aboutEyebrow {
   margin: 0 0 22px;
-  color: rgb(203 213 225 / 0.72);
+  color: #0874f9;
   font-size: 1rem;
+  font-weight: 800;
   line-height: 1.4;
   letter-spacing: 0.02em;
 }
 
 .aboutEyebrow span {
-  color: #e2e8f0;
+  color: #0869e8;
 }
 
 .aboutIntro h2 {
   max-width: 760px;
   margin: 0;
-  color: #ffffff;
+  color: #091735;
   font-family: Arial, var(--font-sans);
   font-size: clamp(3.5rem, 4.55vw, 4.8rem);
   font-weight: 700;
@@ -380,8 +384,8 @@
 }
 
 .aboutIntro h2 span {
-  color: #1478ff;
-  text-shadow: 0 0 30px rgb(37 99 235 / 0.18);
+  color: #0874f9;
+  text-shadow: 0 8px 24px rgb(37 99 235 / 0.12);
 }
 
 .aboutVisual {
@@ -401,7 +405,7 @@
   aspect-ratio: 1;
   border-radius: 50%;
   pointer-events: none;
-  background: radial-gradient(circle, rgb(42 121 255 / 0.38) 0%, rgb(22 74 152 / 0.18) 38%, transparent 72%);
+  background: radial-gradient(circle, rgb(96 165 250 / 0.32) 0%, rgb(191 219 254 / 0.38) 38%, transparent 72%);
   filter: blur(14px);
   transform: translateX(-50%);
 }
@@ -415,7 +419,7 @@
   height: calc(100% + 60px);
   max-height: none;
   object-fit: contain;
-  filter: drop-shadow(0 34px 44px rgb(0 0 0 / 0.55));
+  filter: drop-shadow(0 30px 38px rgb(15 23 42 / 0.22));
   animation: aboutFigureEnter 320ms ease-out both;
 }
 
@@ -429,13 +433,13 @@
 
 .aboutCopy:focus-visible {
   border-radius: 6px;
-  outline: 3px solid #facc15;
+  outline: 3px solid #f5b700;
   outline-offset: 8px;
 }
 
 .aboutCopy p {
   margin: 0;
-  color: rgb(226 232 240 / 0.86);
+  color: #66738d;
   font-size: clamp(1rem, 1.25vw, 1.22rem);
   line-height: 1.62;
 }
@@ -471,15 +475,17 @@
   flex: 0 0 auto;
   min-height: 54px;
   padding: 0 24px;
-  color: #f8fafc;
+  color: #193054;
   font-size: 0.98rem;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  border: 1px solid rgb(148 163 184 / 0.4);
+  border: 1px solid #aebbd0;
   border-radius: 10px;
-  background: rgb(3 7 18 / 0.22);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  background: rgb(255 255 255 / 0.76);
+  box-shadow:
+    0 5px 14px rgb(15 23 42 / 0.07),
+    inset 0 1px 0 #ffffff;
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -488,10 +494,11 @@
 }
 
 .roleTab[aria-selected="true"] {
+  color: #ffffff;
   border-color: #2488ff;
   background: linear-gradient(180deg, #1685ff 0%, #0564ff 100%);
   box-shadow:
-    0 12px 30px rgb(37 99 235 / 0.38),
+    0 12px 26px rgb(37 99 235 / 0.26),
     inset 0 1px 0 rgb(255 255 255 / 0.24);
 }
 
@@ -502,14 +509,14 @@
   width: 20px;
   height: 20px;
   content: "";
-  border: 1px solid rgb(255 255 255 / 0.22);
+  border: 1px solid rgb(255 255 255 / 0.42);
   border-radius: 50%;
   background: #0875ff;
-  box-shadow: 0 5px 10px rgb(0 44 140 / 0.48);
+  box-shadow: 0 5px 10px rgb(15 23 42 / 0.22);
 }
 
 .roleTab:focus-visible {
-  outline: 3px solid #facc15;
+  outline: 3px solid #f5b700;
   outline-offset: 4px;
 }
 
@@ -517,19 +524,22 @@
   flex: 0 0 auto;
   min-width: 74px;
   margin: 0 0 17px;
-  color: rgb(203 213 225 / 0.58);
+  color: #75839a;
   font-size: 1rem;
   line-height: 1;
 }
 
 .roleCount span {
-  color: #1685ff;
+  color: #0874f9;
 }
 
 @media (hover: hover) {
   .roleTab:not([aria-selected="true"]):hover {
-    border-color: rgb(96 165 250 / 0.8);
-    background: rgb(15 23 42 / 0.58);
+    border-color: #0874f9;
+    background: #f3f7fd;
+    box-shadow:
+      0 8px 18px rgb(15 23 42 / 0.1),
+      inset 0 1px 0 #ffffff;
     transform: translateY(-1px);
   }
 }
@@ -1254,6 +1264,11 @@
     padding: 0 24px 44px;
   }
 
+  .aboutSection {
+    width: calc(100% + 48px);
+    margin: 0 -24px;
+  }
+
   .homeHero {
     grid-template-columns: 1fr;
     gap: 30px;
@@ -1419,6 +1434,11 @@
   .homePage {
     align-items: start;
     padding: 0 20px 42px;
+  }
+
+  .aboutSection {
+    width: calc(100% + 40px);
+    margin: 0 -20px;
   }
 
   .homeHero {
