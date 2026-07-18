@@ -130,6 +130,10 @@ npm run check
 npm run visual:smoke
 ```
 
+`visual:smoke` сам запускает Vite на свободном локальном порту и гарантированно
+останавливает сервер после Playwright-тестов. Предварительно запускать
+`npm run dev` не нужно; общий лимит visual smoke-прогона — 45 секунд.
+
 Эти же проверки запускаются в GitHub Actions: `typecheck`, `lint`, `test`, `build`.
 Скриншоты visual smoke-проверки сохраняются в `artifacts/home-desktop.png` и
 `artifacts/home-mobile.png`; агент может открыть их через `view_image`.
