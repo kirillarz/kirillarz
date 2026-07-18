@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 import heroMinifigure from "../assets/hero-minifigure.png";
+import { AboutSection } from "./AboutSection";
 import styles from "./Page.module.css";
 
 const heroSkills = [
@@ -55,6 +56,8 @@ export function HomePage() {
           <span className={styles.lightMark} aria-hidden="true" />
         </div>
       </section>
+
+      <AboutSection />
     </main>
   );
 }
