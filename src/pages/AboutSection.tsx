@@ -7,9 +7,9 @@ type Role = {
   id: string;
   label: string;
   paragraphs: readonly [string, string];
-  image: string;
-  imageAlt: string;
 };
+
+const aboutFigureAlt = "Стилизованная конструкторная фигурка Кирилла с планшетом";
 
 const roles: readonly Role[] = [
   {
@@ -19,8 +19,6 @@ const roles: readonly Role[] = [
       "Мне интересно создавать продукты на стыке разработки, управления и AI-интеграций. Я участвую в проработке продукта, помогаю команде двигаться к результату и превращать идеи в работающие проекты.",
       "Ближе всего мне product management. При этом я сохраняю техническую базу, чтобы понимать разработку, собирать прототипы и участвовать в создании решения не только со стороны организации.",
     ],
-    image: productManagerFigure,
-    imageAlt: "Стилизованная конструкторная фигурка Кирилла в роли Product Manager с планшетом",
   },
   {
     id: "project-manager",
@@ -29,8 +27,6 @@ const roles: readonly Role[] = [
       "В проектной работе я координирую команду, распределяю задачи и помогаю участникам сохранять фокус на результате. Такой опыт получил в том числе в проекте команды из шести человек.",
       "Общаюсь с заказчиком, готовлю презентации и защищаю решения. Мне близки проекты, где организация работы сочетается с пониманием продукта и технических задач.",
     ],
-    image: productManagerFigure,
-    imageAlt: "Стилизованная конструкторная фигурка Кирилла в роли Project Manager",
   },
   {
     id: "backend-developer",
@@ -39,8 +35,6 @@ const roles: readonly Role[] = [
       "Я хочу сохранять техническую базу: понимаю разработку, работаю с backend- и frontend-инструментами, умею собирать прототипы и превращать идеи в работающие проекты.",
       "В разработке использую Python, FastAPI, SQL, PostgreSQL, Docker и REST API. Технические задачи для меня — часть общего пути от идеи до работающего решения.",
     ],
-    image: productManagerFigure,
-    imageAlt: "Стилизованная конструкторная фигурка Кирилла в роли Backend Developer",
   },
   {
     id: "business-analyst",
@@ -49,8 +43,6 @@ const roles: readonly Role[] = [
       "Мне интересны аналитика требований и BPMN. В проектах я участвую в проработке продукта, общаюсь с заказчиком и помогаю объяснять идеи и принятые решения.",
       "Совмещаю аналитический взгляд с технической базой: понимаю backend- и frontend-разработку, работаю с SQL и участвую в создании прототипов.",
     ],
-    image: productManagerFigure,
-    imageAlt: "Стилизованная конструкторная фигурка Кирилла в роли Business Analyst",
   },
 ] as const;
 
@@ -87,7 +79,7 @@ export function AboutSection() {
   };
 
   return (
-    <section className={styles.aboutSection} aria-labelledby={`${idPrefix}-title`}>
+    <section id="about" className={styles.aboutSection} aria-labelledby={`${idPrefix}-title`}>
       <div className={styles.aboutInner}>
         <header className={styles.aboutIntro}>
           <p className={styles.aboutEyebrow}>
@@ -106,9 +98,8 @@ export function AboutSection() {
           <div className={styles.aboutGlow} aria-hidden="true" />
           <img
             className={styles.aboutFigure}
-            key={activeRole.id}
-            src={activeRole.image}
-            alt={activeRole.imageAlt}
+            src={productManagerFigure}
+            alt={aboutFigureAlt}
           />
         </div>
 

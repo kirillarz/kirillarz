@@ -1,6 +1,16 @@
 import { mkdir } from "node:fs/promises";
 
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
+
+async function scrollToSection(section: Locator) {
+  await section.evaluate((element) => {
+    const root = document.documentElement;
+    const previousScrollBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    element.scrollIntoView({ block: "start" });
+    root.style.scrollBehavior = previousScrollBehavior;
+  });
+}
 
 test("home renders on desktop and mobile", async ({ page }) => {
   await mkdir("artifacts", { recursive: true });
@@ -8,6 +18,13 @@ test("home renders on desktop and mobile", async ({ page }) => {
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://kirillarz.ru/");
+  await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute("href", "/favicon.svg");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://kirillarz.ru/");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    "content",
+    "https://kirillarz.ru/og/kirill-arzamastsev.jpg",
+  );
   await page.screenshot({ path: "artifacts/home-desktop-reference-viewport.png" });
 
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -18,7 +35,7 @@ test("home renders on desktop and mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
-  await expect(page.getByRole("link", { name: /Узнать обо мне/ })).toHaveAttribute("href", "/employer");
+  await expect(page.getByRole("link", { name: /Узнать обо мне/ })).toHaveAttribute("href", "#about");
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
@@ -57,18 +74,18 @@ test("about section switches roles and supports keyboard navigation", async ({ p
   await expect(analystTab).toBeFocused();
   await expect(analystTab).toHaveAttribute("aria-selected", "true");
   await expect(page.getByRole("tabpanel")).toContainText("аналитика требований и BPMN");
-  await expect(page.getByRole("img", { name: /Business Analyst/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /фигурка Кирилла с планшетом/ })).toBeVisible();
   await expect(page.getByText("04 / 04")).toBeVisible();
 
   await page.goto("/");
   const aboutSection = page.getByRole("region", { name: /Создаю продукты/ });
-  await aboutSection.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await scrollToSection(aboutSection);
   await page.waitForTimeout(400);
   await page.screenshot({ path: "artifacts/about-desktop.png" });
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  await aboutSection.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await scrollToSection(aboutSection);
   await page.waitForTimeout(400);
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
@@ -82,7 +99,8 @@ test("skills section renders its groups without viewport overflow", async ({ pag
   await page.goto("/");
 
   const skillsSection = page.getByRole("region", { name: /Навыки, которые помогают/ });
-  await skillsSection.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await scrollToSection(skillsSection);
+  await page.waitForTimeout(500);
   await expect(skillsSection.getByRole("article")).toHaveCount(3);
   await expect(skillsSection.getByRole("heading", { name: "Разработка" })).toBeVisible();
   await expect(skillsSection.getByRole("heading", { name: "Продукт и управление" })).toBeVisible();
@@ -94,7 +112,8 @@ test("skills section renders its groups without viewport overflow", async ({ pag
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  await skillsSection.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await scrollToSection(skillsSection);
+  await page.waitForTimeout(500);
   await expect(skillsSection.getByRole("article")).toHaveCount(3);
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
@@ -102,13 +121,13 @@ test("skills section renders its groups without viewport overflow", async ({ pag
   await page.screenshot({ path: "artifacts/skills-mobile.png", fullPage: false });
 });
 
-test("projects section renders carousels and inactive future links", async ({ page }) => {
+test("projects section renders confirmed media and working actions", async ({ page }) => {
   await mkdir("artifacts", { recursive: true });
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
 
   const projectsSection = page.getByRole("region", { name: /Проекты, которыми я особенно горжусь/ });
-  await projectsSection.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await scrollToSection(projectsSection);
   await expect(projectsSection.getByRole("article")).toHaveCount(3);
   await expect(projectsSection.getByRole("heading", { name: "AI-агент для подбора помещений" })).toBeVisible();
   await expect(projectsSection.getByRole("heading", { name: "BotNetSchool" })).toBeVisible();
@@ -119,39 +138,67 @@ test("projects section renders carousels and inactive future links", async ({ pa
   const screenshot = firstProject.getByRole("img", { name: /Экран входа/ });
   await expect(screenshot).toBeVisible();
   await expect.poll(() => screenshot.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
-  await expect(firstProject.getByText("01 / 03", { exact: true })).toBeVisible();
+  await expect(firstProject.getByText("01 / 05", { exact: true })).toBeVisible();
 
   await firstProject.getByRole("button", { name: /Следующий слайд/ }).click();
-  await expect(firstProject.getByText("02 / 03", { exact: true })).toBeVisible();
-  await expect(firstProject.getByRole("img", { name: /Экран поиска и карты/ })).toBeVisible();
+  await expect(firstProject.getByText("02 / 05", { exact: true })).toBeVisible();
+  await expect(firstProject.getByRole("img", { name: /Результаты поиска помещений/ })).toBeVisible();
 
   await carousel.focus();
   await carousel.press("ArrowRight");
-  await expect(firstProject.getByText("03 / 03", { exact: true })).toBeVisible();
-  await carousel.press("ArrowRight");
-  await expect(firstProject.getByText("01 / 03", { exact: true })).toBeVisible();
+  await expect(firstProject.getByText("03 / 05", { exact: true })).toBeVisible();
 
-  const inactiveActions = projectsSection.locator('[aria-disabled="true"]');
-  await expect(inactiveActions).toHaveCount(7);
-  await expect.poll(() => inactiveActions.evaluateAll((elements) => elements.every((element) => !element.hasAttribute("href")))).toBe(true);
+  await expect(firstProject.getByRole("link", { name: /Открыть GitVerse/ })).toHaveAttribute(
+    "href",
+    "https://gitverse.ru/name-later-urfu/monorepo",
+  );
+  await expect(projectsSection.locator('[aria-disabled="true"]')).toHaveCount(0);
+
+  const pmProject = projectsSection.getByRole("article").nth(2);
+  const pmVideo = pmProject.locator("video");
+  await expect(pmVideo).toHaveCount(1);
+  await expect(pmVideo).toHaveAttribute("controls", "");
+  await expect(pmVideo).toHaveAttribute("preload", "metadata");
+  await expect(pmVideo).toHaveAttribute("playsinline", "");
+  await expect(pmVideo).not.toHaveAttribute("autoplay", "");
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
   await carousel.evaluate((element: HTMLElement) => element.blur());
-  await projectsSection.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await scrollToSection(projectsSection);
   await page.mouse.move(0, 0);
   await page.screenshot({ path: "artifacts/projects-desktop.png", fullPage: false });
-  await projectsSection.getByRole("article").nth(1).scrollIntoViewIfNeeded();
+  await scrollToSection(projectsSection.getByRole("article").nth(1));
   await page.screenshot({ path: "artifacts/projects-botnetschool-desktop.png", fullPage: false });
-  await projectsSection.getByRole("article").nth(2).scrollIntoViewIfNeeded();
+  await scrollToSection(projectsSection.getByRole("article").nth(2));
   await page.screenshot({ path: "artifacts/projects-pm-simulator-desktop.png", fullPage: false });
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  await projectsSection.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await scrollToSection(projectsSection);
+  await page.waitForTimeout(500);
   await expect(projectsSection.getByRole("article")).toHaveCount(3);
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
   await page.screenshot({ path: "artifacts/projects-mobile.png", fullPage: false });
+});
+
+test("contacts and employer page contain only confirmed public contact actions", async ({ page }) => {
+  await page.goto("/");
+  const contacts = page.getByRole("region", { name: "Будем на связи" });
+  await contacts.scrollIntoViewIfNeeded();
+  await expect(contacts.getByRole("link", { name: /GitHub/ })).toHaveAttribute("href", "https://github.com/kirillarz");
+  await expect(contacts.getByRole("link", { name: /Telegram/ })).toHaveAttribute("href", "https://t.me/kirillarz");
+  await expect(page.getByText(/Скачать резюме/i)).toHaveCount(0);
+
+  await page.goto("/employer");
+  await expect(page.getByRole("heading", { name: "Кирилл Арзамасцев" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ключевые проекты" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /GitHub/ })).toHaveAttribute("href", "https://github.com/kirillarz");
+  await expect(page.getByText(/Скачать резюме/i)).toHaveCount(0);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+    .toBe(true);
+  await page.screenshot({ path: "artifacts/employer-desktop.png", fullPage: true });
 });

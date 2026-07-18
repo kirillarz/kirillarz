@@ -4,6 +4,7 @@
 
 html {
   min-width: 320px;
+  scroll-behavior: smooth;
   background: var(--color-surface);
 }
 
@@ -19,4 +20,10 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
