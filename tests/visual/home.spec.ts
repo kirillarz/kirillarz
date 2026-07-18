@@ -74,50 +74,73 @@ test("home renders on desktop and mobile", async ({ page }) => {
   await captureScreenshot(page, `${artifactsDir}/home-mobile.png`);
 });
 
-test("about section switches roles and supports keyboard navigation", async ({ page }) => {
+test("about section switches inline highlights and respects interaction pauses", async ({ page }) => {
+  await page.clock.install();
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
 
-  const aboutTitle = page.getByRole("heading", { name: /Создаю продукты/ });
+  const aboutTitle = page.getByRole("heading", { name: "Мне тесно в рамках одной роли" });
   await aboutTitle.scrollIntoViewIfNeeded();
   await expect(aboutTitle).toBeVisible();
 
-  const productTab = page.getByRole("tab", { name: "Product Manager" });
-  const projectTab = page.getByRole("tab", { name: "Project Manager" });
-  const backendTab = page.getByRole("tab", { name: "Backend Developer" });
-  const analystTab = page.getByRole("tab", { name: "Business Analyst" });
+  const aboutSection = page.getByRole("region", { name: "Мне тесно в рамках одной роли" });
+  const taskAndProduct = aboutSection.getByRole("button", { name: "понять задачу и продукт" });
+  const workPlan = aboutSection.getByRole("button", { name: "выстроить план работы" });
+  const requirements = aboutSection.getByRole("button", { name: "разобрать требования" });
+  const development = aboutSection.getByRole("button", { name: "погрузиться в разработку" });
 
-  await expect(productTab).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel")).toContainText("Ближе всего мне product management");
-  await expect(page.getByText("01 / 04")).toBeVisible();
+  await expect(aboutSection.getByRole("button")).toHaveCount(8);
+  await expect(aboutSection.getByRole("tab")).toHaveCount(0);
+  await expect(aboutSection.getByText("01 / 04")).toHaveCount(0);
+  await expect(
+    aboutSection.locator("p").filter({
+      hasText: "Мне нравится собирать проекты так, чтобы каждая деталь работала на общий результат",
+    }),
+  ).toHaveCount(1);
+  await expect(
+    aboutSection.locator("p").filter({
+      hasText: "А фундаментом для дисциплины, ответственности и лидерства стало кадетское прошлое",
+    }),
+  ).toHaveCount(1);
 
-  await projectTab.click();
-  await expect(projectTab).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel")).toContainText("команды из шести человек");
-  await expect(page.getByText("02 / 04")).toBeVisible();
+  await expect(taskAndProduct).toHaveAttribute("aria-pressed", "true");
+  await expect(aboutSection.getByRole("img", { name: /продуктового менеджера/ })).toBeVisible();
 
-  await projectTab.press("ArrowRight");
-  await expect(backendTab).toBeFocused();
-  await expect(backendTab).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel")).toContainText("Python, FastAPI, SQL");
+  await workPlan.hover();
+  await expect(workPlan).toHaveAttribute("aria-pressed", "true");
+  await expect(aboutSection.getByText("«выстроить план работы»")).toBeVisible();
 
-  await backendTab.press("End");
-  await expect(analystTab).toBeFocused();
-  await expect(analystTab).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel")).toContainText("аналитика требований и BPMN");
-  await expect(page.getByRole("img", { name: /фигурка Кирилла с планшетом/ })).toBeVisible();
-  await expect(page.getByText("04 / 04")).toBeVisible();
+  await requirements.focus();
+  await expect(requirements).toBeFocused();
+  await expect(requirements).toHaveAttribute("aria-pressed", "true");
+  await page.clock.fastForward(5_200);
+  await expect(requirements).toHaveAttribute("aria-pressed", "true");
+
+  await requirements.evaluate((element: HTMLElement) => element.blur());
+  await page.mouse.move(0, 0);
+  await expect(development).toHaveAttribute("aria-pressed", "false");
+  await page.clock.fastForward(5_200);
+  await expect(development).toHaveAttribute("aria-pressed", "true");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await workPlan.click();
+  await expect(workPlan).toHaveAttribute("aria-pressed", "true");
+  await page.mouse.move(0, 0);
+  await page.clock.fastForward(5_200);
+  await expect(workPlan).toHaveAttribute("aria-pressed", "true");
 
   await page.goto("/");
-  const aboutSection = page.getByRole("region", { name: /Создаю продукты/ });
   await scrollToSection(aboutSection);
+  await taskAndProduct.click();
   await expectImagesReady(aboutSection);
   await captureScreenshot(page, `${artifactsDir}/about-desktop.png`);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await scrollToSection(aboutSection);
-  await expectImagesReady(aboutSection);
+  await workPlan.click();
+  await expect(workPlan).toHaveAttribute("aria-pressed", "true");
+  await expect(aboutSection.getByRole("group", { name: /выстроить план работы/ })).toHaveCSS("position", "sticky");
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);

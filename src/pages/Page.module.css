@@ -297,10 +297,9 @@
   display: grid;
   grid-template-areas:
     "intro visual"
-    "copy visual"
-    "controls visual";
+    "copy visual";
   grid-template-columns: minmax(0, 760px) minmax(440px, 1fr);
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto 1fr;
   column-gap: clamp(40px, 5vw, 92px);
   width: min(calc(100% - 96px), 1500px);
   min-height: 100svh;
@@ -326,7 +325,7 @@
 }
 
 .aboutIntro h2 {
-  max-width: 760px;
+  max-width: 700px;
   margin: 0;
   color: #091735;
   font-family: Arial, var(--font-sans);
@@ -350,6 +349,15 @@
   min-height: 0;
 }
 
+.aboutVisualContent {
+  position: absolute;
+  inset: -10px 0 -50px;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  animation: aboutFigureEnter 320ms ease-out both;
+}
+
 .aboutGlow {
   position: absolute;
   top: 16%;
@@ -364,30 +372,81 @@
 }
 
 .aboutFigure {
-  position: absolute;
-  top: -10px;
   display: block;
   width: auto;
   max-width: 100%;
-  height: calc(100% + 60px);
+  height: 100%;
   max-height: none;
   object-fit: contain;
   filter: drop-shadow(0 30px 38px rgb(15 23 42 / 0.22));
-  animation: aboutFigureEnter 320ms ease-out both;
+}
+
+.aboutFigurePlaceholder {
+  display: grid;
+  place-items: center;
+  width: min(78%, 430px);
+  aspect-ratio: 4 / 5;
+  padding: clamp(24px, 3vw, 42px);
+  text-align: center;
+  border: 2px dashed rgb(8 116 249 / 0.34);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 50% 32%, rgb(219 234 254 / 0.9), transparent 42%),
+    rgb(255 255 255 / 0.58);
+  box-shadow:
+    0 24px 60px rgb(15 23 42 / 0.1),
+    inset 0 1px 0 rgb(255 255 255 / 0.9);
+}
+
+.aboutPlaceholderSilhouette {
+  position: relative;
+  width: clamp(96px, 11vw, 150px);
+  height: clamp(170px, 20vw, 260px);
+  opacity: 0.56;
+}
+
+.aboutPlaceholderSilhouette::before,
+.aboutPlaceholderSilhouette::after {
+  position: absolute;
+  left: 50%;
+  content: "";
+  border: 3px solid #70a9e9;
+  background: linear-gradient(145deg, rgb(239 246 255 / 0.72), rgb(191 219 254 / 0.28));
+  transform: translateX(-50%);
+}
+
+.aboutPlaceholderSilhouette::before {
+  top: 0;
+  width: 42%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.aboutPlaceholderSilhouette::after {
+  bottom: 0;
+  width: 88%;
+  height: 68%;
+  border-radius: 42% 42% 18% 18% / 24% 24% 10% 10%;
+}
+
+.aboutFigurePlaceholder p {
+  position: relative;
+  z-index: 1;
+  margin: -6px 0 0;
+  color: #6b7890;
+  font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  font-weight: 650;
+  line-height: 1.48;
+}
+
+.aboutFigurePlaceholder p span {
+  color: #0874f9;
 }
 
 .aboutCopy {
   grid-area: copy;
   max-width: 700px;
   padding-top: clamp(24px, 3.5vh, 38px);
-  outline: none;
-  animation: aboutCopyEnter 240ms ease-out both;
-}
-
-.aboutCopy:focus-visible {
-  border-radius: 6px;
-  outline: 3px solid #f5b700;
-  outline-offset: 8px;
 }
 
 .aboutCopy p {
@@ -401,99 +460,53 @@
   margin-top: 18px;
 }
 
-.aboutControls {
-  display: flex;
-  grid-area: controls;
-  grid-column: 1 / -1;
-  grid-row: 3;
-  gap: 30px;
-  align-items: end;
-  align-self: end;
-  min-width: 0;
-  padding-top: 30px;
-}
-
-.roleTabsScroller {
-  min-width: 0;
-}
-
-.roleTabs {
-  display: flex;
-  gap: 12px;
-  width: max-content;
-}
-
-.roleTab {
+.aboutHighlight {
   position: relative;
-  flex: 0 0 auto;
-  min-height: 54px;
-  padding: 0 24px;
-  color: #193054;
-  font-size: 0.98rem;
-  line-height: 1;
-  white-space: nowrap;
+  display: inline;
+  padding: 0;
+  color: #357fcf;
+  font: inherit;
+  font-weight: 750;
+  line-height: inherit;
+  text-align: inherit;
   cursor: pointer;
-  border: 1px solid #aebbd0;
-  border-radius: 10px;
-  background: rgb(255 255 255 / 0.76);
-  box-shadow:
-    0 5px 14px rgb(15 23 42 / 0.07),
-    inset 0 1px 0 #ffffff;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: inset 0 -0.08em 0 rgb(53 127 207 / 0.22);
   transition:
-    border-color 160ms ease,
-    background 160ms ease,
+    color 160ms ease,
     box-shadow 160ms ease,
-    transform 160ms ease;
+    text-shadow 160ms ease;
 }
 
-.roleTab[aria-selected="true"] {
-  color: #ffffff;
-  border-color: #2488ff;
-  background: linear-gradient(180deg, #1685ff 0%, #0564ff 100%);
-  box-shadow:
-    0 12px 26px rgb(37 99 235 / 0.26),
-    inset 0 1px 0 rgb(255 255 255 / 0.24);
+.aboutHighlight[aria-pressed="true"] {
+  color: #076cf0;
+  box-shadow: inset 0 -0.34em 0 rgb(96 165 250 / 0.26);
+  text-shadow: 0 7px 18px rgb(37 99 235 / 0.2);
 }
 
-.roleTab[aria-selected="true"]::after {
+.aboutHighlight[aria-pressed="true"]::after {
   position: absolute;
-  top: -10px;
-  right: -7px;
-  width: 20px;
-  height: 20px;
+  right: -0.34em;
+  bottom: 0.02em;
+  width: 0.26em;
+  height: 0.26em;
   content: "";
-  border: 1px solid rgb(255 255 255 / 0.42);
   border-radius: 50%;
   background: #0875ff;
-  box-shadow: 0 5px 10px rgb(15 23 42 / 0.22);
+  box-shadow: 0 0 0 0.13em rgb(96 165 250 / 0.2);
 }
 
-.roleTab:focus-visible {
+.aboutHighlight:focus-visible {
   outline: 3px solid #f5b700;
-  outline-offset: 4px;
-}
-
-.roleCount {
-  flex: 0 0 auto;
-  min-width: 74px;
-  margin: 0 0 17px;
-  color: #75839a;
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.roleCount span {
-  color: #0874f9;
+  outline-offset: 3px;
 }
 
 @media (hover: hover) {
-  .roleTab:not([aria-selected="true"]):hover {
-    border-color: #0874f9;
-    background: #f3f7fd;
-    box-shadow:
-      0 8px 18px rgb(15 23 42 / 0.1),
-      inset 0 1px 0 #ffffff;
-    transform: translateY(-1px);
+  .aboutHighlight:not([aria-pressed="true"]):hover {
+    color: #0869e8;
+    box-shadow: inset 0 -0.28em 0 rgb(96 165 250 / 0.2);
   }
 }
 
@@ -782,18 +795,6 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes aboutCopyEnter {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -1492,14 +1493,7 @@
   }
 
   .aboutInner {
-    grid-template-areas:
-      "intro"
-      "visual"
-      "copy"
-      "controls";
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto;
-    gap: 0;
+    display: block;
     width: min(calc(100% - 48px), 720px);
     padding: 64px 0 58px;
   }
@@ -1509,53 +1503,44 @@
   }
 
   .aboutVisual {
-    min-height: 610px;
-    margin-top: 10px;
+    position: sticky;
+    top: 16px;
+    z-index: 2;
+    min-height: clamp(300px, 44vw, 390px);
+    margin-top: 18px;
+    overflow: hidden;
+    border: 1px solid rgb(148 163 184 / 0.2);
+    border-radius: 28px;
+    background: rgb(248 250 255 / 0.9);
+    box-shadow:
+      0 18px 42px rgb(15 23 42 / 0.1),
+      inset 0 1px 0 rgb(255 255 255 / 0.92);
+    backdrop-filter: blur(14px);
+  }
+
+  .aboutVisualContent {
+    inset: 12px;
   }
 
   .aboutFigure {
-    position: relative;
-    top: auto;
-    width: min(100%, 530px);
-    height: auto;
-    max-height: 610px;
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
   }
 
   .aboutGlow {
-    top: 12%;
-    width: min(86vw, 600px);
+    top: -20%;
+    width: min(82vw, 560px);
   }
 
   .aboutCopy {
     max-width: none;
-    padding-top: 24px;
+    padding-top: 34px;
   }
 
   .aboutCopy p {
     font-size: 1.14rem;
-  }
-
-  .aboutControls {
-    display: block;
-    grid-column: auto;
-    grid-row: auto;
-    padding-top: 36px;
-  }
-
-  .roleTabsScroller {
-    width: calc(100% + 24px);
-    padding: 5px 24px 20px 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .roleTabsScroller::-webkit-scrollbar {
-    display: none;
-  }
-
-  .roleCount {
-    margin: 14px 0 0;
-    font-size: 1.1rem;
   }
 
   .skillsInner {
@@ -1669,18 +1654,38 @@
   }
 
   .aboutVisual {
-    min-height: 350px;
-    margin-top: 8px;
+    top: 10px;
+    min-height: 248px;
+    margin-top: 14px;
+    border-radius: 22px;
   }
 
-  .aboutFigure {
-    width: min(118%, 440px);
-    max-width: none;
-    max-height: 370px;
+  .aboutVisualContent {
+    inset: 8px;
+  }
+
+  .aboutFigurePlaceholder {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 18px;
+    width: min(100%, 360px);
+    aspect-ratio: auto;
+    min-height: 190px;
+    padding: 20px 22px;
+    border-radius: 22px;
+  }
+
+  .aboutPlaceholderSilhouette {
+    width: 70px;
+    height: 126px;
+  }
+
+  .aboutFigurePlaceholder p {
+    margin: 0;
+    font-size: 0.9rem;
   }
 
   .aboutCopy {
-    padding-top: 20px;
+    padding-top: 28px;
   }
 
   .aboutCopy p {
@@ -1690,25 +1695,6 @@
 
   .aboutCopy p + p {
     margin-top: 20px;
-  }
-
-  .aboutControls {
-    padding-top: 28px;
-  }
-
-  .roleTabsScroller {
-    width: calc(100% + 20px);
-    padding-right: 20px;
-  }
-
-  .roleTabs {
-    gap: 10px;
-  }
-
-  .roleTab {
-    min-height: 54px;
-    padding: 0 22px;
-    font-size: 0.94rem;
   }
 
   .skillsInner {
@@ -1810,11 +1796,12 @@
   }
 
   .aboutVisual {
-    min-height: 340px;
+    min-height: 230px;
   }
 
-  .aboutFigure {
-    max-height: 350px;
+  .aboutFigurePlaceholder {
+    min-height: 176px;
+    padding: 16px 18px;
   }
 
   .skillsInner {
@@ -2027,12 +2014,11 @@
     transition: none;
   }
 
-  .aboutFigure,
-  .aboutCopy {
+  .aboutVisualContent {
     animation: none;
   }
 
-  .roleTab {
+  .aboutHighlight {
     transition: none;
   }
 
