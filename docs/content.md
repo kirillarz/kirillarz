@@ -291,14 +291,15 @@ Product / Project Manager и Frontend-разработчик.
 * команда: 6 человек;
 * оценка: 99/100;
 * стек: React, TypeScript, FastAPI, PostgreSQL, Docker;
-* кнопки: «Открыть GitVerse», «Смотреть демо», «Открыть презентацию».
+* кнопки: «Открыть репозиторий», «Открыть презентацию»;
+* видео-демо показывается последним слайдом карусели.
 
 ### Ссылки
 
 * GitVerse: https://gitverse.ru/name-later-urfu/monorepo
 * Видео-демо: `src/assets/screens/ai-agent-search-premises/demo-search-premises.mp4`
 * Презентация: `src/assets/screens/ai-agent-search-premises/name-later-presentation.pdf`
-* Скриншоты в порядке показа:
+* Медиа в порядке показа:
   1. `src/assets/screens/ai-agent-search-premises/login-screen.webp` —
      `Экран входа в систему подбора помещений`;
   2. `src/assets/screens/ai-agent-search-premises/search-results.webp` —
@@ -309,6 +310,9 @@ Product / Project Manager и Frontend-разработчик.
      `Редактор письма владельцу выбранного помещения`;
   5. `src/assets/screens/ai-agent-search-premises/admin-metrics.webp` —
      `Дашборд с метриками работы AI-системы`.
+  6. `src/assets/screens/ai-agent-search-premises/demo-search-premises.mp4` —
+     `Видео-демо AI-агента для подбора помещений`; постер —
+     `src/assets/screens/ai-agent-search-premises/search-results.webp`.
 
 ### Не использовать в описании
 
@@ -405,7 +409,7 @@ Product / Project Manager и Frontend-разработчик.
 * формат: индивидуальный проект;
 * платформы: Telegram + VK;
 * стек: Python, aiogram, vkbottle, MongoDB, SQLAlchemy;
-* кнопка: «Открыть GitHub»;
+* кнопка: «Открыть репозиторий»;
 * отдельная кнопка галереи не нужна: скриншоты показываются в карусели.
 
 ### Ссылки
@@ -505,7 +509,8 @@ MVP готов.
 * формат: индивидуальный экзаменационный проект;
 * стек: Python, pygame;
 * ключевая фраза: «Управляй не кодом, а хаосом перед релизом»;
-* кнопки: «Открыть GitHub», «Смотреть видео».
+* кнопка: «Открыть репозиторий»;
+* видео показывается непосредственно в карусели без отдельной кнопки.
 
 ### Ссылки
 

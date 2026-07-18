@@ -167,23 +167,41 @@ test("projects section renders confirmed media and working actions", async ({ pa
   const screenshot = firstProject.getByRole("img", { name: /Экран входа/ });
   await expect(screenshot).toBeVisible();
   await expect.poll(() => screenshot.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
-  await expect(firstProject.getByText("01 / 05", { exact: true })).toBeVisible();
+  await expect(firstProject.getByText("01 / 06", { exact: true })).toBeVisible();
 
   await firstProject.getByRole("button", { name: /Следующий слайд/ }).click();
-  await expect(firstProject.getByText("02 / 05", { exact: true })).toBeVisible();
+  await expect(firstProject.getByText("02 / 06", { exact: true })).toBeVisible();
   await expect(firstProject.getByRole("img", { name: /Результаты поиска помещений/ })).toBeVisible();
 
   await carousel.focus();
   await carousel.press("ArrowRight");
-  await expect(firstProject.getByText("03 / 05", { exact: true })).toBeVisible();
+  await expect(firstProject.getByText("03 / 06", { exact: true })).toBeVisible();
 
-  await expect(firstProject.getByRole("link", { name: /Открыть GitVerse/ })).toHaveAttribute(
+  await firstProject.getByRole("button", { name: /Показать слайд 6: Видео-демо/ }).click();
+  await expect(firstProject.getByText("06 / 06", { exact: true })).toBeVisible();
+  const aiDemo = firstProject.locator("video");
+  await expect(aiDemo).toHaveAttribute("controls", "");
+  await expect(aiDemo).toHaveAttribute("preload", "metadata");
+  await expect(aiDemo).toHaveAttribute("playsinline", "");
+  await expect(aiDemo).not.toHaveAttribute("autoplay", "");
+
+  await expect(firstProject.getByRole("link", { name: "Открыть репозиторий" })).toHaveAttribute(
     "href",
     "https://gitverse.ru/name-later-urfu/monorepo",
   );
+  const botNetSchoolProject = projectsSection.getByRole("article").nth(1);
+  await expect(botNetSchoolProject.getByRole("link", { name: "Открыть репозиторий" })).toHaveAttribute(
+    "href",
+    "https://github.com/kirillarz/BotNetSchool",
+  );
+  const pmProject = projectsSection.getByRole("article").nth(2);
+  await expect(pmProject.getByRole("link", { name: "Открыть репозиторий" })).toHaveAttribute(
+    "href",
+    "https://github.com/kirillarz/PM-sumulator",
+  );
+  await expect(projectsSection.getByRole("link", { name: /Смотреть (демо|видео)/ })).toHaveCount(0);
   await expect(projectsSection.locator('[aria-disabled="true"]')).toHaveCount(0);
 
-  const pmProject = projectsSection.getByRole("article").nth(2);
   const pmVideo = pmProject.locator("video");
   await expect(pmVideo).toHaveCount(1);
   await expect(pmVideo).toHaveAttribute("controls", "");
@@ -199,7 +217,6 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await page.mouse.move(0, 0);
   await captureScreenshot(page, `${artifactsDir}/projects-desktop.png`);
 
-  const botNetSchoolProject = projectsSection.getByRole("article").nth(1);
   await scrollToSection(botNetSchoolProject);
   await expectImagesReady(botNetSchoolProject);
   await captureScreenshot(page, `${artifactsDir}/projects-botnetschool-desktop.png`);

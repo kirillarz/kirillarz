@@ -15,7 +15,7 @@ import pmSimulatorPoster from "../assets/screens/pm-simulator/poster.webp";
 import styles from "./Page.module.css";
 
 type ProjectFactIcon = "briefcase" | "people" | "platform" | "result" | "status" | "user";
-type ProjectActionIcon = "external" | "file" | "github" | "play";
+type ProjectActionIcon = "external" | "file";
 
 type ProjectSlide =
   | {
@@ -93,10 +93,15 @@ const projects: readonly Project[] = [
         src: aiAgentAdminMetrics,
         alt: "Дашборд с метриками работы AI-системы",
       },
+      {
+        kind: "video",
+        src: aiAgentDemo,
+        poster: aiAgentSearchResults,
+        label: "Видео-демо AI-агента для подбора помещений",
+      },
     ],
     actions: [
-      { label: "Открыть GitVerse", icon: "external", href: "https://gitverse.ru/name-later-urfu/monorepo" },
-      { label: "Смотреть демо", icon: "play", href: aiAgentDemo },
+      { label: "Открыть репозиторий", icon: "external", href: "https://gitverse.ru/name-later-urfu/monorepo" },
       { label: "Открыть презентацию", icon: "file", href: aiAgentPresentation },
     ],
   },
@@ -131,7 +136,9 @@ const projects: readonly Project[] = [
         alt: "Меню отчётов, средний балл и итоговые оценки в боте",
       },
     ],
-    actions: [{ label: "Открыть GitHub", icon: "github", href: "https://github.com/kirillarz/BotNetSchool" }],
+    actions: [
+      { label: "Открыть репозиторий", icon: "external", href: "https://github.com/kirillarz/BotNetSchool" },
+    ],
   },
   {
     id: "pm-simulator",
@@ -156,8 +163,7 @@ const projects: readonly Project[] = [
       },
     ],
     actions: [
-      { label: "Открыть GitHub", icon: "github", href: "https://github.com/kirillarz/PM-sumulator" },
-      { label: "Смотреть видео", icon: "play", href: pmSimulatorDemo },
+      { label: "Открыть репозиторий", icon: "external", href: "https://github.com/kirillarz/PM-sumulator" },
     ],
   },
 ] as const;
@@ -242,19 +248,6 @@ function ProjectActionIconView({ name }: { name: ProjectActionIcon }) {
       return (
         <svg {...commonProps}>
           <path d="M6 3h8l4 4v14H6zM14 3v5h5M9 13h6M9 17h6" />
-        </svg>
-      );
-    case "github":
-      return (
-        <svg {...commonProps}>
-          <path d="M9 19c-4.5 1.4-4.5-2.5-6-3m12 6v-3.4a3 3 0 0 0-.8-2.3c2.7-.3 5.5-1.3 5.5-6a4.7 4.7 0 0 0-1.3-3.2A4.4 4.4 0 0 0 18.3 4S17.3 3.7 15 5.2a11 11 0 0 0-6 0C6.7 3.7 5.7 4 5.7 4a4.4 4.4 0 0 0-.1 3.1A4.7 4.7 0 0 0 4.3 10c0 4.7 2.8 5.7 5.5 6a3 3 0 0 0-.8 2.3V22" />
-        </svg>
-      );
-    case "play":
-      return (
-        <svg {...commonProps}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="m10 8 6 4-6 4z" />
         </svg>
       );
   }
