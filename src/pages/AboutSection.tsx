@@ -1,16 +1,23 @@
 import { useEffect, useId, useRef, useState } from "react";
 
-import productManagerFigure from "../assets/product-manager-with-tablet.png";
+import businessAnalystFigure from "../assets/about-me/business-analyst.png";
+import cadetFigure from "../assets/about-me/cadet.png";
+import coderFigure from "../assets/about-me/coder.png";
+import eventHostFigure from "../assets/about-me/event-host.png";
+import negotiatorFigure from "../assets/about-me/negotiator.png";
+import productManagerFigure from "../assets/about-me/product-manager.png";
+import projectManagerFigure from "../assets/about-me/project-manager.png";
+import staffFigure from "../assets/about-me/staff.png";
 import styles from "./Page.module.css";
 
 type AboutHighlight = {
   id: string;
   label: string;
-  image?: string;
-  imageAlt?: string;
+  image: string;
+  imageAlt: string;
 };
 
-const AUTO_CYCLE_MS = 5_000;
+const AUTO_CYCLE_MS = 3_000;
 
 const aboutHighlights: readonly AboutHighlight[] = [
   {
@@ -22,30 +29,44 @@ const aboutHighlights: readonly AboutHighlight[] = [
   {
     id: "work-plan",
     label: "выстроить план работы",
+    image: projectManagerFigure,
+    imageAlt: "Стилизованная конструкторная фигурка Кирилла с ноутбуком в образе проектного менеджера",
   },
   {
     id: "requirements",
     label: "разобрать требования",
+    image: businessAnalystFigure,
+    imageAlt: "Стилизованная конструкторная фигурка Кирилла с лупой в образе бизнес-аналитика",
   },
   {
     id: "development",
     label: "погрузиться в разработку",
+    image: coderFigure,
+    imageAlt: "Стилизованная конструкторная фигурка Кирилла с ноутбуком и стаканом в образе разработчика",
   },
   {
     id: "communication",
     label: "переговоры и коммуникацию",
+    image: negotiatorFigure,
+    imageAlt: "Стилизованная конструкторная фигурка Кирилла с телефоном и портфелем в образе переговорщика",
   },
   {
     id: "teamwork",
     label: "организовать командную работу",
+    image: staffFigure,
+    imageAlt: "Стилизованная конструкторная фигурка Кирилла с гарнитурой и бейджем организатора команды",
   },
   {
     id: "events",
     label: "вести мероприятия",
+    image: eventHostFigure,
+    imageAlt: "Стилизованная конструкторная фигурка Кирилла с микрофоном в образе ведущего мероприятий",
   },
   {
     id: "platoon-leadership",
     label: "старшиной взвода",
+    image: cadetFigure,
+    imageAlt: "Стилизованная конструкторная фигурка Кирилла в кадетской форме",
   },
 ] as const;
 
@@ -208,22 +229,11 @@ export function AboutSection() {
         >
           <div className={styles.aboutGlow} aria-hidden="true" />
           <div className={styles.aboutVisualContent} key={activeHighlight.id}>
-            {activeHighlight.image && activeHighlight.imageAlt ? (
-              <img
-                className={styles.aboutFigure}
-                src={activeHighlight.image}
-                alt={activeHighlight.imageAlt}
-              />
-            ) : (
-              <div className={styles.aboutFigurePlaceholder}>
-                <div className={styles.aboutPlaceholderSilhouette} aria-hidden="true" />
-                <p>
-                  Образ <span>«{activeHighlight.label}»</span>
-                  <br />
-                  скоро появится
-                </p>
-              </div>
-            )}
+            <img
+              className={styles.aboutFigure}
+              src={activeHighlight.image}
+              alt={activeHighlight.imageAlt}
+            />
           </div>
         </div>
 

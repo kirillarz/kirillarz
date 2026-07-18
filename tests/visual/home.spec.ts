@@ -88,6 +88,10 @@ test("about section switches inline highlights and respects interaction pauses",
   const workPlan = aboutSection.getByRole("button", { name: "выстроить план работы" });
   const requirements = aboutSection.getByRole("button", { name: "разобрать требования" });
   const development = aboutSection.getByRole("button", { name: "погрузиться в разработку" });
+  const communication = aboutSection.getByRole("button", { name: "переговоры и коммуникацию" });
+  const teamwork = aboutSection.getByRole("button", { name: "организовать командную работу" });
+  const events = aboutSection.getByRole("button", { name: "вести мероприятия" });
+  const platoonLeadership = aboutSection.getByRole("button", { name: "старшиной взвода" });
 
   await expect(aboutSection.getByRole("button")).toHaveCount(8);
   await expect(aboutSection.getByRole("tab")).toHaveCount(0);
@@ -108,7 +112,7 @@ test("about section switches inline highlights and respects interaction pauses",
 
   await workPlan.hover();
   await expect(workPlan).toHaveAttribute("aria-pressed", "true");
-  await expect(aboutSection.getByText("«выстроить план работы»")).toBeVisible();
+  await expect(aboutSection.getByRole("img", { name: /проектного менеджера/ })).toBeVisible();
 
   await requirements.focus();
   await expect(requirements).toBeFocused();
@@ -128,6 +132,28 @@ test("about section switches inline highlights and respects interaction pauses",
   await page.mouse.move(0, 0);
   await page.clock.fastForward(5_200);
   await expect(workPlan).toHaveAttribute("aria-pressed", "true");
+
+  const imageCases = [
+    { button: taskAndProduct, imageName: /продуктового менеджера/ },
+    { button: workPlan, imageName: /проектного менеджера/ },
+    { button: requirements, imageName: /бизнес-аналитика/ },
+    { button: development, imageName: /образе разработчика/ },
+    { button: communication, imageName: /образе переговорщика/ },
+    { button: teamwork, imageName: /организатора команды/ },
+    { button: events, imageName: /ведущего мероприятий/ },
+    { button: platoonLeadership, imageName: /кадетской форме/ },
+  ];
+
+  for (const { button, imageName } of imageCases) {
+    await button.click();
+    await expect(button).toHaveAttribute("aria-pressed", "true");
+    const image = aboutSection.getByRole("img", { name: imageName });
+    await expect(image).toBeVisible();
+    await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
+  }
+
+  await expect(aboutSection.locator("img")).toHaveCount(1);
+  await expect(aboutSection.getByText(/скоро появится/)).toHaveCount(0);
 
   await page.goto("/");
   await scrollToSection(aboutSection);
