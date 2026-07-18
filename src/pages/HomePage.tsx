@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import heroMinifigure from "../assets/hero-minifigure.png";
 import { AboutSection } from "./AboutSection";
 import styles from "./Page.module.css";
+import { SkillsSection } from "./SkillsSection";
 
 const heroSkills = [
   "Backend",
@@ -58,6 +59,7 @@ export function HomePage() {
       </section>
 
       <AboutSection />
+      <SkillsSection />
     </main>
   );
 }

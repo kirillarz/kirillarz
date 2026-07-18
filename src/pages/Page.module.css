@@ -558,6 +558,246 @@
   }
 }
 
+.skillsSection {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  overflow: hidden;
+  color: #f8fafc;
+  font-family: Arial, var(--font-sans);
+  background:
+    radial-gradient(ellipse 34% 48% at 17% 64%, rgb(17 103 226 / 0.16), transparent 72%),
+    radial-gradient(ellipse 34% 46% at 50% 68%, rgb(234 179 8 / 0.08), transparent 72%),
+    radial-gradient(ellipse 32% 46% at 84% 66%, rgb(220 38 38 / 0.08), transparent 72%),
+    linear-gradient(109deg, #030812 0%, #07111e 49%, #030812 100%);
+}
+
+.skillsSection::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(ellipse at center, transparent 38%, rgb(1 4 10 / 0.36) 100%),
+    linear-gradient(180deg, rgb(1 4 10 / 0.26), transparent 20%, rgb(1 4 10 / 0.46) 100%);
+}
+
+.skillsInner {
+  position: relative;
+  width: min(calc(100% - 96px), 1280px);
+  min-height: 100svh;
+  padding: clamp(38px, 5vh, 52px) 0 clamp(48px, 6vh, 66px);
+  margin: 0 auto;
+}
+
+.skillsIntro {
+  max-width: 1040px;
+}
+
+.skillsEyebrow {
+  margin: 0 0 15px;
+  color: #1685ff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.025em;
+}
+
+.skillsEyebrow span {
+  color: #1685ff;
+}
+
+.skillsIntro h2 {
+  margin: 0;
+  color: #ffffff;
+  font-family: Arial, var(--font-sans);
+  font-size: clamp(3.15rem, 3.25vw, 3.45rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.skillsIntro h2 span {
+  color: #1478ff;
+  text-shadow: 0 0 30px rgb(37 99 235 / 0.28);
+}
+
+.skillsLead {
+  margin: 14px 0 0;
+  color: rgb(226 232 240 / 0.88);
+  font-size: clamp(1rem, 1.25vw, 1.18rem);
+  line-height: 1.48;
+}
+
+.skillsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 2.25vw, 34px);
+  margin-top: clamp(26px, 3.4vh, 32px);
+}
+
+.skillCard {
+  --skills-accent: #1685ff;
+  --skills-accent-soft: rgb(22 133 255 / 0.2);
+  --skills-glow: rgb(22 133 255 / 0.38);
+
+  position: relative;
+  display: grid;
+  grid-template-rows: 158px auto 1fr;
+  min-width: 0;
+  min-height: 500px;
+  padding: 19px 27px 28px;
+  border: 1px solid var(--skills-accent);
+  border-radius: 16px;
+  background:
+    linear-gradient(160deg, rgb(255 255 255 / 0.055), transparent 35%),
+    linear-gradient(180deg, rgb(12 29 50 / 0.96), rgb(4 17 32 / 0.98));
+  box-shadow:
+    0 25px 46px rgb(0 0 0 / 0.34),
+    0 16px 28px -22px var(--skills-glow),
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    inset 0 0 34px var(--skills-accent-soft);
+}
+
+.skillCard::before,
+.skillCard::after {
+  position: absolute;
+  top: 50px;
+  width: 28px;
+  height: 112px;
+  pointer-events: none;
+  content: "";
+  border: 1px solid var(--skills-accent);
+  background:
+    radial-gradient(circle at 50% 28%, rgb(14 38 66) 0 10px, var(--skills-accent) 10.5px 11.5px, transparent 12px),
+    radial-gradient(circle at 50% 72%, rgb(14 38 66) 0 10px, var(--skills-accent) 10.5px 11.5px, transparent 12px),
+    linear-gradient(180deg, rgb(13 30 51 / 0.98), rgb(5 16 31 / 0.98));
+  box-shadow: 0 10px 18px rgb(0 0 0 / 0.32);
+}
+
+.skillCard::before {
+  left: -29px;
+  border-right: 0;
+  border-radius: 28px 0 0 28px;
+}
+
+.skillCard::after {
+  right: -29px;
+  border-left: 0;
+  border-radius: 0 28px 28px 0;
+}
+
+.skillCardBlue {
+  --skills-accent: #1685ff;
+  --skills-accent-soft: rgb(22 133 255 / 0.18);
+  --skills-glow: rgb(22 133 255 / 0.54);
+}
+
+.skillCardYellow {
+  --skills-accent: #f4b800;
+  --skills-accent-soft: rgb(244 184 0 / 0.11);
+  --skills-glow: rgb(244 184 0 / 0.42);
+}
+
+.skillCardRed {
+  --skills-accent: #ff3341;
+  --skills-accent-soft: rgb(255 51 65 / 0.11);
+  --skills-glow: rgb(255 51 65 / 0.38);
+}
+
+.skillCardImageWrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+}
+
+.skillCardImageWrap::after {
+  position: absolute;
+  right: 15%;
+  bottom: 8px;
+  left: 15%;
+  height: 28px;
+  pointer-events: none;
+  content: "";
+  border-radius: 50%;
+  background: var(--skills-glow);
+  filter: blur(18px);
+  opacity: 0.55;
+}
+
+.skillCardImage {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(100%, 280px);
+  height: 158px;
+  object-fit: cover;
+  filter: drop-shadow(0 18px 16px rgb(0 0 0 / 0.38));
+}
+
+.skillCardRed .skillCardImage {
+  width: min(100%, 290px);
+  object-fit: contain;
+}
+
+.skillCard h3 {
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  margin: 4px 0 14px;
+  color: #ffffff;
+  font-size: clamp(1.35rem, 1.65vw, 1.62rem);
+  font-weight: 800;
+  line-height: 1.18;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.skillList {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-auto-rows: minmax(40px, auto);
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.skillListTwoColumns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.skillList li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid rgb(148 163 184 / 0.17);
+  border-radius: 7px;
+  color: #f8fafc;
+  font-size: clamp(0.88rem, 1vw, 1rem);
+  line-height: 1.18;
+  background: rgb(4 17 33 / 0.54);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.025);
+}
+
+.skillIcon {
+  width: 25px;
+  height: 25px;
+  color: var(--skills-accent);
+  filter: drop-shadow(0 0 7px var(--skills-glow));
+}
+
+.skillList li span {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
 @media (max-width: 980px) {
   .homePage {
     min-height: 100svh;
@@ -683,6 +923,41 @@
     margin: 14px 0 0;
     font-size: 1.1rem;
   }
+
+  .skillsInner {
+    width: min(calc(100% - 48px), 760px);
+    padding: 64px 0 62px;
+  }
+
+  .skillsIntro h2 {
+    font-size: clamp(3rem, 8vw, 4.2rem);
+  }
+
+  .skillsLead {
+    font-size: 1.12rem;
+  }
+
+  .skillsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 44px;
+    margin-top: 38px;
+  }
+
+  .skillCard {
+    min-height: 500px;
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+
+  .skillCard:last-child {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc((100% - 44px) / 2);
+  }
+
+  .skillListTwoColumns {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 640px) {
@@ -796,6 +1071,84 @@
     padding: 0 22px;
     font-size: 0.94rem;
   }
+
+  .skillsInner {
+    width: min(calc(100% - 40px), 580px);
+    padding: 50px 0 54px;
+  }
+
+  .skillsEyebrow {
+    margin-bottom: 17px;
+    font-size: 0.86rem;
+  }
+
+  .skillsIntro h2 {
+    font-size: clamp(2rem, 9vw, 2.75rem);
+    line-height: 1.08;
+  }
+
+  .skillsLead {
+    margin-top: 18px;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .skillsGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 34px;
+    margin-top: 32px;
+  }
+
+  .skillCard,
+  .skillCard:last-child {
+    grid-column: auto;
+    justify-self: stretch;
+    width: auto;
+    min-height: 0;
+    padding: 16px 20px 24px;
+  }
+
+  .skillCard {
+    grid-template-rows: 145px auto 1fr;
+  }
+
+  .skillCard::before,
+  .skillCard::after {
+    top: 42px;
+    width: 21px;
+    height: 94px;
+    background:
+      radial-gradient(circle at 50% 28%, rgb(14 38 66) 0 7px, var(--skills-accent) 7.5px 8.5px, transparent 9px),
+      radial-gradient(circle at 50% 72%, rgb(14 38 66) 0 7px, var(--skills-accent) 7.5px 8.5px, transparent 9px),
+      linear-gradient(180deg, rgb(13 30 51 / 0.98), rgb(5 16 31 / 0.98));
+  }
+
+  .skillCard::before {
+    left: -22px;
+  }
+
+  .skillCard::after {
+    right: -22px;
+  }
+
+  .skillCardImage {
+    height: 145px;
+  }
+
+  .skillCard h3 {
+    margin-top: 5px;
+    font-size: 1.4rem;
+  }
+
+  .skillList,
+  .skillListTwoColumns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skillList li {
+    min-height: 43px;
+    font-size: 0.96rem;
+  }
 }
 
 @media (max-width: 380px) {
@@ -823,6 +1176,15 @@
   .aboutFigure {
     max-height: 350px;
   }
+
+  .skillsInner {
+    width: min(calc(100% - 32px), 348px);
+  }
+
+  .skillCard {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -842,4 +1204,5 @@
   .roleTab {
     transition: none;
   }
+
 }

@@ -75,3 +75,29 @@ test("about section switches roles and supports keyboard navigation", async ({ p
     .toBe(true);
   await page.screenshot({ path: "artifacts/about-mobile.png", fullPage: false });
 });
+
+test("skills section renders its groups without viewport overflow", async ({ page }) => {
+  await mkdir("artifacts", { recursive: true });
+  await page.setViewportSize({ width: 1680, height: 838 });
+  await page.goto("/");
+
+  const skillsSection = page.getByRole("region", { name: /Навыки, которые помогают/ });
+  await skillsSection.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await expect(skillsSection.getByRole("article")).toHaveCount(3);
+  await expect(skillsSection.getByRole("heading", { name: "Разработка" })).toBeVisible();
+  await expect(skillsSection.getByRole("heading", { name: "Продукт и управление" })).toBeVisible();
+  await expect(skillsSection.getByRole("heading", { name: "Коммуникация" })).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+    .toBe(true);
+  await page.screenshot({ path: "artifacts/skills-desktop.png", fullPage: false });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await skillsSection.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await expect(skillsSection.getByRole("article")).toHaveCount(3);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+    .toBe(true);
+  await page.screenshot({ path: "artifacts/skills-mobile.png", fullPage: false });
+});
