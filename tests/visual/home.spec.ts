@@ -194,7 +194,7 @@ test("hero CTA skips video and flash when reduced motion is requested", async ({
 });
 
 test("hero CTA falls back to anchor navigation when the animation cannot load", async ({ page }) => {
-  await page.route("**/hero-minifigure-animate.webm", (route) => route.abort());
+  await page.route("**/hero-minifigure-animate-clean.webm", (route) => route.abort());
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
 

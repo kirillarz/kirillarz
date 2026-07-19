@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type TransitionEvent } from "react";
 
 import heroMinifigure from "../assets/hero-minifigure.png";
-import heroMinifigureAnimation from "../assets/hero-minifigure-animate.webm";
+import heroMinifigureAnimation from "../assets/hero-minifigure-animate-clean.webm";
 import { AboutSection } from "./AboutSection";
 import { ContactsSection } from "./ContactsSection";
 import { HobbySection } from "./HobbySection";
