@@ -338,6 +338,8 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
 
   const scatterTransition = page.getByTestId("section-transition-projects-hobby");
   await placeTransitionAt(page, scatterTransition, 0.5);
+  await expectImagesReady(scatterTransition);
+  await expect(scatterTransition.locator("img[data-transition-piece]")).toHaveCount(13);
   await expect(scatterTransition.locator("[data-transition-piece]").first()).not.toHaveCSS("transform", "none");
   await captureScreenshot(page, `${artifactsDir}/transition-scatter-desktop.png`);
 
