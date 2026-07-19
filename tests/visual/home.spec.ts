@@ -47,6 +47,7 @@ test("home renders on desktop and mobile", async ({ page }) => {
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Узнать обо мне/ })).toBeVisible();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://kirillarz.ru/");
   await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute("href", "/favicon.svg");
   await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://kirillarz.ru/");
@@ -60,6 +61,7 @@ test("home renders on desktop and mobile", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Узнать обо мне/ })).toBeVisible();
   await expectImagesReady(page.locator("section").first());
   await captureScreenshot(page, `${artifactsDir}/home-desktop.png`);
 
@@ -88,11 +90,80 @@ test("home renders on desktop and mobile", async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto("/");
     await expect(page.locator("h1")).toBeVisible();
+    await expect(mobileCta).toBeVisible();
     await expect
       .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
       .toBe(true);
     await captureScreenshot(page, `${artifactsDir}/home-mobile-${viewport.name}.png`);
   }
+});
+
+test("hero role marquee loops continuously and respects reduced motion", async ({ page }) => {
+  const roles = [
+    "Product Manager",
+    "Project Manager",
+    "Backend Developer",
+    "Business Analyst",
+    "AI Product Builder",
+    "Team Coordinator",
+  ];
+
+  await page.setViewportSize({ width: 1680, height: 838 });
+  await page.goto("/");
+
+  const marquee = page.getByTestId("hero-role-marquee");
+  const track = page.getByTestId("hero-role-track");
+  const primaryGroup = marquee.locator('[data-role-group="primary"]');
+  const duplicateGroup = marquee.locator('[data-role-group="duplicate"]');
+
+  await expect(marquee.locator("[data-role-group]")).toHaveCount(2);
+  for (const role of roles) {
+    await expect(primaryGroup.getByText(role, { exact: true })).toHaveCount(1);
+    await expect(duplicateGroup.getByText(role, { exact: true })).toHaveCount(1);
+  }
+
+  await expect(track).toHaveCSS("animation-duration", "30s");
+  await expect(track).toHaveCSS("animation-timing-function", "linear");
+  await expect(track).toHaveCSS("animation-iteration-count", "infinite");
+  await expect(track).toHaveCSS("animation-direction", "normal");
+  for (const group of [primaryGroup, duplicateGroup]) {
+    const separatorStyles = await group
+      .locator("span")
+      .last()
+      .evaluate((element) => {
+        const styles = window.getComputedStyle(element, "::after");
+        return { display: styles.display, height: styles.height, width: styles.width };
+      });
+    expect(separatorStyles).toEqual({ display: "block", height: "4px", width: "4px" });
+  }
+  const bottomClearance = await marquee.evaluate((element) => {
+    const pill = element.querySelector('[data-role-group="primary"] span');
+    if (!(pill instanceof HTMLElement)) return 0;
+    return element.getBoundingClientRect().bottom - pill.getBoundingClientRect().bottom;
+  });
+  expect(bottomClearance).toBeGreaterThanOrEqual(1);
+  const keyframeTransforms = await track.evaluate((element) => {
+    const animation = element.getAnimations()[0];
+    return animation?.effect?.getKeyframes().map((keyframe) => String(keyframe.transform ?? "")) ?? [];
+  });
+  expect(keyframeTransforms.at(-1)).toContain("-50%");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload();
+
+  await expect(track).toHaveCSS("animation-name", "none");
+  await expect(duplicateGroup).toHaveCSS("display", "none");
+  const reducedMotionSeparatorDisplay = await primaryGroup
+    .locator("span")
+    .last()
+    .evaluate((element) => window.getComputedStyle(element, "::after").display);
+  expect(reducedMotionSeparatorDisplay).toBe("none");
+  await expect(marquee).toHaveCSS("overflow-x", "auto");
+  await expect.poll(() => marquee.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(true);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+    .toBe(true);
 });
 
 test("mobile navigation exposes section anchors and closes predictably", async ({ page }) => {

@@ -91,6 +91,17 @@
 * Backend Developer
 * Business Analyst
 
+### Роли в hero
+
+Показывать в англоязычной бегущей строке в следующем порядке:
+
+* Product Manager
+* Project Manager
+* Backend Developer
+* Business Analyst
+* AI Product Builder
+* Team Coordinator
+
 ### Открытость к предложениям
 
 Кирилл открыт к:

@@ -7,11 +7,13 @@ import styles from "./Page.module.css";
 import { ProjectsSection } from "./ProjectsSection";
 import { SkillsSection } from "./SkillsSection";
 
-const heroSkills = [
-  "Backend",
-  "AI Products",
-  "Project Management",
-  "Systems Analysis",
+const heroRoles = [
+  "Product Manager",
+  "Project Manager",
+  "Backend Developer",
+  "Business Analyst",
+  "AI Product Builder",
+  "Team Coordinator",
 ];
 
 export function HomePage() {
@@ -36,13 +38,17 @@ export function HomePage() {
             проекты, координировать команду, общаться с заказчиком и защищать результат.
           </p>
 
-          <div className={styles.skillMarquee}>
-            <span className={styles.srOnly}>Ключевые направления: {heroSkills.join(", ")}</span>
-            <div className={styles.skillTrack} aria-hidden="true">
-              {heroSkills.map((skill) => (
-                <span className={styles.skillPill} key={skill}>
-                  {skill}
-                </span>
+          <div className={styles.roleMarquee} data-testid="hero-role-marquee">
+            <span className={styles.srOnly}>Роли: {heroRoles.join(", ")}</span>
+            <div className={styles.roleTrack} data-testid="hero-role-track" aria-hidden="true">
+              {["primary", "duplicate"].map((group) => (
+                <div className={styles.roleGroup} data-role-group={group} key={group}>
+                  {heroRoles.map((role) => (
+                    <span className={styles.rolePill} key={`${group}-${role}`}>
+                      {role}
+                    </span>
+                  ))}
+                </div>
               ))}
             </div>
           </div>
