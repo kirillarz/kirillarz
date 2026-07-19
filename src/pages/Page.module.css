@@ -973,6 +973,10 @@
   list-style: none;
 }
 
+.skillListPanel {
+  display: contents;
+}
+
 .skillListTwoColumns {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -3069,10 +3073,14 @@
 
   .skillAccordionIcon::after {
     transform: translate(-50%, -50%) rotate(90deg);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
   }
 
   .skillAccordionButton[aria-expanded="true"] .skillAccordionIcon::after {
-    display: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(90deg) scale(0.35);
   }
 
   .skillAccordionButton:focus-visible {
@@ -3080,17 +3088,38 @@
     outline-offset: 2px;
   }
 
-  .skillCard .skillList {
-    display: none;
+  .skillCard .skillListPanel {
+    display: grid;
     grid-area: list;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      grid-template-rows 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 220ms ease,
+      visibility 0s linear 300ms;
+  }
+
+  .skillCard .skillList {
     grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
     margin-top: 8px;
     padding-top: 12px;
+    overflow: hidden;
     border-top: 1px solid rgb(148 163 184 / 0.18);
+    transform: translateY(-8px);
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .skillCardExpanded .skillListPanel {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
   }
 
   .skillCardExpanded .skillList {
-    display: grid;
+    transform: translateY(0);
   }
 
   .skillList li {
@@ -3276,6 +3305,12 @@
 @media (prefers-reduced-motion: reduce) {
   .mobileNavigationMenu,
   .hobbyTabs button {
+    transition: none;
+  }
+
+  .skillCard .skillListPanel,
+  .skillCard .skillList,
+  .skillAccordionIcon::after {
     transition: none;
   }
 }

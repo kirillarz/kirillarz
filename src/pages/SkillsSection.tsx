@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import canbanImage from "../assets/canban-cutout.png";
 import communicationImage from "../assets/communication-cutout.png";
@@ -246,6 +246,18 @@ function SkillIcon({ name }: { name: SkillIconName }) {
 
 export function SkillsSection() {
   const [activeGroupId, setActiveGroupId] = useState(skillGroups[0].id);
+  const [isMobileAccordion, setIsMobileAccordion] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches,
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 640px)");
+    const handleChange = () => setIsMobileAccordion(mediaQuery.matches);
+
+    handleChange();
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   return (
     <section id="skills" className={styles.skillsSection} aria-labelledby="skills-title">
@@ -290,17 +302,22 @@ export function SkillsSection() {
                 <span className={styles.skillAccordionIcon} aria-hidden="true" />
               </button>
 
-              <ul
-                className={`${styles.skillList} ${group.columns === 2 ? styles.skillListTwoColumns : ""}`}
+              <div
+                className={styles.skillListPanel}
                 id={`${group.id}-skills`}
+                aria-hidden={isMobileAccordion ? activeGroupId !== group.id : undefined}
               >
-                {group.skills.map((skill) => (
-                  <li key={skill.label}>
-                    <SkillIcon name={skill.icon} />
-                    <span>{skill.label}</span>
-                  </li>
-                ))}
-              </ul>
+                <ul
+                  className={`${styles.skillList} ${group.columns === 2 ? styles.skillListTwoColumns : ""}`}
+                >
+                  {group.skills.map((skill) => (
+                    <li key={skill.label}>
+                      <SkillIcon name={skill.icon} />
+                      <span>{skill.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </article>
           ))}
         </div>
