@@ -12,7 +12,9 @@ import botNetSchoolReports from "../assets/screens/botnetschool/reports.webp";
 import botNetSchoolSchedule from "../assets/screens/botnetschool/schedule-and-homework.webp";
 import pmSimulatorDemo from "../assets/screens/pm-simulator/demo-pm-simulator.mp4";
 import pmSimulatorPoster from "../assets/screens/pm-simulator/poster.webp";
+import { MotionHeading } from "./PageMotion";
 import styles from "./Page.module.css";
+import { motionReveal } from "./usePageMotion";
 
 type ProjectFactIcon = "briefcase" | "people" | "platform" | "result" | "status" | "user";
 type ProjectActionIcon = "external" | "file";
@@ -405,11 +407,18 @@ export function ProjectsSection() {
     <section id="projects" className={styles.projectsSection} aria-labelledby="projects-title">
       <div className={styles.projectsInner}>
         <header className={styles.projectsIntro}>
-          <p className={styles.projectsEyebrow}>
+          <p className={styles.projectsEyebrow} {...motionReveal("content")}>
             <span>04</span> / ПРОЕКТЫ
           </p>
-          <h2 id="projects-title">Проекты, которыми я особенно горжусь</h2>
-          <p>
+          <MotionHeading
+            id="projects-title"
+            label="Проекты, которыми я особенно горжусь"
+            segments={[
+              { text: "Проекты, которыми" },
+              { text: "я особенно горжусь" },
+            ]}
+          />
+          <p {...motionReveal("content", 1)}>
             Разработка, координация команды и продуктовый подход
             <br className={styles.desktopBreak} /> в работающих учебных и командных кейсах.
           </p>
@@ -421,6 +430,7 @@ export function ProjectsSection() {
               className={`${styles.projectCard} ${index % 2 === 1 ? styles.projectCardReversed : ""}`}
               aria-labelledby={`${project.id}-title`}
               key={project.id}
+              {...motionReveal("card", index)}
             >
               <ProjectCarousel project={project} />
 

@@ -1,7 +1,9 @@
 import { useRef, useState, type CSSProperties, type MouseEvent } from "react";
 
 import hobbyMap from "../assets/hobby_map.png";
+import { MotionHeading } from "./PageMotion";
 import styles from "./Page.module.css";
+import { motionReveal } from "./usePageMotion";
 
 type HobbyPlacement = "left" | "right" | "center";
 
@@ -102,18 +104,23 @@ export function HobbySection() {
     <section id="hobby" className={styles.hobbySection} aria-labelledby="hobby-title">
       <div className={styles.hobbyInner}>
         <header className={styles.hobbyIntro}>
-          <p className={styles.hobbyEyebrow}>
+          <p className={styles.hobbyEyebrow} {...motionReveal("content")}>
             <span>05</span> / ХОББИ
           </p>
-          <h2 id="hobby-title">
-            Не только кодом
-            <br />
-            <span>и проектами</span>
-          </h2>
-          <p>Рыбалка, плавание, путешествия, горные лыжи и ведение мероприятий.</p>
+          <MotionHeading
+            id="hobby-title"
+            label="Не только кодом и проектами"
+            segments={[
+              { text: "Не только кодом" },
+              { text: "и проектами", accent: true, breakBefore: true },
+            ]}
+          />
+          <p {...motionReveal("content", 1)}>
+            Рыбалка, плавание, путешествия, горные лыжи и ведение мероприятий.
+          </p>
         </header>
 
-        <div className={styles.hobbyTabs} aria-label="Выберите хобби">
+        <div className={styles.hobbyTabs} aria-label="Выберите хобби" {...motionReveal("content", 2)}>
           {hobbies.map((hobby) => (
             <button
               type="button"
@@ -133,6 +140,7 @@ export function HobbySection() {
             role="group"
             aria-label="Интерактивная карта хобби"
             ref={viewportRef}
+            {...motionReveal("card")}
             onPointerDown={() => setHasInteracted(true)}
             onScroll={() => setHasInteracted(true)}
           >

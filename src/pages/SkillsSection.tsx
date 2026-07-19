@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import canbanImage from "../assets/canban-cutout.png";
 import communicationImage from "../assets/communication-cutout.png";
 import developmentImage from "../assets/development-cutout.png";
+import { MotionHeading } from "./PageMotion";
 import styles from "./Page.module.css";
+import { motionReveal } from "./usePageMotion";
 
 type SkillIconName =
   | "analytics"
@@ -263,27 +265,33 @@ export function SkillsSection() {
     <section id="skills" className={styles.skillsSection} aria-labelledby="skills-title">
       <div className={styles.skillsInner}>
         <header className={styles.skillsIntro}>
-          <p className={styles.skillsEyebrow}>
+          <p className={styles.skillsEyebrow} {...motionReveal("content")}>
             <span>03</span> / НАВЫКИ
           </p>
-          <h2 id="skills-title">
-            Навыки, которые помогают
-            <br className={styles.desktopBreak} /> превращать идеи в <span>продукты</span>
-          </h2>
-          <p className={styles.skillsLead}>
+          <MotionHeading
+            id="skills-title"
+            label="Навыки, которые помогают превращать идеи в продукты"
+            segments={[
+              { text: "Навыки, которые помогают" },
+              { text: "превращать идеи в", breakBefore: true, breakClassName: styles.desktopBreak },
+              { text: "продукты", accent: true },
+            ]}
+          />
+          <p className={styles.skillsLead} {...motionReveal("content", 1)}>
             Совмещаю разработку, управление и коммуникацию,
             <br className={styles.desktopBreak} /> чтобы создавать работающие решения.
           </p>
         </header>
 
         <div className={styles.skillsGrid}>
-          {skillGroups.map((group) => (
+          {skillGroups.map((group, index) => (
             <article
               className={`${styles.skillCard} ${toneClasses[group.tone]} ${
                 activeGroupId === group.id ? styles.skillCardExpanded : ""
               }`}
               key={group.id}
               aria-labelledby={`${group.id}-title`}
+              {...motionReveal("card", index)}
             >
               <div className={styles.skillCardImageWrap}>
                 <img className={styles.skillCardImage} src={group.image} alt={group.imageAlt} />

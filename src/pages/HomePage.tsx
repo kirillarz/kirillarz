@@ -8,7 +8,9 @@ import { HobbySection } from "./HobbySection";
 import { MobileNavigation } from "./MobileNavigation";
 import styles from "./Page.module.css";
 import { ProjectsSection } from "./ProjectsSection";
+import { SectionTransition } from "./SectionTransition";
 import { SkillsSection } from "./SkillsSection";
+import { usePageMotion } from "./usePageMotion";
 
 const heroRoles = [
   "Product Manager",
@@ -67,6 +69,8 @@ export function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const transitionPhaseRef = useRef<HeroTransitionPhase>("idle");
   const isVideoUnavailableRef = useRef(false);
+
+  usePageMotion();
 
   const changeTransitionPhase = useCallback((phase: HeroTransitionPhase) => {
     transitionPhaseRef.current = phase;
@@ -243,9 +247,13 @@ export function HomePage() {
       </section>
 
       <AboutSection />
+      <SectionTransition id="about-skills" variant="brick-wipe" palette="dark" />
       <SkillsSection />
+      <SectionTransition id="skills-projects" variant="brick-wipe" palette="light" direction="reverse" />
       <ProjectsSection />
+      <SectionTransition id="projects-hobby" variant="scatter" palette="hobby" />
       <HobbySection />
+      <SectionTransition id="hobby-contacts" variant="brick-wipe" palette="night" compact />
       <ContactsSection />
       <div
         className={`${styles.heroFlashOverlay} ${

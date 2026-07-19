@@ -21,6 +21,19 @@ async function scrollToSection(section: Locator) {
     .toBeLessThanOrEqual(2);
 }
 
+async function placeTransitionAt(page: Page, transition: Locator, viewportRatio: number) {
+  await transition.evaluate((element, ratio) => {
+    const root = document.documentElement;
+    root.style.scrollBehavior = "auto";
+    const absoluteTop = element.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: absoluteTop - window.innerHeight * ratio, behavior: "auto" });
+  }, viewportRatio);
+
+  await expect
+    .poll(() => transition.evaluate((element) => Number((element as HTMLElement).dataset.progress)))
+    .toBeGreaterThan(0);
+}
+
 async function expectImagesReady(scope: Locator) {
   await expect
     .poll(() =>
@@ -278,6 +291,99 @@ test("hero role marquee loops continuously and respects reduced motion", async (
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
+});
+
+test("section motion follows scrolling, reveals once, and respects reduced motion", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  const transitionCases = [
+    { id: "about-skills", variant: "brick-wipe" },
+    { id: "skills-projects", variant: "brick-wipe" },
+    { id: "projects-hobby", variant: "scatter" },
+    { id: "hobby-contacts", variant: "brick-wipe" },
+  ] as const;
+
+  await expect(page.locator("[data-section-transition]")).toHaveCount(transitionCases.length);
+  for (const transitionCase of transitionCases) {
+    const transition = page.getByTestId(`section-transition-${transitionCase.id}`);
+    await expect(transition).toHaveAttribute("data-variant", transitionCase.variant);
+    await expect(transition).toHaveAttribute("aria-hidden", "true");
+  }
+
+  const brickTransition = page.getByTestId("section-transition-about-skills");
+  const firstStripe = brickTransition.locator("[data-transition-stripe]").first();
+  await placeTransitionAt(page, brickTransition, 0.82);
+  const earlyProgress = Number(await brickTransition.getAttribute("data-progress"));
+  const earlyTransform = await firstStripe.evaluate((element: HTMLElement) => element.style.transform);
+
+  await placeTransitionAt(page, brickTransition, 0.5);
+  await expect
+    .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
+    .toBeGreaterThan(0.45);
+  const middleProgress = Number(await brickTransition.getAttribute("data-progress"));
+  const middleTransform = await firstStripe.evaluate((element: HTMLElement) => element.style.transform);
+  expect(middleProgress).toBeGreaterThan(earlyProgress);
+  expect(middleTransform).not.toBe(earlyTransform);
+  await captureScreenshot(page, `${artifactsDir}/transition-brick-desktop.png`);
+
+  await placeTransitionAt(page, brickTransition, 0.18);
+  const lateProgress = Number(await brickTransition.getAttribute("data-progress"));
+  expect(lateProgress).toBeGreaterThan(middleProgress);
+
+  await placeTransitionAt(page, brickTransition, 0.82);
+  await expect
+    .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
+    .toBeLessThan(middleProgress);
+
+  const scatterTransition = page.getByTestId("section-transition-projects-hobby");
+  await placeTransitionAt(page, scatterTransition, 0.5);
+  await expect(scatterTransition.locator("[data-transition-piece]").first()).not.toHaveCSS("transform", "none");
+  await captureScreenshot(page, `${artifactsDir}/transition-scatter-desktop.png`);
+
+  for (const sectionId of ["skills", "projects", "hobby", "contacts"]) {
+    await page.goto(`/#${sectionId}`);
+    const section = page.locator(`#${sectionId}`);
+    const heading = section.locator('h2[data-motion-reveal="heading"]');
+    await expect(heading).toHaveAttribute("data-motion-revealed", "true");
+    await expect(page).toHaveURL(new RegExp(`#${sectionId}$`));
+    await expect(heading).toBeInViewport();
+  }
+
+  const hobbyHeading = page.locator('#hobby h2[data-motion-reveal="heading"]');
+  await page.goto("/#hobby");
+  await expect(hobbyHeading).toHaveAttribute("data-motion-revealed", "true");
+  await scrollToSection(page.locator("#top"));
+  await scrollToSection(page.locator("#hobby"));
+  await expect(hobbyHeading).toHaveAttribute("data-motion-revealed", "true");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  for (const transitionCase of transitionCases) {
+    await expect(page.getByTestId(`section-transition-${transitionCase.id}`)).toHaveCSS("display", "none");
+  }
+  const reducedHeadingGroup = page.locator("#about h2 span").first();
+  await expect(reducedHeadingGroup).toHaveCSS("opacity", "1");
+  await expect(reducedHeadingGroup).toHaveCSS("filter", "none");
+  await expect(reducedHeadingGroup).toHaveCSS("transform", "none");
+
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await placeTransitionAt(page, page.getByTestId("section-transition-projects-hobby"), 0.5);
+  await captureScreenshot(page, `${artifactsDir}/transition-scatter-mobile.png`);
+
+  for (const viewport of [
+    { width: 1680, height: 838 },
+    { width: 390, height: 844 },
+    { width: 320, height: 568 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+      .toBe(true);
+  }
 });
 
 test("mobile navigation exposes section anchors and closes predictably", async ({ page }) => {

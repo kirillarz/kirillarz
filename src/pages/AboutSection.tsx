@@ -8,7 +8,9 @@ import negotiatorFigure from "../assets/about-me/negotiator.png";
 import productManagerFigure from "../assets/about-me/product-manager.png";
 import projectManagerFigure from "../assets/about-me/project-manager.png";
 import staffFigure from "../assets/about-me/staff.png";
+import { MotionHeading } from "./PageMotion";
 import styles from "./Page.module.css";
+import { motionReveal } from "./usePageMotion";
 
 type AboutHighlight = {
   id: string;
@@ -213,12 +215,18 @@ export function AboutSection() {
     >
       <div className={styles.aboutInner}>
         <header className={styles.aboutIntro}>
-          <p className={styles.aboutEyebrow}>
+          <p className={styles.aboutEyebrow} {...motionReveal("content")}>
             <span>02</span> / ОБО МНЕ
           </p>
-          <h2 id={`${idPrefix}-title`}>
-            Мне тесно в рамках <span>одной роли</span>
-          </h2>
+          <MotionHeading
+            id={`${idPrefix}-title`}
+            label="Мне тесно в рамках одной роли"
+            segments={[
+              { text: "Мне тесно" },
+              { text: "в рамках" },
+              { text: "одной роли", accent: true },
+            ]}
+          />
         </header>
 
         <div
@@ -226,6 +234,7 @@ export function AboutSection() {
           id={`${idPrefix}-visual`}
           role="group"
           aria-label={`Активный образ: ${activeHighlight.label}`}
+          {...motionReveal("content", 1)}
         >
           <div className={styles.aboutGlow} aria-hidden="true" />
           <div className={styles.aboutVisualContent} key={activeHighlight.id}>
@@ -238,7 +247,7 @@ export function AboutSection() {
           <span className={styles.aboutVisualLabel}>{activeHighlight.label}</span>
         </div>
 
-        <div className={styles.aboutCopy}>
+        <div className={styles.aboutCopy} {...motionReveal("content", 2)}>
           <p className={styles.aboutInteractionHint}>Нажмите на выделенную фразу, чтобы сменить образ.</p>
           <p>
             Мне нравится собирать проекты так, чтобы каждая деталь работала на общий результат. Где-то нужно{" "}
