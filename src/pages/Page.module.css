@@ -821,6 +821,10 @@
   --skills-accent: #1685ff;
   --skills-accent-soft: rgb(22 133 255 / 0.2);
   --skills-glow: rgb(22 133 255 / 0.38);
+  --skills-stud-highlight: #8bc8ff;
+  --skills-stud-face: #176dbd;
+  --skills-stud-shadow: #041b38;
+  --skills-stud-rim-shadow: #05366f;
 
   position: relative;
   display: grid;
@@ -849,10 +853,20 @@
   content: "";
   border: 1px solid var(--skills-accent);
   background:
-    radial-gradient(circle at 50% 28%, rgb(14 38 66) 0 10px, var(--skills-accent) 10.5px 11.5px, transparent 12px),
-    radial-gradient(circle at 50% 72%, rgb(14 38 66) 0 10px, var(--skills-accent) 10.5px 11.5px, transparent 12px),
-    linear-gradient(180deg, rgb(13 30 51 / 0.98), rgb(5 16 31 / 0.98));
-  box-shadow: 0 10px 18px rgb(0 0 0 / 0.32);
+    radial-gradient(circle 2px at 42% calc(28% - 4px), rgb(255 255 255 / 0.82) 0 45%, transparent 78%),
+    radial-gradient(circle 9.5px at 50% calc(28% - 1px), var(--skills-stud-highlight) 0, var(--skills-stud-face) 48%, var(--skills-stud-shadow) 100%, transparent 100%),
+    radial-gradient(circle 11.5px at 50% 28%, var(--skills-accent) 0 70%, var(--skills-stud-rim-shadow) 100%, transparent 100%),
+    radial-gradient(ellipse 12px 5px at 56% calc(28% + 12px), rgb(0 0 0 / 0.58), transparent 76%),
+    radial-gradient(circle 2px at 42% calc(72% - 4px), rgb(255 255 255 / 0.82) 0 45%, transparent 78%),
+    radial-gradient(circle 9.5px at 50% calc(72% - 1px), var(--skills-stud-highlight) 0, var(--skills-stud-face) 48%, var(--skills-stud-shadow) 100%, transparent 100%),
+    radial-gradient(circle 11.5px at 50% 72%, var(--skills-accent) 0 70%, var(--skills-stud-rim-shadow) 100%, transparent 100%),
+    radial-gradient(ellipse 12px 5px at 56% calc(72% + 12px), rgb(0 0 0 / 0.58), transparent 76%),
+    linear-gradient(90deg, rgb(255 255 255 / 0.1), transparent 42%, rgb(0 0 0 / 0.24)),
+    linear-gradient(180deg, rgb(19 43 70 / 0.99), rgb(5 15 29 / 0.99));
+  box-shadow:
+    0 12px 20px rgb(0 0 0 / 0.4),
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    inset 0 -12px 16px rgb(0 0 0 / 0.2);
 }
 
 .skillCard::before {
@@ -873,18 +887,30 @@
   --skills-accent: #1685ff;
   --skills-accent-soft: rgb(22 133 255 / 0.18);
   --skills-glow: rgb(22 133 255 / 0.54);
+  --skills-stud-highlight: #8bc8ff;
+  --skills-stud-face: #176dbd;
+  --skills-stud-shadow: #041b38;
+  --skills-stud-rim-shadow: #05366f;
 }
 
 .skillCardYellow {
   --skills-accent: #f4b800;
   --skills-accent-soft: rgb(244 184 0 / 0.11);
   --skills-glow: rgb(244 184 0 / 0.42);
+  --skills-stud-highlight: #ffe27a;
+  --skills-stud-face: #9b7300;
+  --skills-stud-shadow: #2c2100;
+  --skills-stud-rim-shadow: #715300;
 }
 
 .skillCardRed {
   --skills-accent: #ff3341;
   --skills-accent-soft: rgb(255 51 65 / 0.11);
   --skills-glow: rgb(255 51 65 / 0.38);
+  --skills-stud-highlight: #ff9da4;
+  --skills-stud-face: #b51f2a;
+  --skills-stud-shadow: #3c0710;
+  --skills-stud-rim-shadow: #8a101b;
 }
 
 .skillCardImageWrap {
@@ -1950,22 +1976,7 @@
 
   .skillCard::before,
   .skillCard::after {
-    width: 21px;
-    height: 94px;
-    background:
-      radial-gradient(circle at 50% 28%, rgb(14 38 66) 0 7px, var(--skills-accent) 7.5px 8.5px, transparent 9px),
-      radial-gradient(circle at 50% 72%, rgb(14 38 66) 0 7px, var(--skills-accent) 7.5px 8.5px, transparent 9px),
-      linear-gradient(180deg, rgb(13 30 51 / 0.98), rgb(5 16 31 / 0.98));
-  }
-
-  .skillCard::before {
-    top: 42px;
-    left: -22px;
-  }
-
-  .skillCard::after {
-    right: -22px;
-    bottom: 42px;
+    display: none;
   }
 
   .skillCardImage {
@@ -2997,22 +3008,6 @@
     border-radius: 14px;
   }
 
-  .skillCard::before,
-  .skillCard::after {
-    width: 18px;
-    height: 58px;
-  }
-
-  .skillCard::before {
-    top: 17px;
-    left: -1px;
-  }
-
-  .skillCard::after {
-    right: -1px;
-    bottom: 17px;
-  }
-
   .skillCardImageWrap {
     grid-area: image;
     height: 86px;
@@ -3048,17 +3043,36 @@
     background: transparent;
   }
 
-  .skillAccordionButton span:last-child {
-    display: grid;
+  .skillAccordionIcon {
+    position: relative;
+    display: block;
     flex: 0 0 auto;
     width: 32px;
     height: 32px;
-    place-items: center;
-    color: var(--skills-accent);
-    font-size: 1.5rem;
     border: 1px solid var(--skills-accent);
     border-radius: 9px;
     background: rgb(4 17 33 / 0.7);
+  }
+
+  .skillAccordionIcon::before,
+  .skillAccordionIcon::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 2px;
+    content: "";
+    border-radius: 999px;
+    background: var(--skills-accent);
+    transform: translate(-50%, -50%);
+  }
+
+  .skillAccordionIcon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  .skillAccordionButton[aria-expanded="true"] .skillAccordionIcon::after {
+    display: none;
   }
 
   .skillAccordionButton:focus-visible {

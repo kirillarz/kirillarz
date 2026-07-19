@@ -287,7 +287,7 @@ export function SkillsSection() {
                 onClick={() => setActiveGroupId(group.id)}
               >
                 <span>{group.title}</span>
-                <span aria-hidden="true">{activeGroupId === group.id ? "−" : "+"}</span>
+                <span className={styles.skillAccordionIcon} aria-hidden="true" />
               </button>
 
               <ul
