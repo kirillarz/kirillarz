@@ -19,7 +19,7 @@ export function ContactsSection() {
       <div className={styles.contactsInner}>
         <header className={styles.contactsIntro}>
           <p className={styles.contactsEyebrow}>
-            <span>05</span> / КОНТАКТЫ
+            <span>06</span> / КОНТАКТЫ
           </p>
           <h2 id="contacts-title">Будем на связи</h2>
           <p>Профили, где можно посмотреть код и написать напрямую.</p>

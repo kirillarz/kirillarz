@@ -1,6 +1,7 @@
 import heroMinifigure from "../assets/hero-minifigure.png";
 import { AboutSection } from "./AboutSection";
 import { ContactsSection } from "./ContactsSection";
+import { HobbySection } from "./HobbySection";
 import styles from "./Page.module.css";
 import { ProjectsSection } from "./ProjectsSection";
 import { SkillsSection } from "./SkillsSection";
@@ -56,6 +57,7 @@ export function HomePage() {
       <AboutSection />
       <SkillsSection />
       <ProjectsSection />
+      <HobbySection />
       <ContactsSection />
     </main>
   );
