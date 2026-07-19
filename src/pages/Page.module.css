@@ -2928,12 +2928,18 @@
   }
 
   .heroVisual {
-    min-height: clamp(260px, 36svh, 320px);
+    min-height: clamp(300px, 40svh, 380px);
   }
 
   .heroImageFrame {
     width: min(100vw, 420px);
-    height: clamp(260px, 36svh, 320px);
+    height: clamp(300px, 40svh, 380px);
+  }
+
+  .heroMedia {
+    left: 50%;
+    width: 90%;
+    transform: translateX(-50%);
   }
 
   .homeHero h1 {
