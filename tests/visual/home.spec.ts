@@ -98,6 +98,120 @@ test("home renders on desktop and mobile", async ({ page }) => {
   }
 });
 
+test("hero CTA plays the figure animation and reveals the about section through a white flash", async ({ page }) => {
+  await page.setViewportSize({ width: 1680, height: 838 });
+  await page.goto("/");
+
+  const cta = page.getByRole("link", { name: /Узнать обо мне/ });
+  const image = page.getByAltText("Стилизованная конструкторная минифигурка Кирилла в костюме");
+  const video = page.getByTestId("hero-animation");
+  const overlay = page.getByTestId("hero-flash-overlay");
+  const aboutSection = page.getByRole("region", { name: "Мне тесно в рамках одной роли" });
+
+  await expectVideoMetadataReady(video);
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
+
+  await cta.click();
+  await expect(overlay).toHaveAttribute("data-transition-phase", "playing");
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => !element.paused)).toBe(true);
+  await expect(video).toHaveCSS("opacity", "1");
+  await expect(image).toHaveCSS("opacity", "0");
+  await expect(page.getByRole("heading", { name: "Кирилл Арзамасцев" })).toBeVisible();
+  await expect(cta).toHaveAttribute("aria-disabled", "true");
+
+  await video.evaluate(async (element: HTMLVideoElement) => {
+    element.currentTime = 2.5;
+    await new Promise<void>((resolve) => element.addEventListener("seeked", () => resolve(), { once: true }));
+    element.pause();
+  });
+  await captureScreenshot(page, `${artifactsDir}/hero-animation-midpoint.png`);
+
+  const coveringStylesPromise = overlay.evaluate(
+    (element) =>
+      new Promise<{ backgroundColor: string; duration: string; zIndex: string }>((resolve) => {
+        const captureCoveringStyles = () => {
+          if ((element as HTMLElement).dataset.transitionPhase !== "covering") return false;
+
+          const styles = window.getComputedStyle(element);
+          observer.disconnect();
+          resolve({
+            backgroundColor: styles.backgroundColor,
+            duration: styles.transitionDuration,
+            zIndex: styles.zIndex,
+          });
+          return true;
+        };
+
+        const observer = new MutationObserver(captureCoveringStyles);
+        if (!captureCoveringStyles()) {
+          observer.observe(element, { attributes: true, attributeFilter: ["data-transition-phase"] });
+        }
+      }),
+  );
+
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.currentTime = 4.01;
+  });
+
+  await expect(coveringStylesPromise).resolves.toEqual({
+    backgroundColor: "rgb(255, 255, 255)",
+    duration: "0.22s",
+    zIndex: "1000",
+  });
+  await expect(page).toHaveURL(/#about$/);
+  await expect
+    .poll(() => aboutSection.evaluate((element) => Math.abs(element.getBoundingClientRect().top)))
+    .toBeLessThanOrEqual(2);
+  await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeLessThan(0.1);
+  await captureScreenshot(page, `${artifactsDir}/hero-animation-about-revealed.png`);
+
+  await scrollToSection(page.locator("#top"));
+  await cta.click();
+  await expect(overlay).toHaveAttribute("data-transition-phase", "playing");
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeLessThan(0.5);
+});
+
+test("hero CTA skips video and flash when reduced motion is requested", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const video = page.getByTestId("hero-animation");
+  const overlay = page.getByTestId("hero-flash-overlay");
+  const aboutSection = page.getByRole("region", { name: "Мне тесно в рамках одной роли" });
+
+  await page.getByRole("link", { name: /Узнать обо мне/ }).click();
+  await expect(page).toHaveURL(/#about$/);
+  await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
+  await expect(overlay).toHaveCSS("display", "none");
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect
+    .poll(() => aboutSection.evaluate((element) => Math.abs(element.getBoundingClientRect().top)))
+    .toBeLessThanOrEqual(80);
+});
+
+test("hero CTA falls back to anchor navigation when the animation cannot load", async ({ page }) => {
+  await page.route("**/hero-minifigure-animate.webm", (route) => route.abort());
+  await page.setViewportSize({ width: 1680, height: 838 });
+  await page.goto("/");
+
+  const video = page.getByTestId("hero-animation");
+  const overlay = page.getByTestId("hero-flash-overlay");
+  const aboutSection = page.getByRole("region", { name: "Мне тесно в рамках одной роли" });
+
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.error !== null)).toBe(true);
+  await page.getByRole("link", { name: /Узнать обо мне/ }).click();
+
+  await expect(page).toHaveURL(/#about$/);
+  await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
+  await expect
+    .poll(() => aboutSection.evaluate((element) => Math.abs(element.getBoundingClientRect().top)))
+    .toBeLessThanOrEqual(2);
+});
+
 test("hero role marquee loops continuously and respects reduced motion", async ({ page }) => {
   const roles = [
     "Product Manager",
