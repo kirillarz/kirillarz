@@ -411,7 +411,7 @@
 
 .aboutCopy p {
   margin: 0;
-  color: #66738d;
+  color: #526078;
   font-size: clamp(1rem, 1.25vw, 1.22rem);
   line-height: 1.62;
 }
@@ -423,50 +423,50 @@
 .aboutHighlight {
   position: relative;
   display: inline;
-  padding: 0;
-  color: #357fcf;
+  padding: 0 0.04em;
+  margin: 0 -0.04em;
+  color: #24344f;
   font: inherit;
   font-weight: 750;
   line-height: inherit;
   text-align: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: rgb(82 96 120 / 0.3);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.17em;
   cursor: pointer;
   border: 0;
-  border-radius: 4px;
+  border-radius: 2px;
   background: transparent;
-  box-shadow: inset 0 -0.08em 0 rgb(53 127 207 / 0.22);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
   transition:
     color 160ms ease,
-    box-shadow 160ms ease,
-    text-shadow 160ms ease;
+    text-decoration-color 160ms ease,
+    text-decoration-thickness 160ms ease;
 }
 
 .aboutHighlight[aria-pressed="true"] {
-  color: #076cf0;
-  box-shadow: inset 0 -0.34em 0 rgb(96 165 250 / 0.26);
-  text-shadow: 0 7px 18px rgb(37 99 235 / 0.2);
-}
-
-.aboutHighlight[aria-pressed="true"]::after {
-  position: absolute;
-  right: -0.34em;
-  bottom: 0.02em;
-  width: 0.26em;
-  height: 0.26em;
-  content: "";
-  border-radius: 50%;
-  background: #0875ff;
-  box-shadow: 0 0 0 0.13em rgb(96 165 250 / 0.2);
+  color: #15243e;
+  text-decoration-color: transparent;
+  background: linear-gradient(
+    178deg,
+    transparent 0 48%,
+    rgb(255 216 77 / 0.84) 48% 89%,
+    transparent 89% 100%
+  );
 }
 
 .aboutHighlight:focus-visible {
-  outline: 3px solid #f5b700;
+  outline: 3px solid #0b6ef3;
   outline-offset: 3px;
 }
 
 @media (hover: hover) {
   .aboutHighlight:not([aria-pressed="true"]):hover {
-    color: #0869e8;
-    box-shadow: inset 0 -0.28em 0 rgb(96 165 250 / 0.2);
+    color: #1b2b46;
+    text-decoration-color: #d2a100;
+    text-decoration-thickness: 0.12em;
   }
 }
 
@@ -2961,24 +2961,35 @@
     max-width: calc(100% - 20px);
     padding: 7px 10px;
     overflow: hidden;
-    color: #155fcb;
+    color: #27364f;
     font-size: 0.76rem;
     font-weight: 800;
     text-overflow: ellipsis;
     white-space: nowrap;
-    border: 1px solid rgb(37 99 235 / 0.18);
+    border: 1px solid rgb(196 148 0 / 0.28);
     border-radius: 999px;
-    background: rgb(255 255 255 / 0.88);
+    background: rgb(255 239 159 / 0.94);
     box-shadow: 0 7px 18px rgb(15 23 42 / 0.08);
   }
 
   .aboutInteractionHint {
     display: block;
     margin-bottom: 14px !important;
-    color: #155fcb !important;
+    color: #64748b !important;
     font-size: 0.82rem !important;
     font-weight: 700;
     line-height: 1.45 !important;
+  }
+
+  .aboutInteractionHint::before {
+    display: inline-block;
+    width: 0.82em;
+    height: 1em;
+    margin-right: 0.48em;
+    vertical-align: -0.14em;
+    content: "";
+    background: currentcolor;
+    clip-path: polygon(0 0, 0 100%, 30% 72%, 49% 100%, 64% 91%, 46% 64%, 79% 64%);
   }
 
   .skillsGrid {
