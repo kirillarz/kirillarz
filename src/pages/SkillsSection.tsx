@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import canbanImage from "../assets/canban-cutout.png";
 import communicationImage from "../assets/communication-cutout.png";
 import developmentImage from "../assets/development-cutout.png";
@@ -243,8 +245,10 @@ function SkillIcon({ name }: { name: SkillIconName }) {
 }
 
 export function SkillsSection() {
+  const [activeGroupId, setActiveGroupId] = useState(skillGroups[0].id);
+
   return (
-    <section className={styles.skillsSection} aria-labelledby="skills-title">
+    <section id="skills" className={styles.skillsSection} aria-labelledby="skills-title">
       <div className={styles.skillsInner}>
         <header className={styles.skillsIntro}>
           <p className={styles.skillsEyebrow}>
@@ -263,7 +267,9 @@ export function SkillsSection() {
         <div className={styles.skillsGrid}>
           {skillGroups.map((group) => (
             <article
-              className={`${styles.skillCard} ${toneClasses[group.tone]}`}
+              className={`${styles.skillCard} ${toneClasses[group.tone]} ${
+                activeGroupId === group.id ? styles.skillCardExpanded : ""
+              }`}
               key={group.id}
               aria-labelledby={`${group.id}-title`}
             >
@@ -273,7 +279,21 @@ export function SkillsSection() {
 
               <h3 id={`${group.id}-title`}>{group.title}</h3>
 
-              <ul className={`${styles.skillList} ${group.columns === 2 ? styles.skillListTwoColumns : ""}`}>
+              <button
+                className={styles.skillAccordionButton}
+                type="button"
+                aria-expanded={activeGroupId === group.id}
+                aria-controls={`${group.id}-skills`}
+                onClick={() => setActiveGroupId(group.id)}
+              >
+                <span>{group.title}</span>
+                <span aria-hidden="true">{activeGroupId === group.id ? "−" : "+"}</span>
+              </button>
+
+              <ul
+                className={`${styles.skillList} ${group.columns === 2 ? styles.skillListTwoColumns : ""}`}
+                id={`${group.id}-skills`}
+              >
                 {group.skills.map((skill) => (
                   <li key={skill.label}>
                     <SkillIcon name={skill.icon} />

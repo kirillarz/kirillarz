@@ -15,7 +15,7 @@ const contacts = [
 
 export function ContactsSection() {
   return (
-    <section className={styles.contactsSection} aria-labelledby="contacts-title">
+    <section id="contacts" className={styles.contactsSection} aria-labelledby="contacts-title">
       <div className={styles.contactsInner}>
         <header className={styles.contactsIntro}>
           <p className={styles.contactsEyebrow}>

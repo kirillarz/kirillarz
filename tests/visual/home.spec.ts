@@ -72,6 +72,57 @@ test("home renders on desktop and mobile", async ({ page }) => {
     .toBe(true);
   await expectImagesReady(page.locator("section").first());
   await captureScreenshot(page, `${artifactsDir}/home-mobile.png`);
+
+  const mobileCta = page.getByRole("link", { name: /Узнать обо мне/ });
+  await expect
+    .poll(async () => {
+      const box = await mobileCta.boundingBox();
+      return box !== null && box.y >= 0 && box.y + box.height <= 844;
+    })
+    .toBe(true);
+
+  for (const viewport of [
+    { width: 320, height: 568, name: "compact" },
+    { width: 430, height: 932, name: "large" },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await expect(page.locator("h1")).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+      .toBe(true);
+    await captureScreenshot(page, `${artifactsDir}/home-mobile-${viewport.name}.png`);
+  }
+});
+
+test("mobile navigation exposes section anchors and closes predictably", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const navigation = page.getByRole("navigation", { name: "Навигация по странице" });
+  const toggle = navigation.getByRole("button", { name: /Меню/ });
+  await expect(navigation).toBeVisible();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await captureScreenshot(page, `${artifactsDir}/navigation-mobile-open.png`);
+  const skillsLink = navigation.getByRole("link", { name: /Навыки/ });
+  await expect(skillsLink).toHaveAttribute("href", "#skills");
+  await skillsLink.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(page).toHaveURL(/#skills$/);
+
+  await toggle.click();
+  await page.keyboard.press("Escape");
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+  for (const id of ["top", "about", "skills", "projects", "hobby", "contacts"]) {
+    await expect(page.locator(`#${id}`)).toHaveCount(1);
+  }
+
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await expect(navigation).toBeHidden();
 });
 
 test("about section switches inline highlights and respects interaction pauses", async ({ page }) => {
@@ -171,6 +222,12 @@ test("about section switches inline highlights and respects interaction pauses",
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
   await captureScreenshot(page, `${artifactsDir}/about-mobile.png`);
+
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto("/");
+  await scrollToSection(aboutSection);
+  await expect(aboutSection.getByRole("group", { name: /понять задачу и продукт/ })).toHaveCSS("position", "relative");
+  await captureScreenshot(page, `${artifactsDir}/about-mobile-compact.png`);
 });
 
 test("skills section renders its groups without viewport overflow", async ({ page }) => {
@@ -194,6 +251,17 @@ test("skills section renders its groups without viewport overflow", async ({ pag
   await scrollToSection(skillsSection);
   await expectImagesReady(skillsSection);
   await expect(skillsSection.getByRole("article")).toHaveCount(3);
+  const developmentToggle = skillsSection.getByRole("button", { name: /^Разработка/ });
+  const managementToggle = skillsSection.getByRole("button", { name: /^Продукт и управление/ });
+  await expect(developmentToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(managementToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(skillsSection.locator("#development-skills")).toBeVisible();
+  await expect(skillsSection.locator("#product-management-skills")).toBeHidden();
+  await managementToggle.click();
+  await expect(developmentToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(managementToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(skillsSection.locator("#development-skills")).toBeHidden();
+  await expect(skillsSection.locator("#product-management-skills")).toBeVisible();
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
@@ -279,6 +347,21 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await scrollToSection(projectsSection);
   await expectImagesReady(firstProject);
   await expect(projectsSection.getByRole("article")).toHaveCount(3);
+  const mobileFirstProject = projectsSection.getByRole("article").first();
+  const mobileProjectTitle = mobileFirstProject.getByRole("heading", { name: "AI-агент для подбора помещений" });
+  const mobileCarousel = mobileFirstProject.getByRole("group", { name: /Материалы проекта/ });
+  await expect
+    .poll(async () => {
+      const titleBox = await mobileProjectTitle.boundingBox();
+      const carouselBox = await mobileCarousel.boundingBox();
+      return titleBox !== null && carouselBox !== null && titleBox.y < carouselBox.y;
+    })
+    .toBe(true);
+  for (const arrow of await mobileFirstProject.getByRole("button", { name: /слайд проекта/ }).all()) {
+    const box = await arrow.boundingBox();
+    expect(box?.width).toBeGreaterThanOrEqual(44);
+    expect(box?.height).toBeGreaterThanOrEqual(44);
+  }
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
@@ -324,25 +407,30 @@ test("hobby section reveals descriptions without page overflow", async ({ page }
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
-  const fishing = hobbySection.getByRole("button", { name: "Рыбалка" });
-  await fishing.dispatchEvent("pointerdown", { pointerType: "touch" });
-  await fishing.evaluate((element: HTMLButtonElement) => element.click());
-  await expect(fishing).toHaveAttribute("aria-expanded", "true");
-  await fishing.dispatchEvent("pointerdown", { pointerType: "touch" });
-  await fishing.evaluate((element: HTMLButtonElement) => element.click());
-  await expect(fishing).toHaveAttribute("aria-expanded", "false");
-  await fishing.dispatchEvent("pointerdown", { pointerType: "touch" });
-  await fishing.evaluate((element: HTMLButtonElement) => element.click());
-  await expect(fishing).toHaveAttribute("aria-expanded", "true");
-  const visibleTooltip = hobbySection.locator('[role="tooltip"]:visible');
-  await expect(visibleTooltip).toHaveCount(1);
+  const tabs = hobbySection.getByLabel("Выберите хобби");
+  const fishingTab = tabs.getByRole("button", { name: "Рыбалка" });
+  const travelTab = tabs.getByRole("button", { name: "Путешествия" });
+  await expect(fishingTab).toHaveAttribute("aria-pressed", "false");
+  await fishingTab.click();
+  await expect(fishingTab).toHaveAttribute("aria-pressed", "true");
+  await expect(hobbySection.locator("#hobby-mobile-description")).toContainText("Рыбалка");
+  await expect(hobbySection.locator("#hobby-mobile-description")).toContainText(
+    "Здесь появится короткое описание хобби.",
+  );
+  await travelTab.click();
+  await expect(travelTab).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(() => mapViewport.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  const visiblePanel = hobbySection.locator("#hobby-mobile-description");
+  await expect(visiblePanel).toBeVisible();
   await expect
     .poll(async () => {
-      const box = await visibleTooltip.boundingBox();
+      const box = await visiblePanel.boundingBox();
       return box !== null && box.x >= 0 && box.x + box.width <= 390;
     })
     .toBe(true);
   await captureScreenshot(page, `${artifactsDir}/hobby-mobile.png`);
+  await visiblePanel.scrollIntoViewIfNeeded();
+  await captureScreenshot(page, `${artifactsDir}/hobby-mobile-panel.png`);
 });
 
 test("contacts and employer page contain only confirmed public contact actions", async ({ page }) => {
@@ -362,4 +450,11 @@ test("contacts and employer page contain only confirmed public contact actions",
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
   await captureScreenshot(page, `${artifactsDir}/employer-desktop.png`, true);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/employer");
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+    .toBe(true);
+  await captureScreenshot(page, `${artifactsDir}/employer-mobile.png`, true);
 });

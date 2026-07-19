@@ -402,7 +402,7 @@ function ProjectActions({ actions }: { actions: readonly ProjectAction[] }) {
 
 export function ProjectsSection() {
   return (
-    <section className={styles.projectsSection} aria-labelledby="projects-title">
+    <section id="projects" className={styles.projectsSection} aria-labelledby="projects-title">
       <div className={styles.projectsInner}>
         <header className={styles.projectsIntro}>
           <p className={styles.projectsEyebrow}>
@@ -425,29 +425,33 @@ export function ProjectsSection() {
               <ProjectCarousel project={project} />
 
               <div className={styles.projectContent}>
-                <p className={styles.projectCategory}>
-                  {project.number} / {project.category}
-                </p>
-                <h3 id={`${project.id}-title`}>{project.title}</h3>
-                <p className={styles.projectDescription}>{project.description}</p>
+                <div className={styles.projectHeading}>
+                  <p className={styles.projectCategory}>
+                    {project.number} / {project.category}
+                  </p>
+                  <h3 id={`${project.id}-title`}>{project.title}</h3>
+                  <p className={styles.projectDescription}>{project.description}</p>
+                </div>
 
-                <dl className={styles.projectFacts}>
-                  {project.facts.map((fact) => (
-                    <div key={fact.label}>
-                      <ProjectFactIconView name={fact.icon} />
-                      <dt>{fact.label}:</dt>
-                      <dd>{fact.value}</dd>
-                    </div>
-                  ))}
-                </dl>
+                <div className={styles.projectDetails}>
+                  <dl className={styles.projectFacts}>
+                    {project.facts.map((fact) => (
+                      <div key={fact.label}>
+                        <ProjectFactIconView name={fact.icon} />
+                        <dt>{fact.label}:</dt>
+                        <dd>{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
 
-                <ul className={styles.projectTechnologies} aria-label={`Технологии проекта «${project.title}»`}>
-                  {project.technologies.map((technology) => (
-                    <li key={technology}>{technology}</li>
-                  ))}
-                </ul>
+                  <ul className={styles.projectTechnologies} aria-label={`Технологии проекта «${project.title}»`}>
+                    {project.technologies.map((technology) => (
+                      <li key={technology}>{technology}</li>
+                    ))}
+                  </ul>
 
-                <ProjectActions actions={project.actions} />
+                  <ProjectActions actions={project.actions} />
+                </div>
               </div>
             </article>
           ))}

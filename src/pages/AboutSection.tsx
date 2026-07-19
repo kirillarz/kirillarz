@@ -17,7 +17,7 @@ type AboutHighlight = {
   imageAlt: string;
 };
 
-const AUTO_CYCLE_MS = 3_000;
+const AUTO_CYCLE_MS = 5_000;
 
 const aboutHighlights: readonly AboutHighlight[] = [
   {
@@ -235,9 +235,11 @@ export function AboutSection() {
               alt={activeHighlight.imageAlt}
             />
           </div>
+          <span className={styles.aboutVisualLabel}>{activeHighlight.label}</span>
         </div>
 
         <div className={styles.aboutCopy}>
+          <p className={styles.aboutInteractionHint}>Нажмите на выделенную фразу, чтобы сменить образ.</p>
           <p>
             Мне нравится собирать проекты так, чтобы каждая деталь работала на общий результат. Где-то нужно{" "}
             {renderHighlight(0)}, где-то — {renderHighlight(1)}, где-то — {renderHighlight(2)}, а иногда и самому{" "}

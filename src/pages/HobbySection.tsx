@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from "react";
+import { useRef, useState, type CSSProperties, type MouseEvent } from "react";
 
 import hobbyMap from "../assets/hobby_map.png";
 import styles from "./Page.module.css";
@@ -71,20 +71,35 @@ const placementClasses: Record<HobbyPlacement, string> = {
 
 export function HobbySection() {
   const [activeHobbyId, setActiveHobbyId] = useState<string | null>(null);
-  const lastPointerType = useRef("");
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const activeHobby = hobbies.find((hobby) => hobby.id === activeHobbyId) ?? null;
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>, hobbyId: string) => {
-    if (lastPointerType.current === "touch" || lastPointerType.current === "pen") {
-      setActiveHobbyId((currentId) => (currentId === hobbyId ? null : hobbyId));
-      return;
-    }
+  const selectHobby = (hobbyId: string) => {
+    const hobby = hobbies.find((item) => item.id === hobbyId);
+    const viewport = viewportRef.current;
+    const stage = stageRef.current;
 
     setActiveHobbyId(hobbyId);
+    setHasInteracted(true);
+
+    if (!hobby || !viewport || !stage || viewport.scrollWidth <= viewport.clientWidth) return;
+
+    const requestedLeft = stage.offsetLeft + stage.clientWidth * (hobby.mobileX / 100) - viewport.clientWidth / 2;
+    const left = Math.max(0, Math.min(requestedLeft, viewport.scrollWidth - viewport.clientWidth));
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    viewport.scrollTo({ left, behavior: prefersReducedMotion ? "auto" : "smooth" });
+  };
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>, hobbyId: string) => {
+    selectHobby(hobbyId);
     event.currentTarget.focus();
   };
 
   return (
-    <section className={styles.hobbySection} aria-labelledby="hobby-title">
+    <section id="hobby" className={styles.hobbySection} aria-labelledby="hobby-title">
       <div className={styles.hobbyInner}>
         <header className={styles.hobbyIntro}>
           <p className={styles.hobbyEyebrow}>
@@ -98,88 +113,128 @@ export function HobbySection() {
           <p>Рыбалка, плавание, путешествия, горные лыжи и ведение мероприятий.</p>
         </header>
 
-        <div
-          className={styles.hobbyStageViewport}
-          role="group"
-          aria-label="Интерактивная карта хобби"
-        >
-          <div className={styles.hobbyStage}>
-            <img
-              className={styles.hobbyMap}
-              src={hobbyMap}
-              alt="Конструкторная карта с горами, озером, сценой, аэропортом и бассейном"
-              loading="lazy"
-              decoding="async"
-            />
+        <div className={styles.hobbyTabs} aria-label="Выберите хобби">
+          {hobbies.map((hobby) => (
+            <button
+              type="button"
+              aria-pressed={activeHobbyId === hobby.id}
+              aria-controls="hobby-mobile-description"
+              onClick={() => selectHobby(hobby.id)}
+              key={hobby.id}
+            >
+              {hobby.name}
+            </button>
+          ))}
+        </div>
 
-            {hobbies.map((hobby) => {
-              const isActive = activeHobbyId === hobby.id;
-              const panelId = `hobby-${hobby.id}-description`;
-              const position = {
-                "--hobby-x": `${hobby.x}%`,
-                "--hobby-mobile-x": `${hobby.mobileX}%`,
-                "--hobby-y": `${hobby.y}%`,
-              } as CSSProperties;
+        <div className={styles.hobbyMapShell}>
+          <div
+            className={styles.hobbyStageViewport}
+            role="group"
+            aria-label="Интерактивная карта хобби"
+            ref={viewportRef}
+            onPointerDown={() => setHasInteracted(true)}
+            onScroll={() => setHasInteracted(true)}
+          >
+            <div className={styles.hobbyStage} ref={stageRef}>
+              <img
+                className={styles.hobbyMap}
+                src={hobbyMap}
+                alt="Конструкторная карта с горами, озером, сценой, аэропортом и бассейном"
+                loading="lazy"
+                decoding="async"
+              />
 
-              return (
-                <div
-                  className={`${styles.hobbyHotspot} ${placementClasses[hobby.placement]} ${
-                    isActive ? styles.hobbyHotspotActive : ""
-                  }`}
-                  style={position}
-                  onMouseEnter={() => setActiveHobbyId(hobby.id)}
-                  onMouseLeave={() => setActiveHobbyId(null)}
-                  onFocusCapture={(event) => {
-                    if ((event.target as HTMLElement).matches(":focus-visible")) {
-                      setActiveHobbyId(hobby.id);
-                    }
-                  }}
-                  onBlurCapture={(event) => {
-                    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                      setActiveHobbyId(null);
-                    }
-                  }}
-                  key={hobby.id}
-                >
-                  <button
-                    className={styles.hobbyHotspotButton}
-                    type="button"
-                    aria-expanded={isActive}
-                    aria-controls={panelId}
-                    aria-describedby={isActive ? panelId : undefined}
-                    onPointerDown={(event: PointerEvent<HTMLButtonElement>) => {
-                      lastPointerType.current = event.pointerType;
-                    }}
-                    onClick={(event) => handleClick(event, hobby.id)}
-                    onKeyDown={(event) => {
-                      lastPointerType.current = "keyboard";
+              {hobbies.map((hobby) => (
+                <span
+                  className={styles.hobbySnapPoint}
+                  style={{ "--hobby-mobile-x": `${hobby.mobileX}%` } as CSSProperties}
+                  aria-hidden="true"
+                  key={`${hobby.id}-snap`}
+                />
+              ))}
 
-                      if (event.key === "Escape") {
-                        setActiveHobbyId(null);
-                        event.currentTarget.blur();
+              {hobbies.map((hobby) => {
+                const isActive = activeHobbyId === hobby.id;
+                const panelId = `hobby-${hobby.id}-description`;
+                const position = {
+                  "--hobby-x": `${hobby.x}%`,
+                  "--hobby-mobile-x": `${hobby.mobileX}%`,
+                  "--hobby-y": `${hobby.y}%`,
+                } as CSSProperties;
+
+                return (
+                  <div
+                    className={`${styles.hobbyHotspot} ${placementClasses[hobby.placement]} ${
+                      isActive ? styles.hobbyHotspotActive : ""
+                    }`}
+                    style={position}
+                    onMouseEnter={() => setActiveHobbyId(hobby.id)}
+                    onMouseLeave={() => setActiveHobbyId(null)}
+                    onFocusCapture={(event) => {
+                      if ((event.target as HTMLElement).matches(":focus-visible")) {
+                        setActiveHobbyId(hobby.id);
                       }
                     }}
+                    onBlurCapture={(event) => {
+                      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                        setActiveHobbyId(null);
+                      }
+                    }}
+                    key={hobby.id}
                   >
-                    <span className={styles.hobbyHotspotDot} aria-hidden="true" />
-                    <span className={styles.hobbyHotspotLine} aria-hidden="true" />
-                    <span className={styles.hobbyHotspotLabel}>{hobby.name}</span>
-                  </button>
+                    <button
+                      className={styles.hobbyHotspotButton}
+                      type="button"
+                      aria-expanded={isActive}
+                      aria-controls={panelId}
+                      aria-describedby={isActive ? panelId : undefined}
+                      onClick={(event) => handleClick(event, hobby.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Escape") {
+                          setActiveHobbyId(null);
+                          event.currentTarget.blur();
+                        }
+                      }}
+                    >
+                      <span className={styles.hobbyHotspotDot} aria-hidden="true" />
+                      <span className={styles.hobbyHotspotLine} aria-hidden="true" />
+                      <span className={styles.hobbyHotspotLabel}>{hobby.name}</span>
+                    </button>
 
-                  <span
-                    className={styles.hobbyHotspotPanel}
-                    id={panelId}
-                    role="tooltip"
-                    aria-hidden={!isActive}
-                  >
-                    {hobby.description}
-                  </span>
-                </div>
-              );
-            })}
+                    <span
+                      className={styles.hobbyHotspotPanel}
+                      id={panelId}
+                      role="tooltip"
+                      aria-hidden={!isActive}
+                    >
+                      {hobby.description}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        <p className={styles.hobbyScrollHint}>Проведите по карте, чтобы увидеть все хобби</p>
+        <div
+          className={styles.hobbyMobilePanel}
+          id="hobby-mobile-description"
+          aria-live="polite"
+        >
+          {activeHobby ? (
+            <>
+              <strong>{activeHobby.name}</strong>
+              <p>{activeHobby.description}</p>
+            </>
+          ) : (
+            <p>Выберите хобби на карте или во вкладках.</p>
+          )}
+        </div>
+
+        {!hasInteracted ? (
+          <p className={styles.hobbyScrollHint}>Проведите по карте, чтобы увидеть все хобби</p>
+        ) : null}
       </div>
     </section>
   );
