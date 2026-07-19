@@ -49,7 +49,7 @@ test("home renders on desktop and mobile", async ({ page }) => {
   await expect(page.locator("h1")).toBeVisible();
   await expect(page.getByRole("link", { name: /Узнать обо мне/ })).toBeVisible();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://kirillarz.ru/");
-  await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute("href", "/favicon.svg");
+  await expect(page.locator('link[rel="icon"][type="image/png"]')).toHaveAttribute("href", "/favicon.png");
   await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://kirillarz.ru/");
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
