@@ -20,7 +20,7 @@ type AboutHighlight = {
   imageAlt: string;
 };
 
-const AUTO_CYCLE_MS = 5_000;
+const AUTO_CYCLE_MS = 3_500;
 
 const aboutHighlights: readonly AboutHighlight[] = [
   {

@@ -578,20 +578,22 @@ test("about section switches inline highlights and respects interaction pauses",
   await requirements.focus();
   await expect(requirements).toBeFocused();
   await expect(requirements).toHaveAttribute("aria-pressed", "true");
-  await page.clock.fastForward(5_200);
+  await page.clock.fastForward(3_700);
   await expect(requirements).toHaveAttribute("aria-pressed", "true");
 
   await requirements.evaluate((element: HTMLElement) => element.blur());
   await page.mouse.move(0, 0);
   await expect(development).toHaveAttribute("aria-pressed", "false");
-  await page.clock.fastForward(5_200);
+  await page.clock.fastForward(3_400);
+  await expect(development).toHaveAttribute("aria-pressed", "false");
+  await page.clock.fastForward(200);
   await expect(development).toHaveAttribute("aria-pressed", "true");
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await workPlan.click();
   await expect(workPlan).toHaveAttribute("aria-pressed", "true");
   await page.mouse.move(0, 0);
-  await page.clock.fastForward(5_200);
+  await page.clock.fastForward(3_700);
   await expect(workPlan).toHaveAttribute("aria-pressed", "true");
 
   const imageCases = [
