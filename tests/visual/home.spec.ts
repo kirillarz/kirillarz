@@ -3,6 +3,17 @@ import { mkdir } from "node:fs/promises";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const artifactsDir = "artifacts/visual-smoke";
+const transitionStartViewportRatio = 1;
+const transitionEndViewportRatio = -0.134;
+const transitionMidpointViewportRatio =
+  (transitionStartViewportRatio + transitionEndViewportRatio) / 2;
+
+function expectedTransitionProgress(viewportRatio: number) {
+  return (
+    (transitionStartViewportRatio - viewportRatio) /
+    (transitionStartViewportRatio - transitionEndViewportRatio)
+  );
+}
 
 test.beforeAll(async () => {
   await mkdir(artifactsDir, { recursive: true });
@@ -322,13 +333,18 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
   const brickTransition = page.getByTestId("section-transition-about-skills");
   const firstStripe = brickTransition.locator("[data-transition-stripe]").first();
   await placeTransitionAt(page, brickTransition, 0.82);
+  await expect
+    .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
+    .toBeCloseTo(expectedTransitionProgress(0.82), 2);
   const earlyProgress = Number(await brickTransition.getAttribute("data-progress"));
   const earlyTransform = await firstStripe.evaluate((element: HTMLElement) => element.style.transform);
 
   await placeTransitionAt(page, brickTransition, 0.5);
+  const progressImmediatelyAfterJump = Number(await brickTransition.getAttribute("data-progress"));
+  expect(progressImmediatelyAfterJump).toBeLessThan(expectedTransitionProgress(0.5) - 0.05);
   await expect
     .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
-    .toBeGreaterThan(0.45);
+    .toBeCloseTo(expectedTransitionProgress(0.5), 2);
   const middleProgress = Number(await brickTransition.getAttribute("data-progress"));
   const middleTransform = await firstStripe.evaluate((element: HTMLElement) => element.style.transform);
   expect(middleProgress).toBeGreaterThan(earlyProgress);
@@ -338,17 +354,21 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
   await placeTransitionAt(page, brickTransition, 0.18);
   await expect
     .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
-    .toBeGreaterThan(middleProgress);
+    .toBeCloseTo(expectedTransitionProgress(0.18), 2);
 
   await placeTransitionAt(page, brickTransition, 0.82);
   await expect
     .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
-    .toBeLessThan(middleProgress);
+    .toBeCloseTo(expectedTransitionProgress(0.82), 2);
 
   const scatterTransition = page.getByTestId("section-transition-projects-hobby");
-  await placeTransitionAt(page, scatterTransition, 0.5);
+  await placeTransitionAt(page, scatterTransition, transitionMidpointViewportRatio);
+  await expect
+    .poll(async () => Number(await scatterTransition.getAttribute("data-progress")))
+    .toBeCloseTo(0.5, 2);
   await expectImagesReady(scatterTransition);
   await expect(scatterTransition.locator("img[data-transition-piece]")).toHaveCount(13);
+  await expect(scatterTransition.locator("img[data-transition-piece]:visible")).toHaveCount(13);
   await expect(scatterTransition.locator("[data-transition-piece]").first()).not.toHaveCSS("transform", "none");
   await captureScreenshot(page, `${artifactsDir}/transition-scatter-desktop.png`);
 
@@ -381,7 +401,40 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
 
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  await placeTransitionAt(page, page.getByTestId("section-transition-projects-hobby"), 0.5);
+  const mobileScatterTransition = page.getByTestId("section-transition-projects-hobby");
+  await expectImagesReady(mobileScatterTransition);
+  await placeTransitionAt(page, mobileScatterTransition, transitionMidpointViewportRatio);
+  await placeTransitionAt(page, mobileScatterTransition, transitionMidpointViewportRatio);
+  await expect
+    .poll(async () => Number(await mobileScatterTransition.getAttribute("data-progress")))
+    .toBeCloseTo(0.5, 2);
+  const visibleMobilePieces = mobileScatterTransition.locator("img[data-transition-piece]:visible");
+  await expect(visibleMobilePieces).toHaveCount(6);
+  const mobilePieceLayout = await visibleMobilePieces.evaluateAll((pieces) =>
+    pieces.map((piece) => {
+      const bounds = piece.getBoundingClientRect();
+      return {
+        left: bounds.left,
+        right: bounds.right,
+        center: bounds.left + bounds.width / 2,
+        tone: (piece as HTMLElement).dataset.tone,
+      };
+    }),
+  );
+  expect(Math.min(...mobilePieceLayout.map(({ left }) => left))).toBeGreaterThanOrEqual(12);
+  expect(Math.max(...mobilePieceLayout.map(({ right }) => right))).toBeLessThanOrEqual(378);
+  const mobilePieceCenters = mobilePieceLayout.map(({ center }) => center).sort((a, b) => a - b);
+  expect(
+    Math.min(...mobilePieceCenters.slice(1).map((center, index) => center - mobilePieceCenters[index])),
+  ).toBeGreaterThan(45);
+  expect(mobilePieceLayout.map(({ tone }) => tone).sort()).toEqual([
+    "blue",
+    "blue",
+    "red",
+    "red",
+    "yellow",
+    "yellow",
+  ]);
   await captureScreenshot(page, `${artifactsDir}/transition-scatter-mobile.png`);
 
   for (const viewport of [
@@ -395,6 +448,34 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
       .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
       .toBe(true);
   }
+});
+
+test("fast mobile scroll jumps keep distant transitions idle", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const distantTransition = page.getByTestId("section-transition-projects-hobby");
+  await expect(distantTransition).toHaveAttribute("data-transition-active", "false");
+  await distantTransition.evaluate((element) => {
+    const trackedWindow = window as Window & { __transitionGeometryReads?: number };
+    const originalGetBoundingClientRect = element.getBoundingClientRect.bind(element);
+    trackedWindow.__transitionGeometryReads = 0;
+    element.getBoundingClientRect = () => {
+      trackedWindow.__transitionGeometryReads = (trackedWindow.__transitionGeometryReads ?? 0) + 1;
+      return originalGetBoundingClientRect();
+    };
+  });
+
+  await page.evaluate(() => window.scrollTo({ top: 1_200, behavior: "auto" }));
+
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(500);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as Window & { __transitionGeometryReads?: number }).__transitionGeometryReads ?? 0,
+      ),
+    )
+    .toBe(0);
 });
 
 test("mobile navigation exposes section anchors and closes predictably", async ({ page }) => {
@@ -568,14 +649,24 @@ test("skills section renders its groups without viewport overflow", async ({ pag
   const animatedPanelStyles = await developmentPanel.evaluate((element) => {
     const style = window.getComputedStyle(element);
     return {
-      transitionDuration: style.transitionDuration,
+      animationDuration: style.animationDuration,
+      animationName: style.animationName,
       transitionProperty: style.transitionProperty,
+      tapHighlight: window
+        .getComputedStyle(element.previousElementSibling as Element)
+        .getPropertyValue("-webkit-tap-highlight-color"),
     };
   });
-  expect(animatedPanelStyles.transitionProperty).toContain("grid-template-rows");
-  expect(animatedPanelStyles.transitionDuration).not.toBe("0s");
+  expect(animatedPanelStyles.transitionProperty).not.toContain("grid-template-rows");
+  expect(animatedPanelStyles.animationName).toContain("skillPanelReveal");
+  expect(animatedPanelStyles.animationDuration).toBe("0.3s");
+  expect(animatedPanelStyles.tapHighlight).toBe("rgba(0, 0, 0, 0)");
 
   await managementToggle.click();
+  const movingCardCount = await skillsSection
+    .getByRole("article")
+    .evaluateAll((articles) => articles.filter((article) => article.getAnimations().length > 0).length);
+  expect(movingCardCount).toBeGreaterThan(0);
   await expect(developmentToggle).toHaveAttribute("aria-expanded", "false");
   await expect(managementToggle).toHaveAttribute("aria-expanded", "true");
   await expect(developmentPanel).toHaveAttribute("aria-hidden", "true");
@@ -587,11 +678,20 @@ test("skills section renders its groups without viewport overflow", async ({ pag
     .toBe(true);
   await captureScreenshot(page, `${artifactsDir}/skills-mobile.png`);
 
+  const communicationToggle = skillsSection.getByRole("button", { name: /^Коммуникация/ });
+  await communicationToggle.click();
+  await developmentToggle.click();
+  await expect(developmentToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(managementToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(communicationToggle).toHaveAttribute("aria-expanded", "false");
+  await developmentToggle.click();
+  await expect(developmentToggle).toHaveAttribute("aria-expanded", "true");
+
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload();
   await scrollToSection(skillsSection);
   await expect(developmentPanel).toBeVisible();
-  await expect(developmentPanel).toHaveCSS("transition-duration", "0s");
+  await expect(developmentPanel).toHaveCSS("animation-duration", "0s");
   await expect(developmentPanel.locator("ul")).toHaveCSS("transition-duration", "0s");
   const reducedMotionIconDuration = await developmentToggle
     .locator("span")

@@ -205,6 +205,8 @@
 .scatterPiece {
   position: absolute;
   z-index: 1;
+  top: var(--scatter-top);
+  left: var(--scatter-left);
   display: block;
   height: auto;
   user-select: none;
@@ -1031,6 +1033,18 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes skillPanelReveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -3336,6 +3350,7 @@
     border: 0;
     border-radius: 10px;
     background: transparent;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .skillAccordionIcon {
@@ -3380,15 +3395,8 @@
   }
 
   .skillCard .skillListPanel {
-    display: grid;
+    display: none;
     grid-area: list;
-    grid-template-rows: 0fr;
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      grid-template-rows 300ms cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 220ms ease,
-      visibility 0s linear 300ms;
   }
 
   .skillCard .skillList {
@@ -3398,19 +3406,11 @@
     padding-top: 12px;
     overflow: hidden;
     border-top: 1px solid rgb(148 163 184 / 0.18);
-    transform: translateY(-8px);
-    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .skillCardExpanded .skillListPanel {
-    grid-template-rows: 1fr;
-    opacity: 1;
-    visibility: visible;
-    transition-delay: 0s;
-  }
-
-  .skillCardExpanded .skillList {
-    transform: translateY(0);
+    display: block;
+    animation: skillPanelReveal 300ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .skillList li {
@@ -3668,6 +3668,18 @@
   }
 }
 
+@media (max-width: 640px) {
+  [data-transition-piece] {
+    display: none;
+  }
+
+  [data-transition-piece][data-mobile-visible="true"] {
+    left: var(--scatter-mobile-left);
+    top: var(--scatter-mobile-top);
+    display: block;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sectionTransition {
     display: none;
@@ -3719,5 +3731,9 @@
   .skillCard .skillList,
   .skillAccordionIcon::after {
     transition: none;
+  }
+
+  .skillCard .skillListPanel {
+    animation: none;
   }
 }

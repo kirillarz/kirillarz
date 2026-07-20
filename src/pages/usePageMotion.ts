@@ -10,8 +10,37 @@ type MotionRevealAttributes = HTMLAttributes<HTMLElement> & {
   "data-motion-reveal": MotionRevealKind;
 };
 
-const TRANSITION_START_VIEWPORT_RATIO = 0.92;
-const TRANSITION_END_VIEWPORT_RATIO = 0.08;
+type ScatterPieceRecord = {
+  element: HTMLElement;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  rotation: number;
+  mobile: {
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+  } | null;
+};
+
+type TransitionRecord = {
+  element: HTMLElement;
+  variant: "brick-wipe" | "scatter";
+  reverseDirection: number;
+  stripes: readonly HTMLElement[];
+  pieces: readonly ScatterPieceRecord[];
+  rail: HTMLElement | null;
+  currentProgress: number;
+  targetProgress: number;
+  lastMobileLayout: boolean | null;
+};
+
+const TRANSITION_START_VIEWPORT_RATIO = 1;
+const TRANSITION_END_VIEWPORT_RATIO = -0.134;
+const TRANSITION_FOLLOW_LAG_MS = 140;
+const TRANSITION_PROGRESS_EPSILON = 0.001;
 
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
@@ -21,55 +50,83 @@ function easeInOutCubic(value: number) {
   return value < 0.5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2;
 }
 
-function updateBrickTransition(element: HTMLElement, progress: number) {
-  const reverseDirection = element.dataset.direction === "reverse" ? -1 : 1;
-  const stripes = element.querySelectorAll<HTMLElement>("[data-transition-stripe]");
+function createTransitionRecord(element: HTMLElement): TransitionRecord {
+  const initialProgress = clamp(Number(element.dataset.progress ?? 0));
+  return {
+    element,
+    variant: element.dataset.variant === "scatter" ? "scatter" : "brick-wipe",
+    reverseDirection: element.dataset.direction === "reverse" ? -1 : 1,
+    stripes: Array.from(element.querySelectorAll<HTMLElement>("[data-transition-stripe]")),
+    pieces: Array.from(element.querySelectorAll<HTMLElement>("[data-transition-piece]")).map((piece) => {
+      const hasMobileMotion = piece.dataset.mobileVisible === "true";
+      return {
+        element: piece,
+        startX: Number(piece.dataset.startX ?? 0),
+        startY: Number(piece.dataset.startY ?? 0),
+        endX: Number(piece.dataset.endX ?? 0),
+        endY: Number(piece.dataset.endY ?? 0),
+        rotation: Number(piece.dataset.rotation ?? 0),
+        mobile: hasMobileMotion
+          ? {
+              startX: Number(piece.dataset.mobileStartX ?? 0),
+              startY: Number(piece.dataset.mobileStartY ?? 0),
+              endX: Number(piece.dataset.mobileEndX ?? 0),
+              endY: Number(piece.dataset.mobileEndY ?? 0),
+            }
+          : null,
+      };
+    }),
+    rail: element.querySelector<HTMLElement>("[data-transition-rail]"),
+    currentProgress: initialProgress,
+    targetProgress: initialProgress,
+    lastMobileLayout: null,
+  };
+}
 
-  stripes.forEach((stripe, index) => {
+function updateBrickTransition(record: TransitionRecord, progress: number) {
+  record.stripes.forEach((stripe, index) => {
     const delay = index * 0.018;
     const localProgress = easeInOutCubic(clamp((progress - delay) / (1 - delay * 2)));
-    const rowDirection = (index % 2 === 0 ? -1 : 1) * reverseDirection;
+    const rowDirection = (index % 2 === 0 ? -1 : 1) * record.reverseDirection;
     const translate = rowDirection * (1 - localProgress * 2) * 108;
     stripe.style.transform = `translate3d(${translate}%, 0, 0)`;
   });
 }
 
-function updateScatterTransition(element: HTMLElement, progress: number) {
-  const pieces = element.querySelectorAll<HTMLElement>("[data-transition-piece]");
-  const rail = element.querySelector<HTMLElement>("[data-transition-rail]");
+function updateScatterTransition(record: TransitionRecord, progress: number, useMobileLayout: boolean) {
   const assembling = progress <= 0.5;
   const phaseProgress = easeInOutCubic(assembling ? progress * 2 : (progress - 0.5) * 2);
 
-  if (rail) {
+  if (record.rail) {
     const railProgress = 1 - Math.abs(progress - 0.5) * 2;
-    rail.style.opacity = String(railProgress);
-    rail.style.transform = `translate(-50%, -50%) scaleX(${0.35 + railProgress * 0.65})`;
+    record.rail.style.opacity = String(railProgress);
+    record.rail.style.transform = `translate(-50%, -50%) scaleX(${0.35 + railProgress * 0.65})`;
   }
 
-  pieces.forEach((piece) => {
-    const startX = Number(piece.dataset.startX ?? 0);
-    const startY = Number(piece.dataset.startY ?? 0);
-    const endX = Number(piece.dataset.endX ?? 0);
-    const endY = Number(piece.dataset.endY ?? 0);
-    const rotation = Number(piece.dataset.rotation ?? 0);
+  record.pieces.forEach((piece) => {
+    const { element, rotation } = piece;
+    const motion = useMobileLayout && piece.mobile ? piece.mobile : piece;
+    const { startX, startY, endX, endY } = motion;
     const offsetX = assembling ? startX * (1 - phaseProgress) : endX * phaseProgress;
     const offsetY = assembling ? startY * (1 - phaseProgress) : endY * phaseProgress;
     const rotate = assembling ? rotation * (1 - phaseProgress) : -rotation * phaseProgress;
     const scale = assembling ? 0.72 + phaseProgress * 0.28 : 1 - phaseProgress * 0.18;
 
-    piece.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotate(${rotate}deg) scale(${scale})`;
+    element.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotate(${rotate}deg) scale(${scale})`;
   });
 }
 
-function updateTransition(element: HTMLElement, progress: number) {
+function updateTransition(record: TransitionRecord, progress: number, useMobileLayout = false) {
   const nextProgress = clamp(progress);
-  element.style.setProperty("--transition-progress", nextProgress.toFixed(4));
-  element.dataset.progress = nextProgress.toFixed(3);
+  record.currentProgress = nextProgress;
+  record.lastMobileLayout = useMobileLayout;
+  record.element.style.setProperty("--transition-progress", nextProgress.toFixed(4));
+  record.element.dataset.progress = nextProgress.toFixed(3);
 
-  if (element.dataset.variant === "scatter") {
-    updateScatterTransition(element, nextProgress);
+  if (record.variant === "scatter") {
+    updateScatterTransition(record, nextProgress, useMobileLayout);
   } else {
-    updateBrickTransition(element, nextProgress);
+    updateBrickTransition(record, nextProgress);
   }
 }
 
@@ -84,14 +141,22 @@ export function usePageMotion() {
   useEffect(() => {
     const root = document.documentElement;
     const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobileTransitionQuery = window.matchMedia("(max-width: 640px)");
     const revealElements = Array.from(document.querySelectorAll<HTMLElement>("[data-motion-reveal]"));
-    const transitionElements = Array.from(
+    const transitionRecords = Array.from(
       document.querySelectorAll<HTMLElement>("[data-section-transition]"),
+      createTransitionRecord,
     );
+    const transitionRecordByElement = new Map(
+      transitionRecords.map((record) => [record.element, record] as const),
+    );
+    const activeTransitionRecords = new Set<TransitionRecord>();
     const continuousMotionElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-continuous-motion]"),
     );
     let animationFrameId = 0;
+    let transitionMeasurementRequested = false;
+    let lastFrameTimestamp = 0;
     let observer: IntersectionObserver | null = null;
     let activityObserver: IntersectionObserver | null = null;
 
@@ -101,32 +166,68 @@ export function usePageMotion() {
       });
     };
 
-    const updateTransitions = () => {
+    const updateTransitions = (timestamp: number) => {
       animationFrameId = 0;
-      if (reducedMotionQuery.matches) return;
+      if (reducedMotionQuery.matches) {
+        lastFrameTimestamp = 0;
+        return;
+      }
 
-      const viewportHeight = window.innerHeight;
-      const start = viewportHeight * TRANSITION_START_VIEWPORT_RATIO;
-      const end = viewportHeight * TRANSITION_END_VIEWPORT_RATIO;
+      if (transitionMeasurementRequested) {
+        transitionMeasurementRequested = false;
+        const viewportHeight = window.innerHeight;
+        const start = viewportHeight * TRANSITION_START_VIEWPORT_RATIO;
+        const end = viewportHeight * TRANSITION_END_VIEWPORT_RATIO;
+        const measurements = Array.from(activeTransitionRecords, (record) => ({
+          record,
+          bounds: record.element.getBoundingClientRect(),
+        }));
 
-      transitionElements.forEach((element) => {
-        const bounds = element.getBoundingClientRect();
+        measurements.forEach(({ record, bounds }) => {
+          if (bounds.top > viewportHeight) {
+            record.targetProgress = 0;
+          } else if (bounds.bottom < 0) {
+            record.targetProgress = 1;
+          } else {
+            record.targetProgress = clamp((start - bounds.top) / (start - end));
+          }
+        });
+      }
 
-        if (bounds.top > viewportHeight) {
-          if (element.dataset.progress !== "0.000") updateTransition(element, 0);
-          return;
+      const elapsedMs = lastFrameTimestamp === 0 ? 1000 / 60 : Math.min(timestamp - lastFrameTimestamp, 64);
+      const followAmount = 1 - Math.exp(-elapsedMs / TRANSITION_FOLLOW_LAG_MS);
+      const useMobileLayout = mobileTransitionQuery.matches;
+      let shouldContinue = false;
+      lastFrameTimestamp = timestamp;
+
+      activeTransitionRecords.forEach((record) => {
+        const difference = record.targetProgress - record.currentProgress;
+        let nextProgress = record.currentProgress;
+
+        if (Math.abs(difference) <= TRANSITION_PROGRESS_EPSILON) {
+          nextProgress = record.targetProgress;
+        } else {
+          nextProgress += difference * followAmount;
+          shouldContinue = true;
         }
 
-        if (bounds.bottom < 0) {
-          if (element.dataset.progress !== "1.000") updateTransition(element, 1);
-          return;
+        if (
+          nextProgress !== record.currentProgress ||
+          record.lastMobileLayout !== useMobileLayout
+        ) {
+          updateTransition(record, nextProgress, useMobileLayout);
         }
-
-        updateTransition(element, (start - bounds.top) / (start - end));
       });
+
+      if (transitionMeasurementRequested || shouldContinue) {
+        animationFrameId = window.requestAnimationFrame(updateTransitions);
+      } else {
+        lastFrameTimestamp = 0;
+      }
     };
 
     const requestTransitionUpdate = () => {
+      transitionMeasurementRequested = true;
       if (animationFrameId !== 0) return;
       animationFrameId = window.requestAnimationFrame(updateTransitions);
     };
@@ -137,7 +238,8 @@ export function usePageMotion() {
 
       if (reducedMotionQuery.matches) {
         delete root.dataset.motion;
-        transitionElements.forEach((element) => delete element.dataset.transitionActive);
+        activeTransitionRecords.clear();
+        transitionRecords.forEach(({ element }) => delete element.dataset.transitionActive);
         continuousMotionElements.forEach((element) => delete element.dataset.motionRunning);
         revealEverything();
         return;
@@ -147,8 +249,9 @@ export function usePageMotion() {
 
       if (typeof IntersectionObserver === "undefined") {
         revealEverything();
-        transitionElements.forEach((element) => {
-          element.dataset.transitionActive = "true";
+        transitionRecords.forEach((record) => {
+          record.element.dataset.transitionActive = "true";
+          activeTransitionRecords.add(record);
         });
         continuousMotionElements.forEach((element) => {
           element.dataset.motionRunning = "true";
@@ -175,6 +278,24 @@ export function usePageMotion() {
               const element = entry.target as HTMLElement;
               if (element.hasAttribute("data-section-transition")) {
                 element.dataset.transitionActive = String(entry.isIntersecting);
+                const record = transitionRecordByElement.get(element);
+                if (!record) return;
+
+                if (entry.isIntersecting) {
+                  activeTransitionRecords.add(record);
+                } else {
+                  activeTransitionRecords.delete(record);
+                  const terminalProgress = entry.boundingClientRect.top < 0 ? 1 : 0;
+                  record.targetProgress = terminalProgress;
+                  if (
+                    element.dataset.progress !== terminalProgress.toFixed(3) ||
+                    record.lastMobileLayout !== mobileTransitionQuery.matches
+                  ) {
+                    updateTransition(record, terminalProgress, mobileTransitionQuery.matches);
+                  }
+                }
+
+                requestTransitionUpdate();
               } else {
                 element.dataset.motionRunning = String(entry.isIntersecting);
               }
@@ -183,7 +304,7 @@ export function usePageMotion() {
           { rootMargin: "25% 0px" },
         );
 
-        transitionElements.forEach((element) => activityObserver?.observe(element));
+        transitionRecords.forEach(({ element }) => activityObserver?.observe(element));
         continuousMotionElements.forEach((element) => activityObserver?.observe(element));
       }
 
@@ -202,7 +323,8 @@ export function usePageMotion() {
       window.removeEventListener("scroll", requestTransitionUpdate);
       window.removeEventListener("resize", requestTransitionUpdate);
       reducedMotionQuery.removeEventListener("change", setupMotion);
-      transitionElements.forEach((element) => delete element.dataset.transitionActive);
+      activeTransitionRecords.clear();
+      transitionRecords.forEach(({ element }) => delete element.dataset.transitionActive);
       continuousMotionElements.forEach((element) => delete element.dataset.motionRunning);
       delete root.dataset.motion;
     };
