@@ -4,7 +4,7 @@ import planningBoardImage from "../assets/planning-board-cutout.webp";
 import communicationImage from "../assets/communication-cutout.webp";
 import developmentImage from "../assets/development-cutout.webp";
 import { MotionHeading } from "./PageMotion";
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 import { motionReveal } from "./usePageMotion";
 
 type SkillIconName =

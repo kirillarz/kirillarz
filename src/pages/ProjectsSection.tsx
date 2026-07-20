@@ -20,7 +20,7 @@ import botNetSchoolSchedule from "../assets/screens/botnetschool/schedule-and-ho
 import pmSimulatorDemo from "../assets/screens/pm-simulator/demo-pm-simulator.mp4";
 import pmSimulatorPoster from "../assets/screens/pm-simulator/poster.webp";
 import { MotionHeading } from "./PageMotion";
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 import { motionReveal } from "./usePageMotion";
 
 type ProjectFactIcon = "briefcase" | "people" | "platform" | "result" | "status" | "user";

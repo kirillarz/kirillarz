@@ -9,7 +9,7 @@ import productManagerFigure from "../assets/about-me/product-manager.webp";
 import projectManagerFigure from "../assets/about-me/project-manager.webp";
 import staffFigure from "../assets/about-me/staff.webp";
 import { MotionHeading } from "./PageMotion";
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 import { motionReveal } from "./usePageMotion";
 
 type AboutHighlight = {

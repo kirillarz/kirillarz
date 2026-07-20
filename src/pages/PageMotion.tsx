@@ -1,6 +1,6 @@
 import { Fragment, type CSSProperties } from "react";
 
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 import { motionReveal } from "./usePageMotion";
 
 type MotionStyle = CSSProperties & {

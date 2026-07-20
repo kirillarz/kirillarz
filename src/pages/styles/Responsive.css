@@ -1,0 +1,1009 @@
+.homeHero,
+.aboutSection,
+.skillsSection,
+.projectsSection,
+.hobbySection,
+.contactsSection {
+  scroll-margin-top: 92px;
+}
+
+.mobileNavigationBar,
+.mobileNavigationMenu,
+.aboutInteractionHint,
+.skillAccordionButton,
+.hobbyTabs,
+.hobbyMobilePanel,
+.hobbySnapPoint {
+  display: none;
+}
+
+.hobbyMapShell {
+  display: contents;
+}
+
+@media (max-width: 980px) {
+  .homePage {
+    --mobile-gutter: 24px;
+
+    width: 100%;
+    padding: 0;
+  }
+
+  .homeHero,
+  .aboutSection,
+  .skillsSection,
+  .projectsSection,
+  .hobbySection,
+  .contactsSection {
+    width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+    scroll-margin-top: calc(76px + env(safe-area-inset-top));
+  }
+
+  .aboutInner,
+  .skillsInner,
+  .projectsInner,
+  .contactsInner {
+    width: min(100%, 768px);
+    padding-right: var(--mobile-gutter);
+    padding-left: var(--mobile-gutter);
+  }
+
+  .pageNavigation {
+    position: fixed;
+    top: calc(10px + env(safe-area-inset-top));
+    left: 50%;
+    z-index: 100;
+    display: block;
+    width: min(calc(100% - 32px), 720px);
+    color: #f8fafc;
+    transform: translateX(-50%);
+  }
+
+  .desktopNavigationBar {
+    display: none;
+  }
+
+  .mobileNavigationBar {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    min-height: 52px;
+    padding: 0 10px 0 16px;
+    border: 1px solid rgb(148 163 184 / 0.3);
+    border-radius: 14px;
+    background: rgb(6 16 29 / 0.9);
+    box-shadow:
+      0 14px 32px rgb(0 0 0 / 0.28),
+      inset 0 1px 0 rgb(255 255 255 / 0.08);
+    backdrop-filter: blur(18px);
+  }
+
+  .mobileNavigationBrand {
+    color: #ffffff;
+    font-size: 0.94rem;
+    font-weight: 850;
+    text-decoration: none;
+  }
+
+  .mobileNavigationCurrent {
+    min-width: 0;
+    overflow: hidden;
+    color: #93c5fd;
+    font-size: 0.78rem;
+    font-weight: 750;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobileNavigationToggle {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 10px;
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: 0;
+    border-radius: 9px;
+    background: #0874f9;
+  }
+
+  .mobileNavigationToggle:focus-visible,
+  .mobileNavigationMenu a:focus-visible,
+  .mobileNavigationBrand:focus-visible {
+    outline: 3px solid #facc15;
+    outline-offset: 3px;
+  }
+
+  .mobileNavigationIcon {
+    position: relative;
+    width: 15px;
+    height: 10px;
+    border-top: 2px solid currentcolor;
+    border-bottom: 2px solid currentcolor;
+  }
+
+  .mobileNavigationIcon::after {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 2px;
+    content: "";
+    background: currentcolor;
+    transform: translateY(-50%);
+  }
+
+  .mobileNavigationMenu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    padding: 10px;
+    border: 1px solid rgb(148 163 184 / 0.3);
+    border-radius: 14px;
+    background: rgb(6 16 29 / 0.96);
+    box-shadow: 0 20px 45px rgb(0 0 0 / 0.34);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity 150ms ease,
+      visibility 150ms ease,
+      transform 150ms ease;
+    backdrop-filter: blur(18px);
+  }
+
+  .mobileNavigationMenu[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .mobileNavigationMenu a {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 0 12px;
+    color: #dce8f7;
+    font-size: 0.9rem;
+    font-weight: 750;
+    text-decoration: none;
+    border: 1px solid rgb(148 163 184 / 0.16);
+    border-radius: 9px;
+    background: rgb(15 29 49 / 0.7);
+  }
+
+  .mobileNavigationMenu a[aria-current="location"] {
+    color: #ffffff;
+    border-color: #1685ff;
+    background: rgb(8 69 145 / 0.66);
+  }
+
+  .homeHero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    width: min(100%, 768px);
+    min-height: 100svh;
+    padding: calc(70px + env(safe-area-inset-top)) var(--mobile-gutter) 36px;
+    overflow: hidden;
+  }
+
+  .heroVisual {
+    min-height: clamp(340px, 48svh, 500px);
+  }
+
+  .heroImageFrame {
+    position: relative;
+    width: min(100vw, 520px);
+    height: clamp(340px, 48svh, 500px);
+    mask-image: linear-gradient(180deg, #000 0%, #000 89%, transparent 100%);
+    transform: none;
+  }
+
+  .heroImageFrame::after {
+    position: absolute;
+    z-index: 3;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 20%;
+    pointer-events: none;
+    content: "";
+    background: linear-gradient(180deg, transparent, rgb(5 10 18 / 0.72));
+  }
+
+  .heroMedia {
+    transform: none;
+  }
+
+  .heroContent {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .homeHero h1 {
+    font-size: clamp(3.1rem, 10.5vw, 5.2rem);
+  }
+
+  .roleMarquee {
+    --role-gap: 22px;
+
+    width: calc(100% + var(--mobile-gutter));
+    mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 32px), transparent 100%);
+  }
+
+  .aboutVisual {
+    position: relative;
+    top: auto;
+  }
+
+  .hobbyInner {
+    width: 100%;
+    min-height: auto;
+    padding-bottom: calc(44px + env(safe-area-inset-bottom));
+  }
+
+  .hobbyIntro,
+  .hobbyTabs,
+  .hobbyMobilePanel,
+  .hobbyScrollHint {
+    width: min(100%, 768px);
+    padding-right: var(--mobile-gutter);
+    padding-left: var(--mobile-gutter);
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .hobbyTabs {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+    overflow-x: auto;
+    scroll-padding-inline: var(--mobile-gutter);
+    scrollbar-width: none;
+  }
+
+  .hobbyTabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hobbyTabs button {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 0 15px;
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: 1px solid rgb(100 149 214 / 0.35);
+    border-radius: 9px;
+    background: rgb(8 23 41 / 0.82);
+  }
+
+  .hobbyTabs button[aria-pressed="true"] {
+    color: #ffffff;
+    border-color: #1685ff;
+    background: #0874f9;
+    box-shadow: 0 10px 24px rgb(8 116 249 / 0.28);
+  }
+
+  .hobbyTabs button:focus-visible,
+  .hobbyMobilePanel:focus-visible {
+    outline: 3px solid #facc15;
+    outline-offset: 3px;
+  }
+
+  .hobbyMapShell {
+    position: relative;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .hobbyMapShell::before,
+  .hobbyMapShell::after {
+    position: absolute;
+    top: 0;
+    bottom: 16px;
+    z-index: 9;
+    width: 34px;
+    pointer-events: none;
+    content: "";
+  }
+
+  .hobbyMapShell::before {
+    left: 0;
+    background: linear-gradient(90deg, #050c16, transparent);
+  }
+
+  .hobbyMapShell::after {
+    right: 0;
+    background: linear-gradient(270deg, #050c16, transparent);
+  }
+
+  .hobbyStageViewport {
+    width: 100%;
+    padding: 0 var(--mobile-gutter) 16px;
+    margin-top: 18px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .hobbyStageViewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hobbyStage {
+    width: 880px;
+    max-width: none;
+  }
+
+  .hobbySnapPoint {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--hobby-mobile-x);
+    display: block;
+    width: 1px;
+    pointer-events: none;
+    scroll-snap-align: center;
+  }
+
+  .hobbyHotspot {
+    left: var(--hobby-mobile-x);
+  }
+
+  .hobbyHotspotPanel {
+    display: none;
+  }
+
+  .hobbyMobilePanel {
+    position: relative;
+    z-index: 4;
+    display: block;
+    min-height: 96px;
+    padding-top: 17px;
+    padding-bottom: 17px;
+    color: #dce8f7;
+    border-top: 1px solid rgb(83 126 184 / 0.34);
+    border-bottom: 1px solid rgb(83 126 184 / 0.22);
+    background: rgb(6 17 32 / 0.72);
+  }
+
+  .hobbyMobilePanel strong {
+    display: block;
+    color: #ffffff;
+    font-size: 1rem;
+  }
+
+  .hobbyMobilePanel p {
+    margin: 7px 0 0;
+    color: #aebdd1;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .hobbyScrollHint {
+    display: block;
+    margin-top: 12px;
+    color: #91a3bd;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .contactsInner {
+    padding-bottom: calc(clamp(74px, 9vh, 112px) + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 640px) {
+  .homePage {
+    --mobile-gutter: 20px;
+  }
+
+  .page.homePage {
+    padding: 0;
+  }
+
+  .homeHero {
+    gap: 12px;
+    padding-top: calc(68px + env(safe-area-inset-top));
+    padding-bottom: 28px;
+  }
+
+  .heroVisual {
+    min-height: clamp(300px, 40svh, 380px);
+  }
+
+  .heroImageFrame {
+    width: min(100vw, 420px);
+    height: clamp(300px, 40svh, 380px);
+  }
+
+  .heroMedia {
+    left: 50%;
+    width: 90%;
+    transform: translateX(-50%);
+  }
+
+  .homeHero h1 {
+    font-size: clamp(2.75rem, 12vw, 3.25rem);
+    line-height: 0.98;
+  }
+
+  .heroDescription {
+    margin-top: 14px;
+    font-size: clamp(1.05rem, 4.5vw, 1.125rem);
+    line-height: 1.45;
+  }
+
+  .roleMarquee {
+    --role-gap: 18px;
+
+    margin-top: 16px;
+  }
+
+  .rolePill {
+    min-height: 44px;
+    padding: 0 15px;
+    font-size: 0.94rem;
+    line-height: 44px;
+  }
+
+  .rolePill::after {
+    right: -11px;
+  }
+
+  .homeHero .actions {
+    margin-top: 14px;
+  }
+
+  .homeHero .primaryLink {
+    min-height: 58px;
+    padding: 0 24px;
+    font-size: 1rem;
+  }
+
+  .aboutInner,
+  .skillsInner,
+  .projectsInner,
+  .contactsInner {
+    width: min(100%, 620px);
+    padding-right: var(--mobile-gutter);
+    padding-left: var(--mobile-gutter);
+  }
+
+  .aboutInner,
+  .skillsInner,
+  .projectsInner {
+    padding-top: calc(86px + env(safe-area-inset-top));
+  }
+
+  .aboutIntro h2,
+  .skillsIntro h2,
+  .projectsIntro h2,
+  .hobbyIntro h2,
+  .contactsIntro h2 {
+    font-size: clamp(2rem, 9.5vw, 2.375rem);
+    line-height: 1.06;
+  }
+
+  .aboutVisual {
+    top: auto;
+    height: clamp(190px, 28svh, 240px);
+    min-height: 0;
+    margin-top: 16px;
+    border-radius: 20px;
+  }
+
+  .aboutVisualContent {
+    inset: 4px 4px 18px;
+  }
+
+  .aboutVisualLabel {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    z-index: 3;
+    display: block;
+    width: fit-content;
+    max-width: calc(100% - 20px);
+    padding: 7px 10px;
+    overflow: hidden;
+    color: #27364f;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border: 1px solid rgb(196 148 0 / 0.28);
+    border-radius: 999px;
+    background: rgb(255 239 159 / 0.94);
+    box-shadow: 0 7px 18px rgb(15 23 42 / 0.08);
+    transform: none;
+  }
+
+  .aboutInteractionHint {
+    display: block;
+    margin-bottom: 14px !important;
+    color: #64748b !important;
+    font-size: 0.82rem !important;
+    font-weight: 700;
+    line-height: 1.45 !important;
+  }
+
+  .aboutInteractionHint::before {
+    display: inline-block;
+    width: 0.82em;
+    height: 1em;
+    margin-right: 0.48em;
+    vertical-align: -0.14em;
+    content: "";
+    background: currentcolor;
+    clip-path: polygon(0 0, 0 100%, 30% 72%, 49% 100%, 64% 91%, 46% 64%, 79% 64%);
+  }
+
+  .skillsGrid {
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .skillCard,
+  .skillCard:last-child {
+    display: grid;
+    grid-template-areas:
+      "image toggle"
+      "list list";
+    grid-template-columns: 92px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    width: 100%;
+    min-height: 0;
+    padding: 10px 12px;
+    overflow: hidden;
+    border-radius: 14px;
+  }
+
+  .skillCardImageWrap {
+    grid-area: image;
+    height: 86px;
+  }
+
+  .skillCardImage,
+  .skillCardRed .skillCardImage {
+    width: 92px;
+    height: 86px;
+    object-fit: contain;
+  }
+
+  .skillCard h3 {
+    display: none;
+  }
+
+  .skillAccordionButton {
+    display: flex;
+    grid-area: toggle;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    min-height: 64px;
+    padding: 8px 10px;
+    color: #ffffff;
+    font-size: 1.12rem;
+    font-weight: 850;
+    text-align: left;
+    cursor: pointer;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .skillAccordionIcon {
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--skills-accent);
+    border-radius: 9px;
+    background: rgb(4 17 33 / 0.7);
+  }
+
+  .skillAccordionIcon::before,
+  .skillAccordionIcon::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 2px;
+    content: "";
+    border-radius: 999px;
+    background: var(--skills-accent);
+    transform: translate(-50%, -50%);
+  }
+
+  .skillAccordionIcon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  .skillAccordionButton[aria-expanded="true"] .skillAccordionIcon::after {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(90deg) scale(0.35);
+  }
+
+  .skillAccordionButton:focus-visible {
+    outline: 3px solid #facc15;
+    outline-offset: 2px;
+  }
+
+  .skillCard .skillListPanel {
+    display: none;
+    grid-area: list;
+  }
+
+  .skillCard .skillList {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    margin-top: 8px;
+    padding-top: 12px;
+    overflow: hidden;
+    border-top: 1px solid rgb(148 163 184 / 0.18);
+  }
+
+  .skillCardExpanded .skillListPanel {
+    display: block;
+    animation: skillPanelReveal 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .skillList li {
+    min-height: 44px;
+  }
+
+  .projectsList {
+    gap: 64px;
+  }
+
+  .projectCard,
+  .projectCardReversed {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .projectContent {
+    display: contents;
+  }
+
+  .projectHeading {
+    order: 0;
+  }
+
+  .projectCarousel,
+  .projectCardReversed .projectCarousel {
+    order: 1;
+    margin-top: 24px;
+  }
+
+  .projectDetails {
+    order: 2;
+  }
+
+  .projectContent h3 {
+    font-size: clamp(2rem, 9.5vw, 2.375rem);
+  }
+
+  .projectFacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .projectFacts > div {
+    grid-template-areas:
+      "icon term"
+      "value value";
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 7px 8px;
+    align-content: start;
+    padding: 12px;
+    border: 1px solid #d5deea;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 0.72);
+  }
+
+  .projectFacts svg {
+    grid-area: icon;
+  }
+
+  .projectFacts dt {
+    grid-area: term;
+    align-self: center;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .projectFacts dd {
+    grid-area: value;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .projectCarouselArrow {
+    width: 44px;
+    height: 44px;
+  }
+
+  .projectCarouselDot {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+  }
+
+  .projectCarouselDot::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 9px;
+    height: 9px;
+    content: "";
+    border-radius: 999px;
+    background: #bdc8d8;
+    transform: translate(-50%, -50%);
+  }
+
+  .projectCarouselDot[aria-current="true"] {
+    width: 44px;
+    background: transparent;
+  }
+
+  .projectCarouselDot[aria-current="true"]::before {
+    width: 28px;
+    background: #0874f9;
+  }
+
+  .projectCarouselDots {
+    gap: 0;
+    margin-top: 4px;
+  }
+
+  .hobbyInner {
+    padding-top: calc(86px + env(safe-area-inset-top));
+  }
+
+  .hobbyIntro,
+  .hobbyTabs,
+  .hobbyMobilePanel,
+  .hobbyScrollHint {
+    width: min(100%, 620px);
+  }
+
+  .hobbyIntro h2 {
+    font-size: clamp(2.125rem, 10vw, 2.375rem);
+  }
+
+  .hobbyStage {
+    width: clamp(680px, 210vw, 880px);
+  }
+
+  .hobbyHotspotLabel {
+    font-size: 0.8rem;
+  }
+
+  .contactsInner {
+    padding-top: calc(86px + env(safe-area-inset-top));
+  }
+}
+
+@media (max-width: 640px) and (min-height: 700px) {
+  .aboutVisual {
+    position: sticky;
+    top: calc(76px + env(safe-area-inset-top));
+    z-index: 3;
+  }
+}
+
+@media (max-width: 380px) {
+  .homePage {
+    --mobile-gutter: 16px;
+  }
+
+  .pageNavigation {
+    width: calc(100% - 20px);
+  }
+
+  .mobileNavigationBar {
+    gap: 7px;
+    padding-left: 12px;
+  }
+
+  .mobileNavigationCurrent {
+    font-size: 0.72rem;
+  }
+
+  .mobileNavigationToggle {
+    padding: 0 8px;
+  }
+
+  .homeHero h1 {
+    font-size: 2.75rem;
+  }
+
+  .projectFacts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 980px) {
+  .sectionTransition {
+    height: clamp(86px, 13svh, 118px);
+  }
+
+  .sectionTransitionCompact {
+    height: clamp(64px, 9svh, 82px);
+  }
+
+  .sectionTransitionHobby {
+    height: clamp(116px, 17svh, 154px);
+  }
+
+  .sectionTransitionStripe {
+    height: calc(25% + 1px);
+  }
+
+  .sectionTransitionStripe:nth-child(1) {
+    top: 0;
+  }
+
+  .sectionTransitionStripe:nth-child(2) {
+    top: 25%;
+  }
+
+  .sectionTransitionStripe:nth-child(3) {
+    top: 50%;
+  }
+
+  .sectionTransitionStripe:nth-child(4) {
+    top: 75%;
+  }
+
+  .sectionTransitionStripe:nth-child(n + 5) {
+    display: none;
+  }
+
+  .sectionTransitionStuds {
+    background-size: 210px 210px;
+  }
+
+  [data-transition-piece]:nth-of-type(n + 10) {
+    display: none;
+  }
+
+  .scatterPieceBrick {
+    width: clamp(46px, 13vw, 62px);
+  }
+
+  .scatterPieceStud {
+    width: clamp(29px, 8vw, 38px);
+  }
+
+  html[data-motion="enhanced"] [data-motion-reveal="heading"]:not([data-motion-revealed="true"])
+    .motionHeadingGroup {
+    filter: blur(6px);
+    transform: translate3d(0, 14px, 0);
+  }
+
+  html[data-motion="enhanced"] [data-motion-reveal="heading"][data-motion-revealed="true"]
+    .motionHeadingGroup {
+    transition-delay: calc(var(--motion-index, 0) * 55ms);
+  }
+
+  html[data-motion="enhanced"] [data-motion-reveal="content"]:not([data-motion-revealed="true"]),
+  html[data-motion="enhanced"] [data-motion-reveal="card"]:not([data-motion-revealed="true"]) {
+    transform: translate3d(0, 22px, 0);
+  }
+
+  html[data-motion="enhanced"] [data-motion-reveal="content"][data-motion-revealed="true"],
+  html[data-motion="enhanced"] [data-motion-reveal="card"][data-motion-revealed="true"] {
+    transition-delay: calc(var(--motion-index, 0) * 60ms);
+  }
+}
+
+@media (max-width: 640px) {
+  [data-transition-piece] {
+    display: none;
+  }
+
+  [data-transition-piece][data-mobile-visible="true"] {
+    left: var(--scatter-mobile-left);
+    top: var(--scatter-mobile-top);
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desktopNavigationLinks a {
+    transition: none;
+  }
+
+  .sectionTransition {
+    display: none;
+  }
+
+  [data-motion-reveal],
+  .motionHeadingGroup {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .roleMarquee {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .roleMarquee::-webkit-scrollbar {
+    display: none;
+  }
+
+  .roleTrack {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+
+  .roleGroup[data-role-group="duplicate"] {
+    display: none;
+  }
+
+  .roleGroup[data-role-group="primary"] .rolePill:last-child::after {
+    display: none;
+  }
+
+  .rolePill {
+    scroll-snap-align: start;
+  }
+
+  .mobileNavigationMenu,
+  .hobbyTabs button {
+    transition: none;
+  }
+
+  .skillCard .skillListPanel,
+  .skillCard .skillList,
+  .skillAccordionIcon::after {
+    transition: none;
+  }
+
+  .skillCard .skillListPanel {
+    animation: none;
+  }
+}

@@ -2,7 +2,7 @@ import { useRef, useState, type CSSProperties, type MouseEvent } from "react";
 
 import hobbyMap from "../assets/hobby-map.webp";
 import { MotionHeading } from "./PageMotion";
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 import { motionReveal } from "./usePageMotion";
 
 type HobbyPlacement = "left" | "right" | "center";
