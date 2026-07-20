@@ -568,6 +568,8 @@ test("about section switches inline highlights and respects interaction pauses",
     /^linear-gradient\(rgba/,
   );
   await expect(aboutSection.getByRole("img", { name: /продуктового менеджера/ })).toBeVisible();
+  await expect(aboutSection.getByRole("group", { name: "Активный образ: Продакт менеджер" })).toBeVisible();
+  await expect(aboutSection.getByText("Продакт менеджер", { exact: true })).toBeVisible();
 
   await workPlan.hover();
   await expect(workPlan).toHaveAttribute("aria-pressed", "true");
@@ -593,19 +595,21 @@ test("about section switches inline highlights and respects interaction pauses",
   await expect(workPlan).toHaveAttribute("aria-pressed", "true");
 
   const imageCases = [
-    { button: taskAndProduct, imageName: /продуктового менеджера/ },
-    { button: workPlan, imageName: /проектного менеджера/ },
-    { button: requirements, imageName: /бизнес-аналитика/ },
-    { button: development, imageName: /образе разработчика/ },
-    { button: communication, imageName: /образе переговорщика/ },
-    { button: teamwork, imageName: /организатора команды/ },
-    { button: events, imageName: /ведущего мероприятий/ },
-    { button: platoonLeadership, imageName: /кадетской форме/ },
+    { button: taskAndProduct, imageName: /продуктового менеджера/, role: "Продакт менеджер" },
+    { button: workPlan, imageName: /проектного менеджера/, role: "Проджект менеджер" },
+    { button: requirements, imageName: /бизнес-аналитика/, role: "Бизнес аналитик" },
+    { button: development, imageName: /образе разработчика/, role: "Разработчик" },
+    { button: communication, imageName: /образе переговорщика/, role: "Переговорщик" },
+    { button: teamwork, imageName: /организатора команды/, role: "Организатор" },
+    { button: events, imageName: /ведущего мероприятий/, role: "Ведущий" },
+    { button: platoonLeadership, imageName: /кадетской форме/, role: "Кадет" },
   ];
 
-  for (const { button, imageName } of imageCases) {
+  for (const { button, imageName, role } of imageCases) {
     await button.click();
     await expect(button).toHaveAttribute("aria-pressed", "true");
+    await expect(aboutSection.getByRole("group", { name: `Активный образ: ${role}` })).toBeVisible();
+    await expect(aboutSection.getByText(role, { exact: true })).toBeVisible();
     const image = aboutSection.getByRole("img", { name: imageName });
     await expect(image).toBeVisible();
     await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
@@ -625,7 +629,8 @@ test("about section switches inline highlights and respects interaction pauses",
   await scrollToSection(aboutSection);
   await workPlan.click();
   await expect(workPlan).toHaveAttribute("aria-pressed", "true");
-  await expect(aboutSection.getByRole("group", { name: /выстроить план работы/ })).toHaveCSS("position", "sticky");
+  await expect(aboutSection.getByRole("group", { name: /Проджект менеджер/ })).toHaveCSS("position", "sticky");
+  await expect(aboutSection.getByText("Проджект менеджер", { exact: true })).toBeVisible();
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
@@ -634,7 +639,8 @@ test("about section switches inline highlights and respects interaction pauses",
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto("/");
   await scrollToSection(aboutSection);
-  await expect(aboutSection.getByRole("group", { name: /понять задачу и продукт/ })).toHaveCSS("position", "relative");
+  await expect(aboutSection.getByRole("group", { name: /Продакт менеджер/ })).toHaveCSS("position", "relative");
+  await expect(aboutSection.getByText("Продакт менеджер", { exact: true })).toBeVisible();
   await captureScreenshot(page, `${artifactsDir}/about-mobile-compact.png`);
 });
 
