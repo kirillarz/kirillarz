@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "pages:build": "npm run build && npm run pages:prepare",
+    "pages:prepare": "node scripts/prepare-pages.mjs",
     "preview": "vite preview",
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
     "lint": "eslint src tests scripts vite.config.ts playwright.config.ts eslint.config.js",
