@@ -1,0 +1,277 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+  padding: 48px 24px;
+  background:
+    linear-gradient(135deg, rgb(248 250 252 / 90%), rgb(239 246 255 / 72%)),
+    var(--color-surface);
+}
+
+.homePage {
+  position: relative;
+  display: block;
+  min-height: 100svh;
+  padding: 0;
+  overflow-x: hidden;
+  color: #f8fafc;
+  background:
+    radial-gradient(ellipse 42% 72% at 29% 51%, rgb(86 148 211 / 0.36), rgb(35 70 110 / 0.2) 42%, transparent 72%),
+    radial-gradient(ellipse 48% 54% at 66% 50%, rgb(45 62 85 / 0.16), transparent 70%),
+    linear-gradient(112deg, #080d16 0%, #0c1420 35%, #080d16 69%, #040811 100%);
+}
+
+.homePage::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(ellipse at center, transparent 35%, rgb(1 4 10 / 0.3) 100%),
+    linear-gradient(180deg, rgb(1 4 10 / 0.08), transparent 45%, rgb(1 4 10 / 0.48) 100%);
+}
+
+.heroFlashOverlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  background: #ffffff;
+  transition-property: opacity;
+  transition-duration: 0ms;
+  will-change: auto;
+}
+
+.heroFlashOverlayCovering {
+  visibility: visible;
+  opacity: 1;
+  transition-duration: 220ms;
+  transition-timing-function: ease-out;
+  will-change: opacity;
+}
+
+.heroFlashOverlayRevealing {
+  visibility: visible;
+  opacity: 0;
+  transition-duration: 420ms;
+  transition-timing-function: ease-in-out;
+  will-change: opacity;
+}
+
+.sectionTransition {
+  --transition-progress: 0;
+
+  position: relative;
+  z-index: 2;
+  height: clamp(118px, 18svh, 170px);
+  margin: -1px 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint style;
+}
+
+.sectionTransitionCompact {
+  height: clamp(82px, 12svh, 118px);
+}
+
+.sectionTransitionDark {
+  background: linear-gradient(180deg, #f7f9fd 0%, #dbeafe 46%, #07111e 54%, #030812 100%);
+}
+
+.sectionTransitionLight {
+  background: linear-gradient(180deg, #030812 0%, #07111e 46%, #dbeafe 54%, #f8faff 100%);
+}
+
+.sectionTransitionNight {
+  background: linear-gradient(180deg, #030914 0%, #06101c 44%, #0c1420 56%, #080d16 100%);
+}
+
+.sectionTransitionHobby {
+  height: clamp(150px, 22svh, 210px);
+  background:
+    radial-gradient(ellipse 54% 80% at 50% 48%, rgb(20 120 255 / 0.2), transparent 72%),
+    linear-gradient(180deg, #f7f9fd 0%, #dce9fb 47%, #07111e 53%, #030914 100%);
+}
+
+.sectionTransitionStage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.sectionTransitionStripe {
+  position: absolute;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: calc(16.6667% + 1px);
+  overflow: hidden;
+  border-block: 1px solid rgb(255 255 255 / 0.08);
+  box-shadow:
+    0 12px 24px rgb(0 0 0 / 0.2),
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    inset 0 -6px 10px rgb(0 0 0 / 0.18);
+  transform: translate3d(-108%, 0, 0);
+  will-change: auto;
+}
+
+.sectionTransitionStripe:nth-child(even) {
+  transform: translate3d(108%, 0, 0);
+}
+
+.sectionTransitionStripe:nth-child(1) {
+  top: 0;
+}
+
+.sectionTransitionStripe:nth-child(2) {
+  top: 16.6667%;
+}
+
+.sectionTransitionStripe:nth-child(3) {
+  top: 33.3334%;
+}
+
+.sectionTransitionStripe:nth-child(4) {
+  top: 50%;
+}
+
+.sectionTransitionStripe:nth-child(5) {
+  top: 66.6667%;
+}
+
+.sectionTransitionStripe:nth-child(6) {
+  top: 83.3334%;
+}
+
+.sectionTransitionDark .sectionTransitionStripe {
+  background: linear-gradient(90deg, #06101d, #0c2d55 52%, #07111e);
+  border-color: rgb(22 133 255 / 0.32);
+}
+
+.sectionTransitionDark .sectionTransitionStripe:nth-child(3n + 2) {
+  background: linear-gradient(90deg, #0b2850, #1685ff 50%, #0a2344);
+}
+
+.sectionTransitionLight .sectionTransitionStripe {
+  background: linear-gradient(90deg, #dbeafe, #ffffff 50%, #d9e8fb);
+  border-color: rgb(59 130 246 / 0.22);
+  box-shadow:
+    0 12px 24px rgb(30 64 175 / 0.12),
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    inset 0 -6px 10px rgb(30 64 175 / 0.09);
+}
+
+.sectionTransitionLight .sectionTransitionStripe:nth-child(3n + 2) {
+  background: linear-gradient(90deg, #bfdbfe, #eff6ff 50%, #b7d7fd);
+}
+
+.sectionTransitionNight .sectionTransitionStripe {
+  background: linear-gradient(90deg, #07111e, #0d315d 50%, #07111e);
+  border-color: rgb(22 133 255 / 0.28);
+}
+
+.sectionTransitionNight .sectionTransitionStripe:nth-child(3n + 2) {
+  background: linear-gradient(90deg, #0a2445, #126dd1 50%, #091e39);
+}
+
+.sectionTransitionStuds {
+  position: absolute;
+  inset: 0;
+  opacity: 0.78;
+  background-image: url("../../assets/transitions/stud-plate-texture.webp");
+  background-position: center 42%;
+  background-repeat: repeat;
+  background-size: 280px 280px;
+  filter: contrast(1.18);
+  mix-blend-mode: soft-light;
+}
+
+.scatterRail {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(78%, 1120px);
+  height: 5px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, #1685ff 18% 82%, transparent);
+  box-shadow: 0 0 28px rgb(22 133 255 / 0.62);
+  opacity: 0;
+  transform: translate(-50%, -50%) scaleX(0.35);
+  will-change: auto;
+}
+
+.scatterPiece {
+  position: absolute;
+  z-index: 1;
+  top: var(--scatter-top);
+  left: var(--scatter-left);
+  display: block;
+  height: auto;
+  user-select: none;
+  filter: drop-shadow(0 12px 9px rgb(0 0 0 / 0.35));
+  transform-origin: center;
+  will-change: auto;
+}
+
+.sectionTransition[data-transition-active="true"] .sectionTransitionStripe,
+.sectionTransition[data-transition-active="true"] .scatterPiece {
+  will-change: transform;
+}
+
+.sectionTransition[data-transition-active="true"] .scatterRail {
+  will-change: opacity, transform;
+}
+
+.scatterPieceBrick {
+  width: clamp(58px, 5.4vw, 86px);
+}
+
+.scatterPieceStud {
+  width: clamp(34px, 3.2vw, 50px);
+}
+
+.motionHeadingGroup {
+  display: inline-block;
+}
+
+.motionHeadingAccent {
+  color: var(--motion-heading-accent, #1478ff);
+  text-shadow: 0 0 30px rgb(37 99 235 / 0.28);
+}
+
+html[data-motion="enhanced"] [data-motion-reveal="heading"]:not([data-motion-revealed="true"])
+  .motionHeadingGroup {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translate3d(0, 22px, 0);
+}
+
+html[data-motion="enhanced"] [data-motion-reveal="heading"][data-motion-revealed="true"]
+  .motionHeadingGroup {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 620ms ease-out,
+    filter 680ms ease-out,
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--motion-index, 0) * 70ms);
+}
+
+html[data-motion="enhanced"] [data-motion-reveal="content"]:not([data-motion-revealed="true"]),
+html[data-motion="enhanced"] [data-motion-reveal="card"]:not([data-motion-revealed="true"]) {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0);
+}
+
+html[data-motion="enhanced"] [data-motion-reveal="content"][data-motion-revealed="true"],
+html[data-motion="enhanced"] [data-motion-reveal="card"][data-motion-revealed="true"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 560ms ease-out,
+    transform 720ms cubic-bezier(0.22, 1.18, 0.36, 1);
+  transition-delay: calc(var(--motion-index, 0) * 80ms);
+}

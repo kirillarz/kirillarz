@@ -160,11 +160,10 @@ PDF-резюме доступно.
 
 * Целевой canonical URL: https://kirillarz.ru/
 * `og:url`: https://kirillarz.ru/
-* Favicon: `/favicon.svg`, PNG fallback: `/favicon-64.png`.
+* Favicon: `/favicon.png`, PNG 64×64.
 * Open Graph image: `/og/kirill-arzamastsev.jpg`, 1200×630.
-* Площадка публикации пока не выбрана. Нельзя утверждать, что сайт уже
-  опубликован: перед релизом нужно привязать домен, включить HTTPS, проверить
-  сертификат и редирект с HTTP.
+* Площадка публикации: GitHub Pages.
+* Сайт опубликован на `https://kirillarz.ru/`; домен и HTTPS подключены.
 
 ---
 
@@ -326,7 +325,7 @@ Product / Project Manager и Frontend-разработчик.
 
 * GitVerse: https://gitverse.ru/name-later-urfu/monorepo
 * Видео-демо: `src/assets/screens/ai-agent-search-premises/demo-search-premises.mp4`
-* Презентация: `src/assets/screens/ai-agent-search-premises/name-later-presentation.pdf`
+* Презентация: `src/assets/screens/ai-agent-search-premises/ai-agent-presentation.pdf`
 * Медиа в порядке показа:
   1. `src/assets/screens/ai-agent-search-premises/login-screen.webp` —
      `Экран входа в систему подбора помещений`;

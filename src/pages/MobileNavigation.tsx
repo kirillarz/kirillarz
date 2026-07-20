@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 
 const navigationItems = [
   { id: "top", label: "Начало" },

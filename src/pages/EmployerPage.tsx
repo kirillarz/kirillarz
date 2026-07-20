@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 
 export function EmployerPage() {
   return (

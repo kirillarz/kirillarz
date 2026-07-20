@@ -6,7 +6,7 @@ import { AboutSection } from "./AboutSection";
 import { ContactsSection } from "./ContactsSection";
 import { HobbySection } from "./HobbySection";
 import { PageNavigation } from "./MobileNavigation";
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 import { ProjectsSection } from "./ProjectsSection";
 import { SectionTransition } from "./SectionTransition";
 import { SkillsSection } from "./SkillsSection";

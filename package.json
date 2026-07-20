@@ -3,11 +3,17 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "npm@11.11.0",
+  "engines": {
+    "node": "24.x",
+    "npm": "11.x"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "pages:build": "npm run build && npm run pages:prepare",
     "pages:prepare": "node scripts/prepare-pages.mjs",
+    "release:check": "npm run check && npm run pages:prepare && node scripts/release-check.mjs",
     "preview": "vite preview",
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
     "lint": "eslint src tests scripts vite.config.ts playwright.config.ts eslint.config.js",

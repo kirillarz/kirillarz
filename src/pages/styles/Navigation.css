@@ -1,0 +1,77 @@
+.pageNavigation {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  z-index: 100;
+  width: min(calc(100% - 40px), 1220px);
+  color: #f8fafc;
+  transform: translateX(-50%);
+}
+
+.desktopNavigationBar {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 58px;
+  padding: 0 14px 0 22px;
+  border: 1px solid rgb(148 163 184 / 0.28);
+  border-radius: 16px;
+  background: rgb(6 16 29 / 0.88);
+  box-shadow:
+    0 16px 38px rgb(0 0 0 / 0.28),
+    inset 0 1px 0 rgb(255 255 255 / 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.desktopNavigationBrand {
+  flex: 0 0 auto;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.desktopNavigationLinks {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.desktopNavigationLinks a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 13px;
+  color: #cbd5e1;
+  font-size: 0.86rem;
+  font-weight: 750;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease;
+}
+
+.desktopNavigationLinks a[aria-current="location"] {
+  color: #ffffff;
+  border-color: rgb(22 133 255 / 0.72);
+  background: rgb(8 105 224 / 0.58);
+}
+
+.desktopNavigationBrand:focus-visible,
+.desktopNavigationLinks a:focus-visible {
+  outline: 3px solid #facc15;
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .desktopNavigationLinks a:hover {
+    color: #ffffff;
+    border-color: rgb(148 163 184 / 0.32);
+    background: rgb(30 50 76 / 0.72);
+  }
+}
+

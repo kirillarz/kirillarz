@@ -1,0 +1,773 @@
+@media (max-width: 640px) {
+  .projectLightboxBackdrop {
+    padding: 12px;
+  }
+
+  .projectLightbox {
+    --project-lightbox-media-width: calc(100dvw - 24px);
+    --project-lightbox-media-height: calc(100dvh - 136px);
+
+    grid-template:
+      ". . close" 48px
+      "media media media" minmax(0, 1fr)
+      "previous count next" 48px
+      / 48px minmax(0, 1fr) 48px;
+    gap: 8px;
+  }
+
+  .projectLightboxVideoBadge {
+    top: 8px;
+    left: 8px;
+  }
+
+  .projectLightboxCount {
+    align-self: center;
+  }
+}
+
+@media (max-width: 980px) {
+  .homePage {
+    min-height: 100svh;
+    padding: 0 24px 44px;
+  }
+
+  .aboutSection {
+    width: calc(100% + 48px);
+    margin: 0 -24px;
+  }
+
+  .homeHero {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    width: min(100%, 720px);
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .heroVisual {
+    align-self: auto;
+    order: 0;
+    min-height: 520px;
+  }
+
+  .heroImageFrame {
+    width: min(100vw, 520px);
+    height: 500px;
+    transform: none;
+  }
+
+  .heroMedia {
+    transform: none;
+  }
+
+  .heroContent {
+    order: 1;
+    width: min(100%, 720px);
+    padding-top: 0;
+  }
+
+  .homeHero h1 {
+    font-size: clamp(3.4rem, 12vw, 5.2rem);
+  }
+
+  .desktopBreak {
+    display: none;
+  }
+
+  .roleMarquee {
+    width: calc(100% + 24px);
+    overflow: hidden;
+  }
+
+  .aboutInner {
+    display: block;
+    width: min(calc(100% - 48px), 720px);
+    padding: 64px 0 58px;
+  }
+
+  .aboutIntro h2 {
+    font-size: clamp(3.1rem, 8.5vw, 4.4rem);
+  }
+
+  .aboutVisual {
+    position: sticky;
+    top: 16px;
+    z-index: 2;
+    min-height: clamp(300px, 44vw, 390px);
+    margin-top: 18px;
+    overflow: hidden;
+    border: 1px solid rgb(148 163 184 / 0.2);
+    border-radius: 28px;
+    background: rgb(248 250 255 / 0.9);
+    box-shadow:
+      0 18px 42px rgb(15 23 42 / 0.1),
+      inset 0 1px 0 rgb(255 255 255 / 0.92);
+    backdrop-filter: blur(14px);
+  }
+
+  .aboutVisualContent {
+    inset: 12px;
+  }
+
+  .aboutFigure {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+  }
+
+  .aboutGlow {
+    top: -20%;
+    width: min(82vw, 560px);
+  }
+
+  .aboutCopy {
+    max-width: none;
+    padding-top: 34px;
+  }
+
+  .aboutCopy p {
+    font-size: 1.14rem;
+  }
+
+  .skillsInner {
+    width: min(calc(100% - 48px), 760px);
+    padding: 64px 0 62px;
+  }
+
+  .skillsIntro h2 {
+    font-size: clamp(3rem, 8vw, 4.2rem);
+  }
+
+  .skillsLead {
+    font-size: 1.12rem;
+  }
+
+  .skillsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 44px;
+    margin-top: 38px;
+  }
+
+  .skillCard {
+    min-height: 500px;
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+
+  .skillCard:last-child {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc((100% - 44px) / 2);
+  }
+
+  .skillListTwoColumns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    align-items: start;
+    padding: 40px 20px;
+  }
+
+  .homePage {
+    align-items: start;
+    padding: 0 20px 42px;
+  }
+
+  .aboutSection {
+    width: calc(100% + 40px);
+    margin: 0 -20px;
+  }
+
+  .homeHero {
+    gap: 24px;
+  }
+
+  .heroVisual {
+    min-height: 390px;
+  }
+
+  .heroImageFrame {
+    width: min(100vw, 420px);
+    height: 390px;
+  }
+
+  .homeHero .kicker {
+    font-size: 0.82rem;
+  }
+
+  .homeHero h1 {
+    font-size: clamp(3rem, 13.5vw, 3.75rem);
+  }
+
+  .heroDescription {
+    margin-top: 22px;
+    font-size: 1.24rem;
+    line-height: 1.48;
+  }
+
+  .roleMarquee {
+    width: calc(100% + 20px);
+    margin-top: 28px;
+  }
+
+  .homeHero .actions {
+    width: 100%;
+    margin-top: 26px;
+  }
+
+  .homeHero .primaryLink {
+    width: 100%;
+    min-width: 0;
+    min-height: 78px;
+  }
+
+  .aboutInner {
+    width: min(calc(100% - 40px), 580px);
+    padding: 50px 0 46px;
+  }
+
+  .aboutEyebrow {
+    margin-bottom: 17px;
+    font-size: 0.86rem;
+  }
+
+  .aboutIntro h2 {
+    font-size: clamp(2rem, 9vw, 2.75rem);
+    line-height: 1.08;
+  }
+
+  .aboutVisual {
+    top: 10px;
+    min-height: 248px;
+    margin-top: 14px;
+    border-radius: 22px;
+  }
+
+  .aboutVisualContent {
+    inset: 8px;
+  }
+
+  .aboutCopy {
+    padding-top: 28px;
+  }
+
+  .aboutCopy p {
+    font-size: 1.02rem;
+    line-height: 1.62;
+  }
+
+  .aboutCopy p + p {
+    margin-top: 20px;
+  }
+
+  .skillsInner {
+    width: min(calc(100% - 40px), 580px);
+    padding: 50px 0 54px;
+  }
+
+  .skillsEyebrow {
+    margin-bottom: 17px;
+    font-size: 0.86rem;
+  }
+
+  .skillsIntro h2 {
+    font-size: clamp(2rem, 9vw, 2.75rem);
+    line-height: 1.08;
+  }
+
+  .skillsLead {
+    margin-top: 18px;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .skillsGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 34px;
+    margin-top: 32px;
+  }
+
+  .skillCard,
+  .skillCard:last-child {
+    grid-column: auto;
+    justify-self: stretch;
+    width: auto;
+    min-height: 0;
+    padding: 16px 20px 24px;
+  }
+
+  .skillCard {
+    grid-template-rows: 145px auto 1fr;
+  }
+
+  .skillCard::before,
+  .skillCard::after {
+    display: none;
+  }
+
+  .skillCardImage {
+    height: 145px;
+  }
+
+  .skillCard h3 {
+    margin-top: 5px;
+    font-size: 1.4rem;
+  }
+
+  .skillList,
+  .skillListTwoColumns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skillList li {
+    min-height: 43px;
+    font-size: 0.96rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .homeHero h1 {
+    font-size: 3rem;
+  }
+
+  .heroVisual {
+    min-height: 360px;
+  }
+
+  .heroImageFrame {
+    width: min(100vw, 390px);
+    height: 360px;
+  }
+
+  .aboutIntro h2 {
+    font-size: 2rem;
+  }
+
+  .aboutVisual {
+    min-height: 230px;
+  }
+
+  .skillsInner {
+    width: min(calc(100% - 32px), 348px);
+  }
+
+  .skillCard {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}
+
+@media (max-width: 1120px) {
+  .projectsInner {
+    width: min(calc(100% - 64px), 820px);
+    padding-top: 64px;
+  }
+
+  .projectCard,
+  .projectCardReversed {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 44px;
+  }
+
+  .projectCardReversed .projectCarousel,
+  .projectCardReversed .projectContent {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .projectCardReversed .projectCarousel {
+    order: 0;
+  }
+
+  .projectCardReversed .projectContent {
+    order: 1;
+  }
+
+  .projectContent {
+    max-width: 700px;
+  }
+
+  .projectContent h3 {
+    max-width: 680px;
+  }
+}
+
+@media (max-width: 980px) {
+  .projectsSection {
+    width: calc(100% + 48px);
+    margin: 0 -24px -44px;
+  }
+
+  .hobbySection {
+    width: calc(100% + 48px);
+    margin: 0 -24px;
+  }
+
+  .hobbyInner {
+    width: 100%;
+    min-height: auto;
+    padding: 64px 0 44px;
+  }
+
+  .hobbyIntro {
+    width: min(calc(100% - 48px), 720px);
+    margin: 0 auto;
+  }
+
+  .hobbyStageViewport {
+    width: 100%;
+    padding: 0 24px 16px;
+    margin-top: 24px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-color: rgb(22 133 255 / 0.66) rgb(148 163 184 / 0.12);
+    scrollbar-width: thin;
+    overscroll-behavior-inline: contain;
+  }
+
+  .hobbyStage {
+    width: 880px;
+    max-width: none;
+  }
+
+  .hobbyHotspot {
+    left: var(--hobby-mobile-x);
+  }
+
+  .hobbyHotspotLeft .hobbyHotspotPanel {
+    right: auto;
+    left: 0;
+  }
+
+  .hobbyHotspotRight .hobbyHotspotPanel {
+    right: 0;
+    left: auto;
+  }
+
+  .hobbyScrollHint {
+    display: block;
+    width: min(calc(100% - 48px), 720px);
+    margin: 6px auto 0;
+    color: #91a3bd;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .projectsSection {
+    width: calc(100% + 40px);
+    margin: 0 -20px -42px;
+  }
+
+  .projectsInner {
+    width: min(calc(100% - 40px), 580px);
+    padding: 50px 0 72px;
+  }
+
+  .projectsEyebrow {
+    margin-bottom: 17px;
+    font-size: 0.86rem;
+  }
+
+  .projectsIntro h2 {
+    font-size: clamp(2.1rem, 10vw, 2.85rem);
+    line-height: 1.06;
+  }
+
+  .projectsIntro > p:last-child {
+    margin-top: 18px;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .projectsList {
+    gap: 86px;
+    margin-top: 38px;
+  }
+
+  .projectCard,
+  .projectCardReversed {
+    gap: 30px;
+  }
+
+  .projectMediaFrame {
+    padding: 8px;
+    border-radius: 15px;
+  }
+
+  .projectMediaFrame::before,
+  .projectMediaFrame::after {
+    width: 21px;
+    height: 82px;
+    background:
+      radial-gradient(circle at 50% 28%, #eef2f7 0 6px, rgb(100 116 139 / 0.34) 6.5px 7.5px, transparent 8px),
+      radial-gradient(circle at 50% 72%, #eef2f7 0 6px, rgb(100 116 139 / 0.34) 6.5px 7.5px, transparent 8px),
+      linear-gradient(180deg, #f8fafc, #e6ebf2);
+  }
+
+  .projectMediaFrame::before {
+    left: -22px;
+  }
+
+  .projectMediaFrame::after {
+    right: -22px;
+  }
+
+  .projectSlide {
+    border-radius: 10px;
+  }
+
+  .projectCarouselArrow {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+  }
+
+  .projectCarouselArrowPrevious {
+    left: 18px;
+  }
+
+  .projectCarouselArrowNext {
+    right: 18px;
+  }
+
+  .projectSlideCount {
+    right: 17px;
+    bottom: 16px;
+    min-width: 54px;
+    padding: 6px 8px;
+    font-size: 0.65rem;
+  }
+
+  .projectCarouselDots {
+    margin-top: 14px;
+  }
+
+  .projectCategory {
+    margin-bottom: 13px;
+    font-size: 0.83rem;
+  }
+
+  .projectContent h3 {
+    font-size: clamp(2.25rem, 11vw, 3rem);
+    line-height: 1.04;
+  }
+
+  .projectDescription {
+    margin-top: 15px;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .projectFacts {
+    gap: 11px;
+    margin-top: 22px;
+  }
+
+  .projectFacts > div {
+    grid-template-columns: 25px auto minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .projectFacts svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .projectFacts dt,
+  .projectFacts dd {
+    font-size: 0.92rem;
+  }
+
+  .projectTechnologies {
+    gap: 7px;
+    margin-top: 24px;
+  }
+
+  .projectTechnologies li {
+    padding: 8px 11px;
+    font-size: 0.8rem;
+  }
+
+  .projectActions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .projectAction {
+    width: 100%;
+    min-height: 50px;
+  }
+
+  .hobbySection {
+    width: calc(100% + 40px);
+    margin: 0 -20px;
+  }
+
+  .hobbyInner {
+    padding: 50px 0 36px;
+  }
+
+  .hobbyIntro {
+    width: min(calc(100% - 40px), 580px);
+  }
+
+  .hobbyEyebrow {
+    margin-bottom: 12px;
+    font-size: 0.86rem;
+  }
+
+  .hobbyIntro h2 {
+    font-size: clamp(2.35rem, 12vw, 3.15rem);
+    line-height: 1;
+  }
+
+  .hobbyIntro > p:last-child {
+    margin-top: 16px;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .hobbyStageViewport {
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-top: 18px;
+  }
+
+  .hobbyStage {
+    width: 820px;
+  }
+
+  .hobbyHotspotLabel {
+    font-size: 0.84rem;
+  }
+
+  .hobbyScrollHint {
+    width: min(calc(100% - 40px), 580px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homeHero .primaryLink {
+    transition: none;
+  }
+
+  .heroMedia {
+    transition: none;
+  }
+
+  .heroFlashOverlay {
+    display: none;
+  }
+
+  .aboutVisualContent {
+    animation: none;
+  }
+
+  .aboutHighlight {
+    transition: none;
+  }
+
+  .projectCarouselArrow,
+  .projectCarouselDot,
+  .projectAction,
+  .projectImageZoomHint,
+  .projectVideoOpenButton,
+  .projectLightboxPlayButton {
+    transition: none;
+  }
+
+  .hobbyHotspotPanel {
+    transition: none;
+  }
+
+}
+
+@media (max-width: 980px) {
+  .contactsSection {
+    width: calc(100% + 48px);
+    margin: 0 -24px -44px;
+  }
+
+  .contactsInner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 38px;
+    width: min(calc(100% - 48px), 720px);
+  }
+
+  .employerProjects ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .contactsSection {
+    width: calc(100% + 40px);
+    margin: 0 -20px -42px;
+  }
+
+  .contactsInner {
+    width: min(calc(100% - 40px), 580px);
+    padding: 58px 0 66px;
+  }
+
+  .contactsIntro h2 {
+    font-size: clamp(2.5rem, 13vw, 3.4rem);
+  }
+
+  .contactsList a {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 14px;
+    min-height: 92px;
+    padding: 16px 18px;
+  }
+
+  .contactsList a > span:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .contactsList a > span:last-child {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .page.employerPage {
+    padding: 16px;
+  }
+
+  .employerCard {
+    padding: 24px 18px;
+    border-radius: 13px;
+  }
+
+  .employerIntro {
+    margin-top: 42px;
+  }
+
+  .employerIntro h1 {
+    font-size: clamp(2.65rem, 14vw, 3.65rem);
+  }
+
+  .employerGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .employerProjects {
+    grid-column: auto;
+  }
+
+  .employerGrid > section {
+    padding: 20px 16px;
+  }
+}
+
+/* Adaptive navigation and mobile-first composition overrides. */
+

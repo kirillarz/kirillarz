@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import blueBrick from "../assets/transitions/brick-blue.webp";
 import redBrick from "../assets/transitions/brick-red.webp";
 import yellowStud from "../assets/transitions/stud-yellow.webp";
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 
 export type SectionTransitionVariant = "brick-wipe" | "scatter";
 export type SectionTransitionPalette = "dark" | "light" | "night" | "hobby";
@@ -60,6 +60,13 @@ const scatterPieceAssets: Record<ScatterPiece["tone"], string> = {
   red: redBrick,
 };
 
+const paletteClasses: Record<SectionTransitionPalette, string> = {
+  dark: styles.sectionTransitionDark,
+  light: styles.sectionTransitionLight,
+  night: styles.sectionTransitionNight,
+  hobby: styles.sectionTransitionHobby,
+};
+
 export function SectionTransition({
   id,
   variant,
@@ -69,7 +76,7 @@ export function SectionTransition({
 }: SectionTransitionProps) {
   return (
     <div
-      className={`${styles.sectionTransition} ${styles[`sectionTransition${palette[0].toUpperCase()}${palette.slice(1)}`]} ${
+      className={`${styles.sectionTransition} ${paletteClasses[palette]} ${
         compact ? styles.sectionTransitionCompact : ""
       }`}
       data-section-transition={id}
