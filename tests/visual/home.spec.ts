@@ -3,6 +3,17 @@ import { mkdir } from "node:fs/promises";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const artifactsDir = "artifacts/visual-smoke";
+const transitionStartViewportRatio = 1;
+const transitionEndViewportRatio = -0.134;
+const transitionMidpointViewportRatio =
+  (transitionStartViewportRatio + transitionEndViewportRatio) / 2;
+
+function expectedTransitionProgress(viewportRatio: number) {
+  return (
+    (transitionStartViewportRatio - viewportRatio) /
+    (transitionStartViewportRatio - transitionEndViewportRatio)
+  );
+}
 
 test.beforeAll(async () => {
   await mkdir(artifactsDir, { recursive: true });
@@ -322,13 +333,18 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
   const brickTransition = page.getByTestId("section-transition-about-skills");
   const firstStripe = brickTransition.locator("[data-transition-stripe]").first();
   await placeTransitionAt(page, brickTransition, 0.82);
+  await expect
+    .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
+    .toBeCloseTo(expectedTransitionProgress(0.82), 2);
   const earlyProgress = Number(await brickTransition.getAttribute("data-progress"));
   const earlyTransform = await firstStripe.evaluate((element: HTMLElement) => element.style.transform);
 
   await placeTransitionAt(page, brickTransition, 0.5);
+  const progressImmediatelyAfterJump = Number(await brickTransition.getAttribute("data-progress"));
+  expect(progressImmediatelyAfterJump).toBeLessThan(expectedTransitionProgress(0.5) - 0.05);
   await expect
     .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
-    .toBeGreaterThan(0.45);
+    .toBeCloseTo(expectedTransitionProgress(0.5), 2);
   const middleProgress = Number(await brickTransition.getAttribute("data-progress"));
   const middleTransform = await firstStripe.evaluate((element: HTMLElement) => element.style.transform);
   expect(middleProgress).toBeGreaterThan(earlyProgress);
@@ -338,15 +354,18 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
   await placeTransitionAt(page, brickTransition, 0.18);
   await expect
     .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
-    .toBeGreaterThan(middleProgress);
+    .toBeCloseTo(expectedTransitionProgress(0.18), 2);
 
   await placeTransitionAt(page, brickTransition, 0.82);
   await expect
     .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
-    .toBeLessThan(middleProgress);
+    .toBeCloseTo(expectedTransitionProgress(0.82), 2);
 
   const scatterTransition = page.getByTestId("section-transition-projects-hobby");
-  await placeTransitionAt(page, scatterTransition, 0.5);
+  await placeTransitionAt(page, scatterTransition, transitionMidpointViewportRatio);
+  await expect
+    .poll(async () => Number(await scatterTransition.getAttribute("data-progress")))
+    .toBeCloseTo(0.5, 2);
   await expectImagesReady(scatterTransition);
   await expect(scatterTransition.locator("img[data-transition-piece]")).toHaveCount(13);
   await expect(scatterTransition.locator("img[data-transition-piece]:visible")).toHaveCount(13);
@@ -384,8 +403,8 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
   await page.goto("/");
   const mobileScatterTransition = page.getByTestId("section-transition-projects-hobby");
   await expectImagesReady(mobileScatterTransition);
-  await placeTransitionAt(page, mobileScatterTransition, 0.5);
-  await placeTransitionAt(page, mobileScatterTransition, 0.5);
+  await placeTransitionAt(page, mobileScatterTransition, transitionMidpointViewportRatio);
+  await placeTransitionAt(page, mobileScatterTransition, transitionMidpointViewportRatio);
   await expect
     .poll(async () => Number(await mobileScatterTransition.getAttribute("data-progress")))
     .toBeCloseTo(0.5, 2);

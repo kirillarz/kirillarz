@@ -32,10 +32,15 @@ type TransitionRecord = {
   stripes: readonly HTMLElement[];
   pieces: readonly ScatterPieceRecord[];
   rail: HTMLElement | null;
+  currentProgress: number;
+  targetProgress: number;
+  lastMobileLayout: boolean | null;
 };
 
-const TRANSITION_START_VIEWPORT_RATIO = 0.92;
-const TRANSITION_END_VIEWPORT_RATIO = 0.08;
+const TRANSITION_START_VIEWPORT_RATIO = 1;
+const TRANSITION_END_VIEWPORT_RATIO = -0.134;
+const TRANSITION_FOLLOW_LAG_MS = 140;
+const TRANSITION_PROGRESS_EPSILON = 0.001;
 
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
@@ -46,6 +51,7 @@ function easeInOutCubic(value: number) {
 }
 
 function createTransitionRecord(element: HTMLElement): TransitionRecord {
+  const initialProgress = clamp(Number(element.dataset.progress ?? 0));
   return {
     element,
     variant: element.dataset.variant === "scatter" ? "scatter" : "brick-wipe",
@@ -71,6 +77,9 @@ function createTransitionRecord(element: HTMLElement): TransitionRecord {
       };
     }),
     rail: element.querySelector<HTMLElement>("[data-transition-rail]"),
+    currentProgress: initialProgress,
+    targetProgress: initialProgress,
+    lastMobileLayout: null,
   };
 }
 
@@ -109,6 +118,8 @@ function updateScatterTransition(record: TransitionRecord, progress: number, use
 
 function updateTransition(record: TransitionRecord, progress: number, useMobileLayout = false) {
   const nextProgress = clamp(progress);
+  record.currentProgress = nextProgress;
+  record.lastMobileLayout = useMobileLayout;
   record.element.style.setProperty("--transition-progress", nextProgress.toFixed(4));
   record.element.dataset.progress = nextProgress.toFixed(3);
 
@@ -144,6 +155,8 @@ export function usePageMotion() {
       document.querySelectorAll<HTMLElement>("[data-continuous-motion]"),
     );
     let animationFrameId = 0;
+    let transitionMeasurementRequested = false;
+    let lastFrameTimestamp = 0;
     let observer: IntersectionObserver | null = null;
     let activityObserver: IntersectionObserver | null = null;
 
@@ -153,41 +166,68 @@ export function usePageMotion() {
       });
     };
 
-    const updateTransitions = () => {
+    const updateTransitions = (timestamp: number) => {
       animationFrameId = 0;
-      if (reducedMotionQuery.matches) return;
+      if (reducedMotionQuery.matches) {
+        lastFrameTimestamp = 0;
+        return;
+      }
 
-      const viewportHeight = window.innerHeight;
-      const start = viewportHeight * TRANSITION_START_VIEWPORT_RATIO;
-      const end = viewportHeight * TRANSITION_END_VIEWPORT_RATIO;
+      if (transitionMeasurementRequested) {
+        transitionMeasurementRequested = false;
+        const viewportHeight = window.innerHeight;
+        const start = viewportHeight * TRANSITION_START_VIEWPORT_RATIO;
+        const end = viewportHeight * TRANSITION_END_VIEWPORT_RATIO;
+        const measurements = Array.from(activeTransitionRecords, (record) => ({
+          record,
+          bounds: record.element.getBoundingClientRect(),
+        }));
 
-      const measurements = Array.from(activeTransitionRecords, (record) => ({
-        record,
-        bounds: record.element.getBoundingClientRect(),
-      }));
-
-      measurements.forEach(({ record, bounds }) => {
-        const { element } = record;
-
-        if (bounds.top > viewportHeight) {
-          if (element.dataset.progress !== "0.000") {
-            updateTransition(record, 0, mobileTransitionQuery.matches);
+        measurements.forEach(({ record, bounds }) => {
+          if (bounds.top > viewportHeight) {
+            record.targetProgress = 0;
+          } else if (bounds.bottom < 0) {
+            record.targetProgress = 1;
+          } else {
+            record.targetProgress = clamp((start - bounds.top) / (start - end));
           }
-          return;
+        });
+      }
+
+      const elapsedMs = lastFrameTimestamp === 0 ? 1000 / 60 : Math.min(timestamp - lastFrameTimestamp, 64);
+      const followAmount = 1 - Math.exp(-elapsedMs / TRANSITION_FOLLOW_LAG_MS);
+      const useMobileLayout = mobileTransitionQuery.matches;
+      let shouldContinue = false;
+      lastFrameTimestamp = timestamp;
+
+      activeTransitionRecords.forEach((record) => {
+        const difference = record.targetProgress - record.currentProgress;
+        let nextProgress = record.currentProgress;
+
+        if (Math.abs(difference) <= TRANSITION_PROGRESS_EPSILON) {
+          nextProgress = record.targetProgress;
+        } else {
+          nextProgress += difference * followAmount;
+          shouldContinue = true;
         }
 
-        if (bounds.bottom < 0) {
-          if (element.dataset.progress !== "1.000") {
-            updateTransition(record, 1, mobileTransitionQuery.matches);
-          }
-          return;
+        if (
+          nextProgress !== record.currentProgress ||
+          record.lastMobileLayout !== useMobileLayout
+        ) {
+          updateTransition(record, nextProgress, useMobileLayout);
         }
-
-        updateTransition(record, (start - bounds.top) / (start - end), mobileTransitionQuery.matches);
       });
+
+      if (transitionMeasurementRequested || shouldContinue) {
+        animationFrameId = window.requestAnimationFrame(updateTransitions);
+      } else {
+        lastFrameTimestamp = 0;
+      }
     };
 
     const requestTransitionUpdate = () => {
+      transitionMeasurementRequested = true;
       if (animationFrameId !== 0) return;
       animationFrameId = window.requestAnimationFrame(updateTransitions);
     };
@@ -246,7 +286,11 @@ export function usePageMotion() {
                 } else {
                   activeTransitionRecords.delete(record);
                   const terminalProgress = entry.boundingClientRect.top < 0 ? 1 : 0;
-                  if (element.dataset.progress !== terminalProgress.toFixed(3)) {
+                  record.targetProgress = terminalProgress;
+                  if (
+                    element.dataset.progress !== terminalProgress.toFixed(3) ||
+                    record.lastMobileLayout !== mobileTransitionQuery.matches
+                  ) {
                     updateTransition(record, terminalProgress, mobileTransitionQuery.matches);
                   }
                 }
