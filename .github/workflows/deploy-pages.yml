@@ -35,10 +35,8 @@ jobs:
       - name: Run quality checks
         run: npm run check
 
-      - name: Build Pages artifact
-        env:
-          PAGES_BASE_PATH: ${{ vars.PAGES_BASE_PATH || '/kirillarz/' }}
-        run: npm run pages:build
+      - name: Prepare Pages artifact
+        run: npm run pages:prepare
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

@@ -1,0 +1,24 @@
+.projectsSection {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  color: #0b1733;
+  font-family: Arial, var(--font-sans);
+  background:
+    radial-gradient(ellipse 46% 34% at 15% 16%, rgb(219 234 254 / 0.55), transparent 74%),
+    radial-gradient(ellipse 40% 28% at 88% 55%, rgb(224 231 255 / 0.42), transparent 76%),
+    linear-gradient(180deg, #f8faff 0%, #ffffff 34%, #f7f9fd 100%);
+}
+
+.projectsSection::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, rgb(15 23 42 / 0.025) 1px, transparent 1px),
+    linear-gradient(180deg, rgb(15 23 42 / 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.34), transparent 23%, transparent 78%, rgb(0 0 0 / 0.2));
+}
+

@@ -1,0 +1,223 @@
+.employerPage {
+  display: block;
+  padding: clamp(24px, 4vw, 64px);
+  color: #0b1733;
+  background:
+    radial-gradient(circle at 15% 10%, rgb(37 99 235 / 0.16), transparent 28%),
+    linear-gradient(135deg, #07111e, #0b1730 55%, #050a13);
+}
+
+.employerCard {
+  width: min(100%, 1120px);
+  padding: clamp(28px, 5vw, 72px);
+  margin: 0 auto;
+  border: 1px solid rgb(148 163 184 / 0.34);
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, rgb(15 23 42 / 0.025) 1px, transparent 1px),
+    linear-gradient(180deg, rgb(15 23 42 / 0.025) 1px, transparent 1px),
+    #f8faff;
+  background-size: 48px 48px;
+  box-shadow: 0 34px 90px rgb(0 0 0 / 0.35);
+}
+
+.employerBackLink {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  color: #155fcb;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.employerBackLink:focus-visible,
+.employerContacts a:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid #f5b700;
+  outline-offset: 4px;
+}
+
+.employerIntro {
+  max-width: 900px;
+  margin-top: clamp(44px, 7vw, 78px);
+}
+
+.employerEyebrow {
+  margin: 0 0 14px;
+  color: #0874f9;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.employerIntro h1 {
+  margin: 0;
+  color: #091735;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.employerRole {
+  margin: 18px 0 0;
+  color: #0874f9;
+  font-size: clamp(1.25rem, 2.2vw, 1.8rem);
+  font-weight: 800;
+}
+
+.employerLead {
+  max-width: 860px;
+  margin: 22px 0 0;
+  color: #52627e;
+  font-size: clamp(1.06rem, 1.6vw, 1.25rem);
+  line-height: 1.65;
+}
+
+.employerGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: clamp(42px, 6vw, 68px);
+}
+
+.employerGrid > section {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.82);
+  box-shadow: inset 0 1px 0 #ffffff;
+}
+
+.employerGrid h2 {
+  margin: 0 0 16px;
+  color: #091735;
+  font-size: 1.15rem;
+}
+
+.employerGrid p {
+  margin: 0;
+  color: #52627e;
+  line-height: 1.58;
+}
+
+.employerMeta {
+  margin-top: 8px !important;
+  color: #75839a !important;
+  font-size: 0.9rem;
+}
+
+.employerTags,
+.employerProjects ul,
+.employerAchievements ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.employerTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.employerTags li {
+  padding: 8px 10px;
+  color: #193054;
+  font-size: 0.86rem;
+  border: 1px solid #c5d0df;
+  border-radius: 7px;
+  background: #f8fbff;
+}
+
+.employerProjects {
+  grid-column: 1 / -1;
+}
+
+.employerProjects ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.employerProjects li {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-left: 4px solid #0874f9;
+  background: #f3f7fd;
+}
+
+.employerProjects span,
+.employerAchievements li {
+  color: #66738d;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.employerAchievements li + li {
+  margin-top: 10px;
+}
+
+.employerContacts p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.employerContacts a {
+  padding: 9px 12px;
+  color: #ffffff;
+  font-weight: 800;
+  text-decoration: none;
+  border-radius: 7px;
+  background: #0874f9;
+}
+
+@keyframes aboutFigureEnter {
+  from {
+    opacity: 0.5;
+    transform: translateY(8px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.aboutVisualLabel {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 3;
+  display: block;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  padding: 9px 14px;
+  overflow: hidden;
+  color: #27364f;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid rgb(196 148 0 / 0.28);
+  border-radius: 999px;
+  background: rgb(255 239 159 / 0.94);
+  box-shadow: 0 7px 18px rgb(15 23 42 / 0.1);
+  transform: translateX(-50%);
+}
+
+@keyframes skillPanelReveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+

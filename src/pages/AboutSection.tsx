@@ -9,64 +9,73 @@ import productManagerFigure from "../assets/about-me/product-manager.webp";
 import projectManagerFigure from "../assets/about-me/project-manager.webp";
 import staffFigure from "../assets/about-me/staff.webp";
 import { MotionHeading } from "./PageMotion";
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 import { motionReveal } from "./usePageMotion";
 
 type AboutHighlight = {
   id: string;
   label: string;
+  role: string;
   image: string;
   imageAlt: string;
 };
 
-const AUTO_CYCLE_MS = 5_000;
+const AUTO_CYCLE_MS = 3_500;
 
 const aboutHighlights: readonly AboutHighlight[] = [
   {
     id: "task-and-product",
     label: "понять задачу и продукт",
+    role: "Продакт менеджер",
     image: productManagerFigure,
     imageAlt: "Стилизованная конструкторная фигурка Кирилла с планшетом в образе продуктового менеджера",
   },
   {
     id: "work-plan",
     label: "выстроить план работы",
+    role: "Проджект менеджер",
     image: projectManagerFigure,
     imageAlt: "Стилизованная конструкторная фигурка Кирилла с ноутбуком в образе проектного менеджера",
   },
   {
     id: "requirements",
     label: "разобрать требования",
+    role: "Бизнес аналитик",
     image: businessAnalystFigure,
     imageAlt: "Стилизованная конструкторная фигурка Кирилла с лупой в образе бизнес-аналитика",
   },
   {
     id: "development",
     label: "погрузиться в разработку",
+    role: "Разработчик",
     image: coderFigure,
     imageAlt: "Стилизованная конструкторная фигурка Кирилла с ноутбуком и стаканом в образе разработчика",
   },
   {
     id: "communication",
     label: "переговоры и коммуникацию",
+    role: "Переговорщик",
     image: negotiatorFigure,
     imageAlt: "Стилизованная конструкторная фигурка Кирилла с телефоном и портфелем в образе переговорщика",
   },
   {
     id: "teamwork",
     label: "организовать командную работу",
+    role: "Организатор",
     image: staffFigure,
     imageAlt: "Стилизованная конструкторная фигурка Кирилла с гарнитурой и бейджем организатора команды",
   },
   {
     id: "events",
     label: "вести мероприятия",
+    role: "Ведущий",
     image: eventHostFigure,
     imageAlt: "Стилизованная конструкторная фигурка Кирилла с микрофоном в образе ведущего мероприятий",
   },
   {
     id: "platoon-leadership",
     label: "старшиной взвода",
+    role: "Кадет",
     image: cadetFigure,
     imageAlt: "Стилизованная конструкторная фигурка Кирилла в кадетской форме",
   },
@@ -233,7 +242,9 @@ export function AboutSection() {
           className={styles.aboutVisual}
           id={`${idPrefix}-visual`}
           role="group"
-          aria-label={`Активный образ: ${activeHighlight.label}`}
+          aria-label={`Активный образ: ${activeHighlight.role}`}
+          aria-live="polite"
+          aria-atomic="true"
           {...motionReveal("content", 1)}
         >
           <div className={styles.aboutGlow} aria-hidden="true" />
@@ -246,7 +257,7 @@ export function AboutSection() {
               decoding="async"
             />
           </div>
-          <span className={styles.aboutVisualLabel}>{activeHighlight.label}</span>
+          <span className={styles.aboutVisualLabel}>{activeHighlight.role}</span>
         </div>
 
         <div className={styles.aboutCopy} {...motionReveal("content", 2)}>

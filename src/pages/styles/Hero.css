@@ -1,0 +1,284 @@
+.hero {
+  width: min(100%, 880px);
+  margin: 0 auto;
+}
+
+.homeHero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 650px minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+  width: min(calc(100% - 48px), 1380px);
+  min-height: 100svh;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.heroVisual {
+  position: relative;
+  display: grid;
+  place-items: start center;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 100svh;
+  overflow: visible;
+}
+
+.heroImageFrame {
+  position: relative;
+  width: 768px;
+  height: 100svh;
+  overflow: hidden;
+  transform: translateX(-72px);
+}
+
+.heroMedia {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: top center;
+  filter: drop-shadow(0 28px 42px rgb(0 0 0 / 0.5));
+  transform: translateY(45px);
+  transition: opacity 80ms linear;
+}
+
+.heroImage {
+  opacity: 1;
+}
+
+.heroImageHidden {
+  opacity: 0;
+}
+
+.heroVideo {
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.heroVideoVisible {
+  opacity: 1;
+}
+
+.heroContent {
+  position: relative;
+  min-width: 0;
+  padding-top: 136px;
+}
+
+.kicker {
+  margin: 0 0 16px;
+  color: var(--color-accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.homeHero .kicker {
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 18px;
+  color: #93c5fd;
+  line-height: 1.35;
+  text-transform: none;
+}
+
+.hero h1 {
+  max-width: 760px;
+  margin: 0;
+  color: var(--color-text);
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  line-height: 0.95;
+}
+
+.homeHero h1 {
+  max-width: 690px;
+  margin: 0;
+  color: #ffffff;
+  font-family: Arial, var(--font-sans);
+  font-size: 6.8rem;
+  font-weight: 700;
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+}
+
+.lead {
+  max-width: 640px;
+  margin: 24px 0 0;
+  color: var(--color-muted);
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+.homeHero .lead {
+  max-width: 640px;
+  margin-top: 16px;
+  color: #cbd5e1;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.heroDescription {
+  max-width: 660px;
+  margin: 24px 0 0;
+  color: #e5e7eb;
+  font-size: 1.55rem;
+  font-weight: 400;
+  line-height: 1.58;
+}
+
+.roleMarquee {
+  --role-gap: 30px;
+
+  width: min(100%, 700px);
+  padding-bottom: 1px;
+  margin-top: 32px;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent 100%);
+}
+
+.roleTrack {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: roleMarqueeScroll 30s linear infinite paused;
+  will-change: auto;
+}
+
+[data-continuous-motion][data-motion-running="true"] .roleTrack {
+  animation-play-state: running;
+  will-change: transform;
+}
+
+.roleGroup {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--role-gap);
+  align-items: center;
+  padding-right: var(--role-gap);
+}
+
+.rolePill {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 15px 20px;
+  color: #f7f7f8;
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  border: 1px solid rgb(148 163 184 / 0.34);
+  border-radius: 6px;
+  background: rgb(3 7 18 / 0.2);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+.rolePill::after {
+  position: absolute;
+  top: 50%;
+  right: -18px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  content: "";
+  background: rgb(226 232 240 / 0.72);
+  transform: translateY(-50%);
+}
+
+@keyframes roleMarqueeScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip: rect(0 0 0 0);
+}
+
+.actions {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 45px;
+}
+
+.primaryLink,
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 6px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.primaryLink {
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+}
+
+.secondaryLink {
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+@media (hover: hover) {
+  .homeHero .primaryLink:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 20px 38px rgb(37 99 235 / 0.4);
+  }
+}
+
+.homeHero .primaryLink {
+  gap: 30px;
+  min-width: 336px;
+  min-height: 84px;
+  padding: 0 38px;
+  border-radius: 11px;
+  color: #ffffff;
+  font-size: 1.22rem;
+  font-weight: 800;
+  background: linear-gradient(180deg, #1685ff 0%, #0564ff 100%);
+  box-shadow:
+    0 18px 40px rgb(37 99 235 / 0.4),
+    inset 0 1px 0 rgb(255 255 255 / 0.22);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.homeHero .primaryLink:focus-visible,
+.homeHero .rolePill:focus-visible {
+  outline: 3px solid #facc15;
+  outline-offset: 4px;
+}
+
+.homeHero .primaryLink:active {
+  transform: translateY(1px);
+}
+

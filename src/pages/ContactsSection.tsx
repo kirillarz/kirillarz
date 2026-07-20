@@ -1,5 +1,5 @@
 import { MotionHeading } from "./PageMotion";
-import styles from "./Page.module.css";
+import styles from "./PageStyles";
 import { motionReveal } from "./usePageMotion";
 
 const contacts = [
