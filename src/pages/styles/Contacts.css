@@ -90,6 +90,24 @@
   outline-offset: 4px;
 }
 
+.contactsPrivacyLink {
+  grid-column: 1 / -1;
+  margin: -20px 0 0;
+  text-align: right;
+}
+
+.contactsPrivacyLink a {
+  color: #93c5fd;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.contactsPrivacyLink a:focus-visible {
+  border-radius: 3px;
+  outline: 3px solid #facc15;
+  outline-offset: 4px;
+}
+
 @media (hover: hover) {
   .contactsList a:hover {
     border-color: #1685ff;
@@ -97,4 +115,3 @@
     transform: translateY(-2px);
   }
 }
-

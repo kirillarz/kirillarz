@@ -70,6 +70,16 @@ export function trackCurrentPage() {
   lastTrackedUrl = currentUrl;
 }
 
+export function disableYandexMetrika() {
+  if (initialized && window.ym) {
+    window.ym(COUNTER_ID, "destruct");
+  }
+
+  initialized = false;
+  lastTrackedUrl = undefined;
+  previousUrl = undefined;
+}
+
 export function reachMetrikaGoal(
   goal: string,
   parameters?: Record<string, unknown>,

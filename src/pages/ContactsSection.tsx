@@ -1,4 +1,5 @@
 import { reachMetrikaGoal } from "../analytics/yandexMetrika";
+import { Link } from "react-router-dom";
 import { MotionHeading } from "./PageMotion";
 import styles from "./PageStyles";
 import { motionReveal } from "./usePageMotion";
@@ -50,6 +51,9 @@ export function ContactsSection() {
             </li>
           ))}
         </ul>
+        <p className="contactsPrivacyLink">
+          <Link to="/privacy">Политика конфиденциальности и настройки cookies</Link>
+        </p>
       </div>
     </section>
   );

@@ -20,6 +20,10 @@ test.beforeAll(async () => {
 });
 
 test.beforeEach(async ({ page }, testInfo) => {
+  if (!testInfo.title.includes("cookie notice")) {
+    await page.addInitScript(() => localStorage.setItem("kirillarz.analyticsConsent", "denied"));
+  }
+
   if (testInfo.title.includes("hero CTA plays the figure animation")) return;
 
   await page.route("**/hero-minifigure-animate-clean.webm", (route) => route.abort());
