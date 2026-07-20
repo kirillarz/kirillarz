@@ -718,6 +718,26 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await expect.poll(() => screenshot.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
   await expect(firstProject.getByText("01 / 06", { exact: true })).toBeVisible();
 
+  const imageTrigger = firstProject.getByRole("button", { name: /Открыть на весь экран: Экран входа/ });
+  await imageTrigger.click();
+  const lightbox = page.getByRole("dialog", { name: /Полноэкранный просмотр проекта/ });
+  await expect(lightbox).toBeVisible();
+  await expect(lightbox.getByRole("img", { name: /Экран входа/ })).toBeVisible();
+  await expect(lightbox.getByText("1 / 5", { exact: true })).toBeVisible();
+  await expect(page.locator("body")).toHaveCSS("overflow", "hidden");
+  await page.keyboard.press("ArrowRight");
+  await expect(lightbox.getByRole("img", { name: /Результаты поиска помещений/ })).toBeVisible();
+  await expect(lightbox.getByText("2 / 5", { exact: true })).toBeVisible();
+  await captureScreenshot(page, `${artifactsDir}/projects-lightbox-desktop.png`);
+  await page.keyboard.press("Escape");
+  await expect(lightbox).toHaveCount(0);
+  await expect(imageTrigger).toBeFocused();
+  await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
+
+  await imageTrigger.click();
+  await lightbox.locator("..").click({ position: { x: 4, y: 4 } });
+  await expect(lightbox).toHaveCount(0);
+
   await firstProject.getByRole("button", { name: /Следующий слайд/ }).click();
   await expect(firstProject.getByText("02 / 06", { exact: true })).toBeVisible();
   await expect(firstProject.getByRole("img", { name: /Результаты поиска помещений/ })).toBeVisible();
@@ -733,6 +753,7 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await expect(aiDemo).toHaveAttribute("preload", "none");
   await expect(aiDemo).toHaveAttribute("playsinline", "");
   await expect(aiDemo).not.toHaveAttribute("autoplay", "");
+  await expect(firstProject.getByRole("button", { name: /Открыть на весь экран/ })).toHaveCount(0);
 
   await expect(firstProject.getByRole("link", { name: "Открыть репозиторий" })).toHaveAttribute(
     "href",
@@ -797,6 +818,14 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
+  const mobileImageTrigger = mobileFirstProject.getByRole("button", { name: /Открыть на весь экран/ });
+  await mobileImageTrigger.click();
+  await expect(page.getByRole("dialog", { name: /Полноэкранный просмотр проекта/ })).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+    .toBe(true);
+  await captureScreenshot(page, `${artifactsDir}/projects-lightbox-mobile.png`);
+  await page.getByRole("button", { name: "Закрыть полноэкранный просмотр" }).click();
   await captureScreenshot(page, `${artifactsDir}/projects-mobile.png`);
 });
 

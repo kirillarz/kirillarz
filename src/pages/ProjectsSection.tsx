@@ -1,4 +1,5 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { createPortal } from "react-dom";
 
 import aiAgentAdminMetrics from "../assets/screens/ai-agent-search-premises/admin-metrics.webp";
 import aiAgentDemo from "../assets/screens/ai-agent-search-premises/demo-search-premises.mp4";
@@ -257,15 +258,21 @@ function ProjectActionIconView({ name }: { name: ProjectActionIcon }) {
 
 function ProjectCarousel({ project }: { project: Project }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const pointerStart = useRef<{ id: number; x: number } | null>(null);
+  const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+  const lightboxTriggerRef = useRef<HTMLButtonElement | null>(null);
   const slideCount = project.slides.length;
+  const imageSlides = project.slides.filter((slide): slide is Extract<ProjectSlide, { kind: "image" }> => {
+    return slide.kind === "image";
+  });
 
   const showSlide = (index: number) => {
     setActiveIndex((index + slideCount) % slideCount);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (slideCount <= 1 || (event.target as HTMLElement).closest("video")) return;
+    if (slideCount <= 1 || (event.target as HTMLElement).closest('video, [role="dialog"]')) return;
 
     if (event.key === "ArrowLeft") {
       event.preventDefault();
@@ -296,6 +303,59 @@ function ProjectCarousel({ project }: { project: Project }) {
   };
 
   const activeSlide = project.slides[activeIndex];
+  const isLightboxOpen = lightboxIndex !== null;
+
+  const closeLightbox = () => {
+    setLightboxIndex(null);
+  };
+
+  const showLightboxImage = (index: number) => {
+    setLightboxIndex((index + imageSlides.length) % imageSlides.length);
+  };
+
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    lightboxCloseRef.current?.focus();
+
+    const handleLightboxKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setLightboxIndex(null);
+      } else if (event.key === "ArrowLeft" && imageSlides.length > 1) {
+        event.preventDefault();
+        setLightboxIndex((current) =>
+          current === null ? current : (current - 1 + imageSlides.length) % imageSlides.length,
+        );
+      } else if (event.key === "ArrowRight" && imageSlides.length > 1) {
+        event.preventDefault();
+        setLightboxIndex((current) => (current === null ? current : (current + 1) % imageSlides.length));
+      } else if (event.key === "Tab") {
+        const dialog = lightboxCloseRef.current?.closest('[role="dialog"]');
+        const controls = dialog?.querySelectorAll<HTMLElement>("button:not([disabled])");
+        if (!controls?.length) return;
+        const firstControl = controls[0];
+        const lastControl = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === firstControl) {
+          event.preventDefault();
+          lastControl.focus();
+        } else if (!event.shiftKey && document.activeElement === lastControl) {
+          event.preventDefault();
+          firstControl.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleLightboxKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleLightboxKeyDown);
+      lightboxTriggerRef.current?.focus();
+    };
+  }, [imageSlides.length, isLightboxOpen]);
 
   return (
     <div
@@ -314,13 +374,26 @@ function ProjectCarousel({ project }: { project: Project }) {
       <div className={styles.projectMediaFrame}>
         <div className={styles.projectSlide} aria-live="polite">
           {activeSlide.kind === "image" ? (
-            <img
-              className={styles.projectScreenshot}
-              src={activeSlide.src}
-              alt={activeSlide.alt}
-              loading="lazy"
-              decoding="async"
-            />
+            <button
+              className={styles.projectImageButton}
+              type="button"
+              aria-label={`Открыть на весь экран: ${activeSlide.alt}`}
+              onClick={(event) => {
+                lightboxTriggerRef.current = event.currentTarget;
+                setLightboxIndex(imageSlides.findIndex((slide) => slide.src === activeSlide.src));
+              }}
+            >
+              <img
+                className={styles.projectScreenshot}
+                src={activeSlide.src}
+                alt={activeSlide.alt}
+                loading="lazy"
+                decoding="async"
+              />
+              <span className={styles.projectImageZoomHint} aria-hidden="true">
+                <span>↗</span> Увеличить
+              </span>
+            </button>
           ) : (
             <video
               className={styles.projectVideo}
@@ -376,6 +449,68 @@ function ProjectCarousel({ project }: { project: Project }) {
           ))}
         </div>
       ) : null}
+
+      {lightboxIndex !== null
+        ? createPortal(
+            <div
+              className={styles.projectLightboxBackdrop}
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) closeLightbox();
+              }}
+            >
+              <div
+                className={styles.projectLightbox}
+                role="dialog"
+                aria-modal="true"
+                aria-label={`Полноэкранный просмотр проекта «${project.title}»`}
+                onMouseDown={(event) => {
+                  if (event.target === event.currentTarget) closeLightbox();
+                }}
+              >
+                <button
+                  className={styles.projectLightboxClose}
+                  type="button"
+                  aria-label="Закрыть полноэкранный просмотр"
+                  onClick={closeLightbox}
+                  ref={lightboxCloseRef}
+                >
+                  ×
+                </button>
+
+                <img
+                  className={styles.projectLightboxImage}
+                  src={imageSlides[lightboxIndex].src}
+                  alt={imageSlides[lightboxIndex].alt}
+                />
+
+                {imageSlides.length > 1 ? (
+                  <>
+                    <button
+                      className={`${styles.projectLightboxArrow} ${styles.projectLightboxArrowPrevious}`}
+                      type="button"
+                      aria-label="Предыдущее фото проекта"
+                      onClick={() => showLightboxImage(lightboxIndex - 1)}
+                    >
+                      ←
+                    </button>
+                    <button
+                      className={`${styles.projectLightboxArrow} ${styles.projectLightboxArrowNext}`}
+                      type="button"
+                      aria-label="Следующее фото проекта"
+                      onClick={() => showLightboxImage(lightboxIndex + 1)}
+                    >
+                      →
+                    </button>
+                    <span className={styles.projectLightboxCount} aria-live="polite">
+                      {lightboxIndex + 1} / {imageSlides.length}
+                    </span>
+                  </>
+                ) : null}
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
