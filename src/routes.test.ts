@@ -5,7 +5,11 @@ import { routes } from "./routes";
 
 describe("routes", () => {
   it("keeps the public route contract stable", () => {
-    expect(routes.map((route) => route.path)).toEqual(["/", "/employer", "*"]);
+    expect(routes.map((route) => route.path)).toEqual(["/", "/employer", "/privacy", "*"]);
+  });
+
+  it("matches the privacy policy route", () => {
+    expect(matchRoutes(routes, "/privacy")?.at(-1)?.route.path).toBe("/privacy");
   });
 
   it("matches the dedicated employer route", () => {
