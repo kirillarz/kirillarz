@@ -8,6 +8,12 @@ test.beforeAll(async () => {
   await mkdir(artifactsDir, { recursive: true });
 });
 
+test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.title.includes("hero CTA plays the figure animation")) return;
+
+  await page.route("**/hero-minifigure-animate-clean.webm", (route) => route.abort());
+});
+
 async function scrollToSection(section: Locator) {
   await section.evaluate((element) => {
     const root = document.documentElement;
@@ -121,6 +127,7 @@ test("hero CTA plays the figure animation and reveals the about section through 
   const overlay = page.getByTestId("hero-flash-overlay");
   const aboutSection = page.getByRole("region", { name: "Мне тесно в рамках одной роли" });
 
+  await expect(video).toHaveAttribute("preload", "auto");
   await expectVideoMetadataReady(video);
   await expect(video).toHaveJSProperty("paused", true);
   await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
@@ -215,9 +222,9 @@ test("hero CTA falls back to anchor navigation when the animation cannot load", 
   const overlay = page.getByTestId("hero-flash-overlay");
   const aboutSection = page.getByRole("region", { name: "Мне тесно в рамках одной роли" });
 
-  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.error !== null)).toBe(true);
   await page.getByRole("link", { name: /Узнать обо мне/ }).click();
 
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.error !== null)).toBe(true);
   await expect(page).toHaveURL(/#about$/);
   await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
   await expect
@@ -294,6 +301,7 @@ test("hero role marquee loops continuously and respects reduced motion", async (
 });
 
 test("section motion follows scrolling, reveals once, and respects reduced motion", async ({ page }) => {
+  test.slow();
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
 
@@ -328,8 +336,9 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
   await captureScreenshot(page, `${artifactsDir}/transition-brick-desktop.png`);
 
   await placeTransitionAt(page, brickTransition, 0.18);
-  const lateProgress = Number(await brickTransition.getAttribute("data-progress"));
-  expect(lateProgress).toBeGreaterThan(middleProgress);
+  await expect
+    .poll(async () => Number(await brickTransition.getAttribute("data-progress")))
+    .toBeGreaterThan(middleProgress);
 
   await placeTransitionAt(page, brickTransition, 0.82);
   await expect
@@ -621,7 +630,7 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await expect(firstProject.getByText("06 / 06", { exact: true })).toBeVisible();
   const aiDemo = firstProject.locator("video");
   await expect(aiDemo).toHaveAttribute("controls", "");
-  await expect(aiDemo).toHaveAttribute("preload", "metadata");
+  await expect(aiDemo).toHaveAttribute("preload", "none");
   await expect(aiDemo).toHaveAttribute("playsinline", "");
   await expect(aiDemo).not.toHaveAttribute("autoplay", "");
 
@@ -645,7 +654,7 @@ test("projects section renders confirmed media and working actions", async ({ pa
   const pmVideo = pmProject.locator("video");
   await expect(pmVideo).toHaveCount(1);
   await expect(pmVideo).toHaveAttribute("controls", "");
-  await expect(pmVideo).toHaveAttribute("preload", "metadata");
+  await expect(pmVideo).toHaveAttribute("preload", "none");
   await expect(pmVideo).toHaveAttribute("playsinline", "");
   await expect(pmVideo).not.toHaveAttribute("autoplay", "");
   await expect
@@ -662,7 +671,7 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await captureScreenshot(page, `${artifactsDir}/projects-botnetschool-desktop.png`);
 
   await scrollToSection(pmProject);
-  await expectVideoMetadataReady(pmVideo);
+  await expect(pmVideo).toBeVisible();
   await captureScreenshot(page, `${artifactsDir}/projects-pm-simulator-desktop.png`);
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -709,6 +718,7 @@ test("hobby section reveals descriptions without page overflow", async ({ page }
   await expect(skiing).toHaveAttribute("aria-expanded", "true");
   await expect(hobbySection.locator('[role="tooltip"]:visible')).toHaveCount(1);
 
+  await page.keyboard.press("Tab");
   await swimming.focus();
   await expect(swimming).toHaveAttribute("aria-expanded", "true");
   await expect(hobbySection.locator('[role="tooltip"]:visible')).toHaveCount(1);

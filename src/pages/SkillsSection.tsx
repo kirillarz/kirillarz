@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-import canbanImage from "../assets/canban-cutout.png";
-import communicationImage from "../assets/communication-cutout.png";
-import developmentImage from "../assets/development-cutout.png";
+import canbanImage from "../assets/canban-cutout.webp";
+import communicationImage from "../assets/communication-cutout.webp";
+import developmentImage from "../assets/development-cutout.webp";
 import { MotionHeading } from "./PageMotion";
 import styles from "./Page.module.css";
 import { motionReveal } from "./usePageMotion";
@@ -294,7 +294,13 @@ export function SkillsSection() {
               {...motionReveal("card", index)}
             >
               <div className={styles.skillCardImageWrap}>
-                <img className={styles.skillCardImage} src={group.image} alt={group.imageAlt} />
+                <img
+                  className={styles.skillCardImage}
+                  src={group.image}
+                  alt={group.imageAlt}
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
 
               <h3 id={`${group.id}-title`}>{group.title}</h3>

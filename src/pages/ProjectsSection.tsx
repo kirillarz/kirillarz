@@ -328,7 +328,7 @@ function ProjectCarousel({ project }: { project: Project }) {
               poster={activeSlide.poster}
               aria-label={activeSlide.label}
               controls
-              preload="metadata"
+              preload="none"
               playsInline
             />
           )}

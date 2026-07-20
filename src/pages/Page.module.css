@@ -41,7 +41,7 @@
   background: #ffffff;
   transition-property: opacity;
   transition-duration: 0ms;
-  will-change: opacity;
+  will-change: auto;
 }
 
 .heroFlashOverlayCovering {
@@ -49,6 +49,7 @@
   opacity: 1;
   transition-duration: 220ms;
   transition-timing-function: ease-out;
+  will-change: opacity;
 }
 
 .heroFlashOverlayRevealing {
@@ -56,6 +57,7 @@
   opacity: 0;
   transition-duration: 420ms;
   transition-timing-function: ease-in-out;
+  will-change: opacity;
 }
 
 .sectionTransition {
@@ -112,7 +114,7 @@
     inset 0 1px 0 rgb(255 255 255 / 0.18),
     inset 0 -6px 10px rgb(0 0 0 / 0.18);
   transform: translate3d(-108%, 0, 0);
-  will-change: transform;
+  will-change: auto;
 }
 
 .sectionTransitionStripe:nth-child(even) {
@@ -197,7 +199,7 @@
   box-shadow: 0 0 28px rgb(22 133 255 / 0.62);
   opacity: 0;
   transform: translate(-50%, -50%) scaleX(0.35);
-  will-change: opacity, transform;
+  will-change: auto;
 }
 
 .scatterPiece {
@@ -208,7 +210,16 @@
   user-select: none;
   filter: drop-shadow(0 12px 9px rgb(0 0 0 / 0.35));
   transform-origin: center;
+  will-change: auto;
+}
+
+.sectionTransition[data-transition-active="true"] .sectionTransitionStripe,
+.sectionTransition[data-transition-active="true"] .scatterPiece {
   will-change: transform;
+}
+
+.sectionTransition[data-transition-active="true"] .scatterRail {
+  will-change: opacity, transform;
 }
 
 .scatterPieceBrick {
@@ -414,7 +425,12 @@
   display: flex;
   align-items: center;
   width: max-content;
-  animation: roleMarqueeScroll 30s linear infinite;
+  animation: roleMarqueeScroll 30s linear infinite paused;
+  will-change: auto;
+}
+
+[data-continuous-motion][data-motion-running="true"] .roleTrack {
+  animation-play-state: running;
   will-change: transform;
 }
 

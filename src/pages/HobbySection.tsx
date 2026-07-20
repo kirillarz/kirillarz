@@ -1,6 +1,6 @@
 import { useRef, useState, type CSSProperties, type MouseEvent } from "react";
 
-import hobbyMap from "../assets/hobby_map.png";
+import hobbyMap from "../assets/hobby_map.webp";
 import { MotionHeading } from "./PageMotion";
 import styles from "./Page.module.css";
 import { motionReveal } from "./usePageMotion";
@@ -151,6 +151,8 @@ export function HobbySection() {
                 alt="Конструкторная карта с горами, озером, сценой, аэропортом и бассейном"
                 loading="lazy"
                 decoding="async"
+                width="1572"
+                height="1001"
               />
 
               {hobbies.map((hobby) => (

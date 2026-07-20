@@ -1,13 +1,13 @@
 import { useEffect, useId, useRef, useState } from "react";
 
-import businessAnalystFigure from "../assets/about-me/business-analyst.png";
-import cadetFigure from "../assets/about-me/cadet.png";
-import coderFigure from "../assets/about-me/coder.png";
-import eventHostFigure from "../assets/about-me/event-host.png";
-import negotiatorFigure from "../assets/about-me/negotiator.png";
-import productManagerFigure from "../assets/about-me/product-manager.png";
-import projectManagerFigure from "../assets/about-me/project-manager.png";
-import staffFigure from "../assets/about-me/staff.png";
+import businessAnalystFigure from "../assets/about-me/business-analyst.webp";
+import cadetFigure from "../assets/about-me/cadet.webp";
+import coderFigure from "../assets/about-me/coder.webp";
+import eventHostFigure from "../assets/about-me/event-host.webp";
+import negotiatorFigure from "../assets/about-me/negotiator.webp";
+import productManagerFigure from "../assets/about-me/product-manager.webp";
+import projectManagerFigure from "../assets/about-me/project-manager.webp";
+import staffFigure from "../assets/about-me/staff.webp";
 import { MotionHeading } from "./PageMotion";
 import styles from "./Page.module.css";
 import { motionReveal } from "./usePageMotion";
@@ -242,6 +242,8 @@ export function AboutSection() {
               className={styles.aboutFigure}
               src={activeHighlight.image}
               alt={activeHighlight.imageAlt}
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <span className={styles.aboutVisualLabel}>{activeHighlight.label}</span>
