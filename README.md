@@ -53,13 +53,15 @@ Lego-style сайт с минифигурками, интерактивными 
 * **TypeScript** — проверка типов;
 * **ESLint** — проверка качества кода;
 * **Vitest** — быстрые unit/smoke-тесты для стабильных контрактов приложения;
-* **Playwright** — визуальный smoke-тест главной страницы со скриншотами для проверки вёрстки.
+* **Playwright** — локальная визуальная диагностика страниц и интерактивных сценариев во время UI-разработки.
 
 ### Развёртывание
 
 * **GitHub Actions** — автоматические проверки качества и production-сборка;
 * **GitHub Pages** — автоматическая публикация изменений из ветки `main`;
-* **Целевой production URL** — [https://kirillarz.ru/](https://kirillarz.ru/).
+* **Production URL** — [https://kirillarz.ru/](https://kirillarz.ru/).
+* **Production base path** — `/`, поскольку сайт публикуется на собственном домене.
+* **Метаданные** — `/favicon.png` и `/og/kirill-arzamastsev.jpg`.
 
 ---
 
@@ -68,13 +70,13 @@ Lego-style сайт с минифигурками, интерактивными 
 ### 1. Клонируйте репозиторий
 
 ```bash
-git clone https://github.com/<your-username>/<repository-name>.git
-cd <repository-name>
+git clone https://github.com/kirillarz/kirillarz.git
+cd kirillarz
 ```
 
 ### 2. Установите зависимости
 
-Проект проверяется в CI на Node.js 24. Для чистой установки по lockfile используйте:
+Проект закреплён на Node.js 24 и npm 11. Для чистой установки по lockfile используйте:
 
 ```bash
 npm ci
@@ -130,23 +132,29 @@ npm run test
 # Полная проверка проекта
 npm run check
 
+# Предрелизная проверка, включая готовность GitHub Pages-артефакта
+npm run release:check
+
 # Скриншоты главной страницы для visual smoke-проверки
 npm run visual:smoke
 ```
 
 `visual:smoke` сам запускает Vite на свободном локальном порту и гарантированно
 останавливает сервер после Playwright-тестов. Предварительно запускать
-`npm run dev` не нужно. Штатный лимит Playwright составляет 35 секунд,
-аварийная остановка дерева процессов начинается через 40 секунд, а абсолютный
-лимит visual smoke-прогона — 45 секунд.
+`npm run dev` не нужно. Лимит одного Playwright-теста составляет 15 секунд,
+всего набора — 110 секунд; runner начинает аварийную остановку через 120 секунд,
+а его абсолютный лимит — 140 секунд.
 
-Эти же проверки запускаются в GitHub Actions: `typecheck`, `lint`, `test`, `build`.
-После успешных проверок deployment workflow собирает Pages-артефакт и публикует
-его из ветки `main`. Перед первым деплоем в `Settings → Pages` нужно выбрать
-источник `GitHub Actions`. До подключения собственного домена сборка использует
-`/kirillarz/`; после добавления `kirillarz.ru` в Pages settings в Actions
-variable `PAGES_BASE_PATH` нужно установить значение `/`. Файл `CNAME` при
-публикации через Actions не требуется.
+Playwright используется локально ИИ-агентом для визуальной диагностики при
+изменениях UI/CSS и не является обязательной CI-проверкой. В GitHub Actions
+запускаются только `lint`, `typecheck`, Vitest и production-сборка.
+
+`npm run release:check` повторяет штатные проверки, подготавливает Pages-файлы
+`/employer/index.html` и `404.html`, затем проверяет структуру артефакта,
+favicon, Open Graph image и production asset URL. Deployment workflow выполняет
+эту сборку один раз и публикует `dist` из ветки `main`. В `Settings → Pages`
+источником должен быть выбран `GitHub Actions`; base path всегда равен `/`.
+Файл `CNAME` при публикации через Actions не требуется.
 Скриншоты visual smoke-проверки сохраняются в
 `artifacts/visual-smoke/home-desktop.png` и
 `artifacts/visual-smoke/home-mobile.png`; папка очищается перед каждым прогоном,

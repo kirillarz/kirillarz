@@ -160,11 +160,10 @@ PDF-резюме доступно.
 
 * Целевой canonical URL: https://kirillarz.ru/
 * `og:url`: https://kirillarz.ru/
-* Favicon: `/favicon.svg`, PNG fallback: `/favicon-64.png`.
+* Favicon: `/favicon.png`, PNG 64×64.
 * Open Graph image: `/og/kirill-arzamastsev.jpg`, 1200×630.
-* Площадка публикации пока не выбрана. Нельзя утверждать, что сайт уже
-  опубликован: перед релизом нужно привязать домен, включить HTTPS, проверить
-  сертификат и редирект с HTTP.
+* Площадка публикации: GitHub Pages.
+* Сайт опубликован на `https://kirillarz.ru/`; домен и HTTPS подключены.
 
 ---
 
