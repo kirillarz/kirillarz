@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import canbanImage from "../assets/canban-cutout.webp";
+import planningBoardImage from "../assets/planning-board-cutout.webp";
 import communicationImage from "../assets/communication-cutout.webp";
 import developmentImage from "../assets/development-cutout.webp";
 import { MotionHeading } from "./PageMotion";
@@ -65,7 +65,7 @@ const skillGroups: readonly SkillGroup[] = [
     id: "product-management",
     title: "Продукт и управление",
     tone: "yellow",
-    image: canbanImage,
+    image: planningBoardImage,
     imageAlt: "Жёлтая конструкторная канбан-доска с синими карточками",
     skills: [
       { label: "Product Management", icon: "target" },

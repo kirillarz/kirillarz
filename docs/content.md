@@ -326,7 +326,7 @@ Product / Project Manager и Frontend-разработчик.
 
 * GitVerse: https://gitverse.ru/name-later-urfu/monorepo
 * Видео-демо: `src/assets/screens/ai-agent-search-premises/demo-search-premises.mp4`
-* Презентация: `src/assets/screens/ai-agent-search-premises/name-later-presentation.pdf`
+* Презентация: `src/assets/screens/ai-agent-search-premises/ai-agent-presentation.pdf`
 * Медиа в порядке показа:
   1. `src/assets/screens/ai-agent-search-premises/login-screen.webp` —
      `Экран входа в систему подбора помещений`;

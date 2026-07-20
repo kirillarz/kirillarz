@@ -12,7 +12,7 @@ import aiAgentDemo from "../assets/screens/ai-agent-search-premises/demo-search-
 import aiAgentEmailComposer from "../assets/screens/ai-agent-search-premises/email-composer.webp";
 import aiAgentLoginScreen from "../assets/screens/ai-agent-search-premises/login-screen.webp";
 import aiAgentMap from "../assets/screens/ai-agent-search-premises/map.webp";
-import aiAgentPresentation from "../assets/screens/ai-agent-search-premises/name-later-presentation.pdf";
+import aiAgentPresentation from "../assets/screens/ai-agent-search-premises/ai-agent-presentation.pdf";
 import aiAgentSearchResults from "../assets/screens/ai-agent-search-premises/search-results.webp";
 import botNetSchoolMainMenu from "../assets/screens/botnetschool/main-menu.webp";
 import botNetSchoolReports from "../assets/screens/botnetschool/reports.webp";
