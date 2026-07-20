@@ -397,6 +397,34 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
   }
 });
 
+test("fast mobile scroll jumps keep distant transitions idle", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const distantTransition = page.getByTestId("section-transition-projects-hobby");
+  await expect(distantTransition).toHaveAttribute("data-transition-active", "false");
+  await distantTransition.evaluate((element) => {
+    const trackedWindow = window as Window & { __transitionGeometryReads?: number };
+    const originalGetBoundingClientRect = element.getBoundingClientRect.bind(element);
+    trackedWindow.__transitionGeometryReads = 0;
+    element.getBoundingClientRect = () => {
+      trackedWindow.__transitionGeometryReads = (trackedWindow.__transitionGeometryReads ?? 0) + 1;
+      return originalGetBoundingClientRect();
+    };
+  });
+
+  await page.evaluate(() => window.scrollTo({ top: 1_200, behavior: "auto" }));
+
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(500);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as Window & { __transitionGeometryReads?: number }).__transitionGeometryReads ?? 0,
+      ),
+    )
+    .toBe(0);
+});
+
 test("mobile navigation exposes section anchors and closes predictably", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");

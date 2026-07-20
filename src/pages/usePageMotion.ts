@@ -10,6 +10,24 @@ type MotionRevealAttributes = HTMLAttributes<HTMLElement> & {
   "data-motion-reveal": MotionRevealKind;
 };
 
+type ScatterPieceRecord = {
+  element: HTMLElement;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  rotation: number;
+};
+
+type TransitionRecord = {
+  element: HTMLElement;
+  variant: "brick-wipe" | "scatter";
+  reverseDirection: number;
+  stripes: readonly HTMLElement[];
+  pieces: readonly ScatterPieceRecord[];
+  rail: HTMLElement | null;
+};
+
 const TRANSITION_START_VIEWPORT_RATIO = 0.92;
 const TRANSITION_END_VIEWPORT_RATIO = 0.08;
 
@@ -21,55 +39,65 @@ function easeInOutCubic(value: number) {
   return value < 0.5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2;
 }
 
-function updateBrickTransition(element: HTMLElement, progress: number) {
-  const reverseDirection = element.dataset.direction === "reverse" ? -1 : 1;
-  const stripes = element.querySelectorAll<HTMLElement>("[data-transition-stripe]");
+function createTransitionRecord(element: HTMLElement): TransitionRecord {
+  return {
+    element,
+    variant: element.dataset.variant === "scatter" ? "scatter" : "brick-wipe",
+    reverseDirection: element.dataset.direction === "reverse" ? -1 : 1,
+    stripes: Array.from(element.querySelectorAll<HTMLElement>("[data-transition-stripe]")),
+    pieces: Array.from(element.querySelectorAll<HTMLElement>("[data-transition-piece]")).map(
+      (piece) => ({
+        element: piece,
+        startX: Number(piece.dataset.startX ?? 0),
+        startY: Number(piece.dataset.startY ?? 0),
+        endX: Number(piece.dataset.endX ?? 0),
+        endY: Number(piece.dataset.endY ?? 0),
+        rotation: Number(piece.dataset.rotation ?? 0),
+      }),
+    ),
+    rail: element.querySelector<HTMLElement>("[data-transition-rail]"),
+  };
+}
 
-  stripes.forEach((stripe, index) => {
+function updateBrickTransition(record: TransitionRecord, progress: number) {
+  record.stripes.forEach((stripe, index) => {
     const delay = index * 0.018;
     const localProgress = easeInOutCubic(clamp((progress - delay) / (1 - delay * 2)));
-    const rowDirection = (index % 2 === 0 ? -1 : 1) * reverseDirection;
+    const rowDirection = (index % 2 === 0 ? -1 : 1) * record.reverseDirection;
     const translate = rowDirection * (1 - localProgress * 2) * 108;
     stripe.style.transform = `translate3d(${translate}%, 0, 0)`;
   });
 }
 
-function updateScatterTransition(element: HTMLElement, progress: number) {
-  const pieces = element.querySelectorAll<HTMLElement>("[data-transition-piece]");
-  const rail = element.querySelector<HTMLElement>("[data-transition-rail]");
+function updateScatterTransition(record: TransitionRecord, progress: number) {
   const assembling = progress <= 0.5;
   const phaseProgress = easeInOutCubic(assembling ? progress * 2 : (progress - 0.5) * 2);
 
-  if (rail) {
+  if (record.rail) {
     const railProgress = 1 - Math.abs(progress - 0.5) * 2;
-    rail.style.opacity = String(railProgress);
-    rail.style.transform = `translate(-50%, -50%) scaleX(${0.35 + railProgress * 0.65})`;
+    record.rail.style.opacity = String(railProgress);
+    record.rail.style.transform = `translate(-50%, -50%) scaleX(${0.35 + railProgress * 0.65})`;
   }
 
-  pieces.forEach((piece) => {
-    const startX = Number(piece.dataset.startX ?? 0);
-    const startY = Number(piece.dataset.startY ?? 0);
-    const endX = Number(piece.dataset.endX ?? 0);
-    const endY = Number(piece.dataset.endY ?? 0);
-    const rotation = Number(piece.dataset.rotation ?? 0);
+  record.pieces.forEach(({ element, startX, startY, endX, endY, rotation }) => {
     const offsetX = assembling ? startX * (1 - phaseProgress) : endX * phaseProgress;
     const offsetY = assembling ? startY * (1 - phaseProgress) : endY * phaseProgress;
     const rotate = assembling ? rotation * (1 - phaseProgress) : -rotation * phaseProgress;
     const scale = assembling ? 0.72 + phaseProgress * 0.28 : 1 - phaseProgress * 0.18;
 
-    piece.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotate(${rotate}deg) scale(${scale})`;
+    element.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotate(${rotate}deg) scale(${scale})`;
   });
 }
 
-function updateTransition(element: HTMLElement, progress: number) {
+function updateTransition(record: TransitionRecord, progress: number) {
   const nextProgress = clamp(progress);
-  element.style.setProperty("--transition-progress", nextProgress.toFixed(4));
-  element.dataset.progress = nextProgress.toFixed(3);
+  record.element.style.setProperty("--transition-progress", nextProgress.toFixed(4));
+  record.element.dataset.progress = nextProgress.toFixed(3);
 
-  if (element.dataset.variant === "scatter") {
-    updateScatterTransition(element, nextProgress);
+  if (record.variant === "scatter") {
+    updateScatterTransition(record, nextProgress);
   } else {
-    updateBrickTransition(element, nextProgress);
+    updateBrickTransition(record, nextProgress);
   }
 }
 
@@ -85,9 +113,14 @@ export function usePageMotion() {
     const root = document.documentElement;
     const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const revealElements = Array.from(document.querySelectorAll<HTMLElement>("[data-motion-reveal]"));
-    const transitionElements = Array.from(
+    const transitionRecords = Array.from(
       document.querySelectorAll<HTMLElement>("[data-section-transition]"),
+      createTransitionRecord,
     );
+    const transitionRecordByElement = new Map(
+      transitionRecords.map((record) => [record.element, record] as const),
+    );
+    const activeTransitionRecords = new Set<TransitionRecord>();
     const continuousMotionElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-continuous-motion]"),
     );
@@ -109,20 +142,25 @@ export function usePageMotion() {
       const start = viewportHeight * TRANSITION_START_VIEWPORT_RATIO;
       const end = viewportHeight * TRANSITION_END_VIEWPORT_RATIO;
 
-      transitionElements.forEach((element) => {
-        const bounds = element.getBoundingClientRect();
+      const measurements = Array.from(activeTransitionRecords, (record) => ({
+        record,
+        bounds: record.element.getBoundingClientRect(),
+      }));
+
+      measurements.forEach(({ record, bounds }) => {
+        const { element } = record;
 
         if (bounds.top > viewportHeight) {
-          if (element.dataset.progress !== "0.000") updateTransition(element, 0);
+          if (element.dataset.progress !== "0.000") updateTransition(record, 0);
           return;
         }
 
         if (bounds.bottom < 0) {
-          if (element.dataset.progress !== "1.000") updateTransition(element, 1);
+          if (element.dataset.progress !== "1.000") updateTransition(record, 1);
           return;
         }
 
-        updateTransition(element, (start - bounds.top) / (start - end));
+        updateTransition(record, (start - bounds.top) / (start - end));
       });
     };
 
@@ -137,7 +175,8 @@ export function usePageMotion() {
 
       if (reducedMotionQuery.matches) {
         delete root.dataset.motion;
-        transitionElements.forEach((element) => delete element.dataset.transitionActive);
+        activeTransitionRecords.clear();
+        transitionRecords.forEach(({ element }) => delete element.dataset.transitionActive);
         continuousMotionElements.forEach((element) => delete element.dataset.motionRunning);
         revealEverything();
         return;
@@ -147,8 +186,9 @@ export function usePageMotion() {
 
       if (typeof IntersectionObserver === "undefined") {
         revealEverything();
-        transitionElements.forEach((element) => {
-          element.dataset.transitionActive = "true";
+        transitionRecords.forEach((record) => {
+          record.element.dataset.transitionActive = "true";
+          activeTransitionRecords.add(record);
         });
         continuousMotionElements.forEach((element) => {
           element.dataset.motionRunning = "true";
@@ -175,6 +215,20 @@ export function usePageMotion() {
               const element = entry.target as HTMLElement;
               if (element.hasAttribute("data-section-transition")) {
                 element.dataset.transitionActive = String(entry.isIntersecting);
+                const record = transitionRecordByElement.get(element);
+                if (!record) return;
+
+                if (entry.isIntersecting) {
+                  activeTransitionRecords.add(record);
+                } else {
+                  activeTransitionRecords.delete(record);
+                  const terminalProgress = entry.boundingClientRect.top < 0 ? 1 : 0;
+                  if (element.dataset.progress !== terminalProgress.toFixed(3)) {
+                    updateTransition(record, terminalProgress);
+                  }
+                }
+
+                requestTransitionUpdate();
               } else {
                 element.dataset.motionRunning = String(entry.isIntersecting);
               }
@@ -183,7 +237,7 @@ export function usePageMotion() {
           { rootMargin: "25% 0px" },
         );
 
-        transitionElements.forEach((element) => activityObserver?.observe(element));
+        transitionRecords.forEach(({ element }) => activityObserver?.observe(element));
         continuousMotionElements.forEach((element) => activityObserver?.observe(element));
       }
 
@@ -202,7 +256,8 @@ export function usePageMotion() {
       window.removeEventListener("scroll", requestTransitionUpdate);
       window.removeEventListener("resize", requestTransitionUpdate);
       reducedMotionQuery.removeEventListener("change", setupMotion);
-      transitionElements.forEach((element) => delete element.dataset.transitionActive);
+      activeTransitionRecords.clear();
+      transitionRecords.forEach(({ element }) => delete element.dataset.transitionActive);
       continuousMotionElements.forEach((element) => delete element.dataset.motionRunning);
       delete root.dataset.motion;
     };
