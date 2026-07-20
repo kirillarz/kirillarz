@@ -564,6 +564,9 @@ test("about section switches inline highlights and respects interaction pauses",
   ).toHaveCount(1);
 
   await expect(taskAndProduct).toHaveAttribute("aria-pressed", "true");
+  expect(await taskAndProduct.evaluate((element) => window.getComputedStyle(element).backgroundImage)).toMatch(
+    /^linear-gradient\(rgba/,
+  );
   await expect(aboutSection.getByRole("img", { name: /продуктового менеджера/ })).toBeVisible();
 
   await workPlan.hover();
