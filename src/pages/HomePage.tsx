@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type TransitionEvent } from "react";
 
-import heroMinifigure from "../assets/hero-minifigure.png";
+import heroMinifigure from "../assets/hero-minifigure.webp";
 import heroMinifigureAnimation from "../assets/hero-minifigure-animate-clean.webm";
 import { AboutSection } from "./AboutSection";
 import { ContactsSection } from "./ContactsSection";
@@ -187,6 +187,10 @@ export function HomePage() {
             <img
               className={`${styles.heroMedia} ${styles.heroImage} ${isVideoVisible ? styles.heroImageHidden : ""}`}
               src={heroMinifigure}
+              width="768"
+              height="1315"
+              decoding="async"
+              fetchPriority="high"
               alt="Стилизованная конструкторная минифигурка Кирилла в костюме"
             />
             <video
@@ -216,7 +220,11 @@ export function HomePage() {
             проекты, координировать команду, общаться с заказчиком и защищать результат.
           </p>
 
-          <div className={styles.roleMarquee} data-testid="hero-role-marquee">
+          <div
+            className={styles.roleMarquee}
+            data-continuous-motion=""
+            data-testid="hero-role-marquee"
+          >
             <span className={styles.srOnly}>Роли: {heroRoles.join(", ")}</span>
             <div className={styles.roleTrack} data-testid="hero-role-track" aria-hidden="true">
               {["primary", "duplicate"].map((group) => (

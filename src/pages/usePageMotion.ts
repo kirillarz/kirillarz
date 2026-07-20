@@ -88,8 +88,12 @@ export function usePageMotion() {
     const transitionElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-section-transition]"),
     );
+    const continuousMotionElements = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-continuous-motion]"),
+    );
     let animationFrameId = 0;
     let observer: IntersectionObserver | null = null;
+    let activityObserver: IntersectionObserver | null = null;
 
     const revealEverything = () => {
       revealElements.forEach((element) => {
@@ -129,9 +133,12 @@ export function usePageMotion() {
 
     const setupMotion = () => {
       observer?.disconnect();
+      activityObserver?.disconnect();
 
       if (reducedMotionQuery.matches) {
         delete root.dataset.motion;
+        transitionElements.forEach((element) => delete element.dataset.transitionActive);
+        continuousMotionElements.forEach((element) => delete element.dataset.motionRunning);
         revealEverything();
         return;
       }
@@ -140,6 +147,12 @@ export function usePageMotion() {
 
       if (typeof IntersectionObserver === "undefined") {
         revealEverything();
+        transitionElements.forEach((element) => {
+          element.dataset.transitionActive = "true";
+        });
+        continuousMotionElements.forEach((element) => {
+          element.dataset.motionRunning = "true";
+        });
       } else {
         observer = new IntersectionObserver(
           (entries) => {
@@ -155,6 +168,23 @@ export function usePageMotion() {
         revealElements.forEach((element) => {
           if (element.dataset.motionRevealed !== "true") observer?.observe(element);
         });
+
+        activityObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const element = entry.target as HTMLElement;
+              if (element.hasAttribute("data-section-transition")) {
+                element.dataset.transitionActive = String(entry.isIntersecting);
+              } else {
+                element.dataset.motionRunning = String(entry.isIntersecting);
+              }
+            });
+          },
+          { rootMargin: "25% 0px" },
+        );
+
+        transitionElements.forEach((element) => activityObserver?.observe(element));
+        continuousMotionElements.forEach((element) => activityObserver?.observe(element));
       }
 
       requestTransitionUpdate();
@@ -167,10 +197,13 @@ export function usePageMotion() {
 
     return () => {
       observer?.disconnect();
+      activityObserver?.disconnect();
       window.cancelAnimationFrame(animationFrameId);
       window.removeEventListener("scroll", requestTransitionUpdate);
       window.removeEventListener("resize", requestTransitionUpdate);
       reducedMotionQuery.removeEventListener("change", setupMotion);
+      transitionElements.forEach((element) => delete element.dataset.transitionActive);
+      continuousMotionElements.forEach((element) => delete element.dataset.motionRunning);
       delete root.dataset.motion;
     };
   }, []);
