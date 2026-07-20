@@ -205,6 +205,8 @@
 .scatterPiece {
   position: absolute;
   z-index: 1;
+  top: var(--scatter-top);
+  left: var(--scatter-left);
   display: block;
   height: auto;
   user-select: none;
@@ -3663,6 +3665,18 @@
   :global(html[data-motion="enhanced"]) [data-motion-reveal="content"][data-motion-revealed="true"],
   :global(html[data-motion="enhanced"]) [data-motion-reveal="card"][data-motion-revealed="true"] {
     transition-delay: calc(var(--motion-index, 0) * 60ms);
+  }
+}
+
+@media (max-width: 640px) {
+  [data-transition-piece] {
+    display: none;
+  }
+
+  [data-transition-piece][data-mobile-visible="true"] {
+    left: var(--scatter-mobile-left);
+    top: var(--scatter-mobile-top);
+    display: block;
   }
 }
 

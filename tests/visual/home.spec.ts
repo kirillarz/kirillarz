@@ -349,6 +349,7 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
   await placeTransitionAt(page, scatterTransition, 0.5);
   await expectImagesReady(scatterTransition);
   await expect(scatterTransition.locator("img[data-transition-piece]")).toHaveCount(13);
+  await expect(scatterTransition.locator("img[data-transition-piece]:visible")).toHaveCount(13);
   await expect(scatterTransition.locator("[data-transition-piece]").first()).not.toHaveCSS("transform", "none");
   await captureScreenshot(page, `${artifactsDir}/transition-scatter-desktop.png`);
 
@@ -381,7 +382,40 @@ test("section motion follows scrolling, reveals once, and respects reduced motio
 
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  await placeTransitionAt(page, page.getByTestId("section-transition-projects-hobby"), 0.5);
+  const mobileScatterTransition = page.getByTestId("section-transition-projects-hobby");
+  await expectImagesReady(mobileScatterTransition);
+  await placeTransitionAt(page, mobileScatterTransition, 0.5);
+  await placeTransitionAt(page, mobileScatterTransition, 0.5);
+  await expect
+    .poll(async () => Number(await mobileScatterTransition.getAttribute("data-progress")))
+    .toBeCloseTo(0.5, 2);
+  const visibleMobilePieces = mobileScatterTransition.locator("img[data-transition-piece]:visible");
+  await expect(visibleMobilePieces).toHaveCount(6);
+  const mobilePieceLayout = await visibleMobilePieces.evaluateAll((pieces) =>
+    pieces.map((piece) => {
+      const bounds = piece.getBoundingClientRect();
+      return {
+        left: bounds.left,
+        right: bounds.right,
+        center: bounds.left + bounds.width / 2,
+        tone: (piece as HTMLElement).dataset.tone,
+      };
+    }),
+  );
+  expect(Math.min(...mobilePieceLayout.map(({ left }) => left))).toBeGreaterThanOrEqual(12);
+  expect(Math.max(...mobilePieceLayout.map(({ right }) => right))).toBeLessThanOrEqual(378);
+  const mobilePieceCenters = mobilePieceLayout.map(({ center }) => center).sort((a, b) => a - b);
+  expect(
+    Math.min(...mobilePieceCenters.slice(1).map((center, index) => center - mobilePieceCenters[index])),
+  ).toBeGreaterThan(45);
+  expect(mobilePieceLayout.map(({ tone }) => tone).sort()).toEqual([
+    "blue",
+    "blue",
+    "red",
+    "red",
+    "yellow",
+    "yellow",
+  ]);
   await captureScreenshot(page, `${artifactsDir}/transition-scatter-mobile.png`);
 
   for (const viewport of [
