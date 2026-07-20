@@ -65,6 +65,37 @@ async function expectVideoMetadataReady(video: Locator) {
   await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.readyState >= 1)).toBe(true);
 }
 
+async function preparePausedVideoScreenshot(video: Locator) {
+  await expectVideoMetadataReady(video);
+  await video.evaluate((element: HTMLVideoElement) => element.pause());
+  await expect(video).toHaveJSProperty("paused", true);
+}
+
+async function expectLightboxGeometry(page: Page, dialog: Locator, video: Locator) {
+  await expect
+    .poll(async () => {
+      const dialogBox = await dialog.boundingBox();
+      const videoBox = await video.boundingBox();
+      const viewport = page.viewportSize();
+      if (!dialogBox || !videoBox || !viewport) return false;
+
+      const isInsideViewport = (box: typeof dialogBox) =>
+        box.x >= 0 &&
+        box.y >= 0 &&
+        box.x + box.width <= viewport.width &&
+        box.y + box.height <= viewport.height;
+      const nativeControlsTop = videoBox.y + Math.max(0, videoBox.height - 56);
+
+      return (
+        isInsideViewport(dialogBox) &&
+        isInsideViewport(videoBox) &&
+        nativeControlsTop >= dialogBox.y &&
+        videoBox.y + videoBox.height <= dialogBox.y + dialogBox.height
+      );
+    })
+    .toBe(true);
+}
+
 async function captureScreenshot(page: Page, path: string, fullPage = false) {
   await page.screenshot({
     path,
@@ -734,6 +765,7 @@ test("skills section renders its groups without viewport overflow", async ({ pag
 });
 
 test("projects section renders confirmed media and working actions", async ({ page }) => {
+  test.setTimeout(30_000);
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");
 
@@ -756,12 +788,34 @@ test("projects section renders confirmed media and working actions", async ({ pa
   const lightbox = page.getByRole("dialog", { name: /Полноэкранный просмотр проекта/ });
   await expect(lightbox).toBeVisible();
   await expect(lightbox.getByRole("img", { name: /Экран входа/ })).toBeVisible();
-  await expect(lightbox.getByText("1 / 5", { exact: true })).toBeVisible();
+  await expect(lightbox.getByText("1 / 6", { exact: true })).toBeVisible();
   await expect(page.locator("body")).toHaveCSS("overflow", "hidden");
   await page.keyboard.press("ArrowRight");
   await expect(lightbox.getByRole("img", { name: /Результаты поиска помещений/ })).toBeVisible();
-  await expect(lightbox.getByText("2 / 5", { exact: true })).toBeVisible();
+  await expect(lightbox.getByText("2 / 6", { exact: true })).toBeVisible();
   await captureScreenshot(page, `${artifactsDir}/projects-lightbox-desktop.png`);
+
+  for (const count of ["3 / 6", "4 / 6", "5 / 6", "6 / 6"]) {
+    await page.keyboard.press("ArrowRight");
+    await expect(lightbox.getByText(count, { exact: true })).toBeVisible();
+  }
+  const traversedModalVideo = lightbox.locator("video");
+  await expect(traversedModalVideo).toBeVisible();
+  await expect(traversedModalVideo).toHaveAttribute("controls", "");
+  await expect(traversedModalVideo).toHaveAttribute("playsinline", "");
+  await expect(traversedModalVideo).toHaveAttribute("preload", "metadata");
+  await expect(traversedModalVideo).not.toHaveAttribute("autoplay", "");
+  await preparePausedVideoScreenshot(traversedModalVideo);
+  await expect(lightbox.getByText("Видео", { exact: true })).toBeVisible();
+  await expect(lightbox.getByRole("button", { name: /Воспроизвести: Видео-демо AI-агента/ })).toBeVisible();
+  await expectLightboxGeometry(page, lightbox, traversedModalVideo);
+  await traversedModalVideo.focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(lightbox.getByText("6 / 6", { exact: true })).toBeVisible();
+  await lightbox.getByRole("button", { name: "Закрыть полноэкранный просмотр" }).focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(lightbox.getByText("5 / 6", { exact: true })).toBeVisible();
+  await expect(traversedModalVideo).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(lightbox).toHaveCount(0);
   await expect(imageTrigger).toBeFocused();
@@ -786,7 +840,45 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await expect(aiDemo).toHaveAttribute("preload", "none");
   await expect(aiDemo).toHaveAttribute("playsinline", "");
   await expect(aiDemo).not.toHaveAttribute("autoplay", "");
-  await expect(firstProject.getByRole("button", { name: /Открыть на весь экран/ })).toHaveCount(0);
+  const videoTrigger = firstProject.getByRole("button", { name: /Открыть на весь экран: Видео-демо/ });
+  await videoTrigger.focus();
+  await expect(videoTrigger).toHaveCSS("opacity", "1");
+  await aiDemo.evaluate(async (element: HTMLVideoElement) => {
+    element.muted = true;
+    await element.play();
+  });
+  await expect.poll(() => aiDemo.evaluate((element: HTMLVideoElement) => !element.paused)).toBe(true);
+  await expect.poll(() => aiDemo.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0);
+  await videoTrigger.click();
+  await expect(aiDemo).toHaveJSProperty("paused", true);
+  await expect.poll(() => aiDemo.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0);
+
+  const directVideoLightbox = page.getByRole("dialog", { name: /Полноэкранный просмотр проекта/ });
+  const directModalVideo = directVideoLightbox.locator("video");
+  await expect(directVideoLightbox.getByText("6 / 6", { exact: true })).toBeVisible();
+  await expect(directModalVideo).toHaveAttribute("controls", "");
+  await expect(directModalVideo).toHaveAttribute("playsinline", "");
+  await expect(directModalVideo).toHaveAttribute("preload", "metadata");
+  await expect(directModalVideo).not.toHaveAttribute("autoplay", "");
+  await preparePausedVideoScreenshot(directModalVideo);
+  await expect.poll(() => directModalVideo.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeLessThan(0.05);
+  await expect(directVideoLightbox.getByText("Видео", { exact: true })).toBeVisible();
+  const directPlayButton = directVideoLightbox.getByRole("button", {
+    name: /Воспроизвести: Видео-демо AI-агента/,
+  });
+  await expect(directPlayButton).toBeVisible();
+  await expectLightboxGeometry(page, directVideoLightbox, directModalVideo);
+  await captureScreenshot(page, `${artifactsDir}/projects-lightbox-video-desktop.png`);
+  await directPlayButton.click();
+  await expect.poll(() => directModalVideo.evaluate((element: HTMLVideoElement) => !element.paused)).toBe(true);
+  await expect.poll(() => directModalVideo.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0);
+  await expect(directModalVideo).toBeFocused();
+  await expect(directPlayButton).toHaveCount(0);
+  await directModalVideo.evaluate((element: HTMLVideoElement) => element.pause());
+  await expect(directPlayButton).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(directVideoLightbox).toHaveCount(0);
+  await expect(videoTrigger).toBeFocused();
 
   await expect(firstProject.getByRole("link", { name: "Открыть репозиторий" })).toHaveAttribute(
     "href",
@@ -811,6 +903,29 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await expect(pmVideo).toHaveAttribute("preload", "none");
   await expect(pmVideo).toHaveAttribute("playsinline", "");
   await expect(pmVideo).not.toHaveAttribute("autoplay", "");
+  const pmVideoTrigger = pmProject.getByRole("button", { name: /Открыть на весь экран: Игровая сцена/ });
+  await pmProject.locator("video").hover();
+  await expect(pmVideoTrigger).toHaveCSS("opacity", "1");
+  await pmVideoTrigger.click();
+  const pmLightbox = page.getByRole("dialog", { name: /Полноэкранный просмотр проекта «PM Simulator»/ });
+  const pmModalVideo = pmLightbox.locator("video");
+  await expect(pmModalVideo).toBeVisible();
+  await preparePausedVideoScreenshot(pmModalVideo);
+  await expect(pmLightbox.getByText("Видео", { exact: true })).toBeVisible();
+  const pmPlayButton = pmLightbox.getByRole("button", { name: /Воспроизвести: Игровая сцена PM Simulator/ });
+  await expect(pmPlayButton).toBeVisible();
+  await expectLightboxGeometry(page, pmLightbox, pmModalVideo);
+  await expect(pmLightbox.getByRole("button", { name: /медиа проекта/ })).toHaveCount(0);
+  await expect(pmLightbox.getByText(/ \//)).toHaveCount(0);
+  await captureScreenshot(page, `${artifactsDir}/projects-lightbox-pm-simulator-desktop.png`);
+  await expect(pmLightbox.getByRole("button", { name: "Закрыть полноэкранный просмотр" })).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(pmPlayButton).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(pmLightbox.getByRole("button", { name: "Закрыть полноэкранный просмотр" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(pmLightbox).toHaveCount(0);
+  await expect(pmVideoTrigger).toBeFocused();
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
     .toBe(true);
@@ -860,6 +975,61 @@ test("projects section renders confirmed media and working actions", async ({ pa
   await captureScreenshot(page, `${artifactsDir}/projects-lightbox-mobile.png`);
   await page.getByRole("button", { name: "Закрыть полноэкранный просмотр" }).click();
   await captureScreenshot(page, `${artifactsDir}/projects-mobile.png`);
+});
+
+test("project video lightboxes stay usable in a real touch context", async ({ browser }) => {
+  const context = await browser.newContext({
+    hasTouch: true,
+    viewport: { width: 390, height: 844 },
+  });
+  const page = await context.newPage();
+  await page.route("**/hero-minifigure-animate-clean.webm", (route) => route.abort());
+
+  try {
+    await page.goto("/");
+    expect(await page.evaluate(() => matchMedia("(hover: none)").matches)).toBe(true);
+
+    const projectsSection = page.getByRole("region", { name: /Проекты, которыми я особенно горжусь/ });
+    await scrollToSection(projectsSection);
+    const firstProject = projectsSection.getByRole("article").first();
+    await firstProject.getByRole("button", { name: /Показать слайд 6: Видео-демо/ }).click();
+    const aiVideoTrigger = firstProject.getByRole("button", {
+      name: /Открыть на весь экран: Видео-демо/,
+    });
+    await expect(aiVideoTrigger).toBeVisible();
+    await expect(aiVideoTrigger).toHaveCSS("opacity", "1");
+    await expect(aiVideoTrigger).not.toBeFocused();
+    await aiVideoTrigger.tap();
+
+    const aiLightbox = page.getByRole("dialog", { name: /Полноэкранный просмотр проекта «AI-агент/ });
+    const aiModalVideo = aiLightbox.locator("video");
+    const aiPlayButton = aiLightbox.getByRole("button", { name: /Воспроизвести: Видео-демо AI-агента/ });
+    await preparePausedVideoScreenshot(aiModalVideo);
+    await expect(aiLightbox.getByText("Видео", { exact: true })).toBeVisible();
+    await expect(aiPlayButton).toBeVisible();
+    await expectLightboxGeometry(page, aiLightbox, aiModalVideo);
+    await captureScreenshot(page, `${artifactsDir}/projects-lightbox-video-mobile.png`);
+    await aiLightbox.getByRole("button", { name: "Закрыть полноэкранный просмотр" }).tap();
+
+    const pmProject = projectsSection.getByRole("article").nth(2);
+    await scrollToSection(pmProject);
+    const pmVideoTrigger = pmProject.getByRole("button", { name: /Открыть на весь экран: Игровая сцена/ });
+    await expect(pmVideoTrigger).toBeVisible();
+    await expect(pmVideoTrigger).toHaveCSS("opacity", "1");
+    await expect(pmVideoTrigger).not.toBeFocused();
+    await pmVideoTrigger.tap();
+
+    const pmLightbox = page.getByRole("dialog", { name: /Полноэкранный просмотр проекта «PM Simulator»/ });
+    const pmModalVideo = pmLightbox.locator("video");
+    await preparePausedVideoScreenshot(pmModalVideo);
+    await expect(pmLightbox.getByText("Видео", { exact: true })).toBeVisible();
+    await expect(pmLightbox.getByRole("button", { name: /Воспроизвести: Игровая сцена PM Simulator/ })).toBeVisible();
+    await expect(pmLightbox.getByRole("button", { name: /медиа проекта/ })).toHaveCount(0);
+    await expectLightboxGeometry(page, pmLightbox, pmModalVideo);
+    await captureScreenshot(page, `${artifactsDir}/projects-lightbox-pm-simulator-mobile.png`);
+  } finally {
+    await context.close();
+  }
 });
 
 test("hobby section reveals descriptions without page overflow", async ({ page }) => {

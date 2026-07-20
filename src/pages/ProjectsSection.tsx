@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from "react";
 import { createPortal } from "react-dom";
 
 import aiAgentAdminMetrics from "../assets/screens/ai-agent-search-premises/admin-metrics.webp";
@@ -32,6 +38,8 @@ type ProjectSlide =
       poster: string;
       label: string;
     };
+
+type ProjectVideoSlide = Extract<ProjectSlide, { kind: "video" }>;
 
 type ProjectAction = {
   label: string;
@@ -256,16 +264,60 @@ function ProjectActionIconView({ name }: { name: ProjectActionIcon }) {
   }
 }
 
+function ProjectLightboxVideo({ slide }: { slide: ProjectVideoSlide }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const playVideo = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    void video.play().catch(() => {
+      setIsPlaying(false);
+    });
+  };
+
+  return (
+    <div className={styles.projectLightboxVideoShell}>
+      <video
+        className={styles.projectLightboxVideo}
+        src={slide.src}
+        poster={slide.poster}
+        aria-label={slide.label}
+        controls
+        playsInline
+        preload="metadata"
+        ref={videoRef}
+        onPlay={(event) => {
+          setIsPlaying(true);
+          event.currentTarget.focus();
+        }}
+        onPause={() => setIsPlaying(false)}
+        onEnded={() => setIsPlaying(false)}
+      />
+      <span className={styles.projectLightboxVideoBadge}>Видео</span>
+      {!isPlaying ? (
+        <button
+          className={styles.projectLightboxPlayButton}
+          type="button"
+          aria-label={`Воспроизвести: ${slide.label}`}
+          onClick={playVideo}
+        >
+          <span className={styles.projectLightboxPlayIcon} aria-hidden="true" />
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 function ProjectCarousel({ project }: { project: Project }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const pointerStart = useRef<{ id: number; x: number } | null>(null);
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
   const lightboxTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const cardVideoRef = useRef<HTMLVideoElement>(null);
   const slideCount = project.slides.length;
-  const imageSlides = project.slides.filter((slide): slide is Extract<ProjectSlide, { kind: "image" }> => {
-    return slide.kind === "image";
-  });
 
   const showSlide = (index: number) => {
     setActiveIndex((index + slideCount) % slideCount);
@@ -304,13 +356,22 @@ function ProjectCarousel({ project }: { project: Project }) {
 
   const activeSlide = project.slides[activeIndex];
   const isLightboxOpen = lightboxIndex !== null;
+  const lightboxSlide = lightboxIndex === null ? null : project.slides[lightboxIndex];
 
   const closeLightbox = () => {
     setLightboxIndex(null);
   };
 
-  const showLightboxImage = (index: number) => {
-    setLightboxIndex((index + imageSlides.length) % imageSlides.length);
+  const openLightbox = (index: number, trigger: HTMLButtonElement) => {
+    lightboxTriggerRef.current = trigger;
+    if (project.slides[index].kind === "video") {
+      cardVideoRef.current?.pause();
+    }
+    setLightboxIndex(index);
+  };
+
+  const showLightboxSlide = (index: number) => {
+    setLightboxIndex((index + slideCount) % slideCount);
   };
 
   useEffect(() => {
@@ -324,17 +385,21 @@ function ProjectCarousel({ project }: { project: Project }) {
       if (event.key === "Escape") {
         event.preventDefault();
         setLightboxIndex(null);
-      } else if (event.key === "ArrowLeft" && imageSlides.length > 1) {
+      } else if (
+        (event.key === "ArrowLeft" || event.key === "ArrowRight") &&
+        event.target instanceof Element &&
+        event.target.closest("video")
+      ) {
+        return;
+      } else if (event.key === "ArrowLeft" && slideCount > 1) {
         event.preventDefault();
-        setLightboxIndex((current) =>
-          current === null ? current : (current - 1 + imageSlides.length) % imageSlides.length,
-        );
-      } else if (event.key === "ArrowRight" && imageSlides.length > 1) {
+        setLightboxIndex((current) => (current === null ? current : (current - 1 + slideCount) % slideCount));
+      } else if (event.key === "ArrowRight" && slideCount > 1) {
         event.preventDefault();
-        setLightboxIndex((current) => (current === null ? current : (current + 1) % imageSlides.length));
+        setLightboxIndex((current) => (current === null ? current : (current + 1) % slideCount));
       } else if (event.key === "Tab") {
         const dialog = lightboxCloseRef.current?.closest('[role="dialog"]');
-        const controls = dialog?.querySelectorAll<HTMLElement>("button:not([disabled])");
+        const controls = dialog?.querySelectorAll<HTMLElement>("button:not([disabled]), video[controls]");
         if (!controls?.length) return;
         const firstControl = controls[0];
         const lastControl = controls[controls.length - 1];
@@ -355,7 +420,7 @@ function ProjectCarousel({ project }: { project: Project }) {
       document.removeEventListener("keydown", handleLightboxKeyDown);
       lightboxTriggerRef.current?.focus();
     };
-  }, [imageSlides.length, isLightboxOpen]);
+  }, [isLightboxOpen, slideCount]);
 
   return (
     <div
@@ -379,8 +444,7 @@ function ProjectCarousel({ project }: { project: Project }) {
               type="button"
               aria-label={`Открыть на весь экран: ${activeSlide.alt}`}
               onClick={(event) => {
-                lightboxTriggerRef.current = event.currentTarget;
-                setLightboxIndex(imageSlides.findIndex((slide) => slide.src === activeSlide.src));
+                openLightbox(activeIndex, event.currentTarget);
               }}
             >
               <img
@@ -395,15 +459,26 @@ function ProjectCarousel({ project }: { project: Project }) {
               </span>
             </button>
           ) : (
-            <video
-              className={styles.projectVideo}
-              src={activeSlide.src}
-              poster={activeSlide.poster}
-              aria-label={activeSlide.label}
-              controls
-              preload="none"
-              playsInline
-            />
+            <>
+              <video
+                className={styles.projectVideo}
+                src={activeSlide.src}
+                poster={activeSlide.poster}
+                aria-label={activeSlide.label}
+                controls
+                preload="none"
+                playsInline
+                ref={cardVideoRef}
+              />
+              <button
+                className={styles.projectVideoOpenButton}
+                type="button"
+                aria-label={`Открыть на весь экран: ${activeSlide.label}`}
+                onClick={(event) => openLightbox(activeIndex, event.currentTarget)}
+              >
+                <span aria-hidden="true">↗</span> Открыть на весь экран
+              </button>
+            </>
           )}
         </div>
 
@@ -450,7 +525,7 @@ function ProjectCarousel({ project }: { project: Project }) {
         </div>
       ) : null}
 
-      {lightboxIndex !== null
+      {lightboxIndex !== null && lightboxSlide
         ? createPortal(
             <div
               className={styles.projectLightboxBackdrop}
@@ -477,32 +552,38 @@ function ProjectCarousel({ project }: { project: Project }) {
                   ×
                 </button>
 
-                <img
-                  className={styles.projectLightboxImage}
-                  src={imageSlides[lightboxIndex].src}
-                  alt={imageSlides[lightboxIndex].alt}
-                />
+                <div className={styles.projectLightboxMedia}>
+                  {lightboxSlide.kind === "image" ? (
+                    <img
+                      className={styles.projectLightboxImage}
+                      src={lightboxSlide.src}
+                      alt={lightboxSlide.alt}
+                    />
+                  ) : (
+                    <ProjectLightboxVideo slide={lightboxSlide} key={lightboxIndex} />
+                  )}
+                </div>
 
-                {imageSlides.length > 1 ? (
+                {slideCount > 1 ? (
                   <>
                     <button
                       className={`${styles.projectLightboxArrow} ${styles.projectLightboxArrowPrevious}`}
                       type="button"
-                      aria-label="Предыдущее фото проекта"
-                      onClick={() => showLightboxImage(lightboxIndex - 1)}
+                      aria-label="Предыдущее медиа проекта"
+                      onClick={() => showLightboxSlide(lightboxIndex - 1)}
                     >
                       ←
                     </button>
                     <button
                       className={`${styles.projectLightboxArrow} ${styles.projectLightboxArrowNext}`}
                       type="button"
-                      aria-label="Следующее фото проекта"
-                      onClick={() => showLightboxImage(lightboxIndex + 1)}
+                      aria-label="Следующее медиа проекта"
+                      onClick={() => showLightboxSlide(lightboxIndex + 1)}
                     >
                       →
                     </button>
                     <span className={styles.projectLightboxCount} aria-live="polite">
-                      {lightboxIndex + 1} / {imageSlides.length}
+                      {lightboxIndex + 1} / {slideCount}
                     </span>
                   </>
                 ) : null}
