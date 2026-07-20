@@ -1,3 +1,4 @@
+import { reachMetrikaGoal } from "../analytics/yandexMetrika";
 import { MotionHeading } from "./PageMotion";
 import styles from "./PageStyles";
 import { motionReveal } from "./usePageMotion";
@@ -7,11 +8,13 @@ const contacts = [
     label: "GitHub",
     handle: "kirillarz",
     href: "https://github.com/kirillarz",
+    goal: "github_profile_open",
   },
   {
     label: "Telegram",
     handle: "@kirillarz",
     href: "https://t.me/kirillarz",
+    goal: "contact_telegram",
   },
 ] as const;
 
@@ -34,7 +37,12 @@ export function ContactsSection() {
         <ul className={styles.contactsList}>
           {contacts.map((contact, index) => (
             <li key={contact.label} {...motionReveal("card", index)}>
-              <a href={contact.href} target="_blank" rel="noreferrer">
+              <a
+                href={contact.href}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => reachMetrikaGoal(contact.goal)}
+              >
                 <span>{contact.label}</span>
                 <strong>{contact.handle}</strong>
                 <span aria-hidden="true">↗</span>

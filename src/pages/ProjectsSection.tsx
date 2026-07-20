@@ -1,3 +1,4 @@
+import { reachMetrikaGoal } from "../analytics/yandexMetrika";
 import { MotionHeading } from "./PageMotion";
 import styles from "./PageStyles";
 import { ProjectCarousel } from "./ProjectCarousel";
@@ -5,7 +6,7 @@ import { ProjectActionIconView, ProjectFactIconView } from "./ProjectIcons";
 import { projects, type ProjectAction } from "./projectsData";
 import { motionReveal } from "./usePageMotion";
 
-function ProjectActions({ actions }: { actions: readonly ProjectAction[] }) {
+function ProjectActions({ actions, projectId }: { actions: readonly ProjectAction[]; projectId: string }) {
   return (
     <div className={styles.projectActions}>
       {actions.map((action, index) => {
@@ -16,6 +17,12 @@ function ProjectActions({ actions }: { actions: readonly ProjectAction[] }) {
             target="_blank"
             rel="noreferrer"
             key={action.label}
+            onClick={() =>
+              reachMetrikaGoal("project_material_open", {
+                project_id: projectId,
+                action: action.label,
+              })
+            }
           >
             <ProjectActionIconView name={action.icon} />
             <span>{action.label}</span>
@@ -85,7 +92,7 @@ export function ProjectsSection() {
                     ))}
                   </ul>
 
-                  <ProjectActions actions={project.actions} />
+                  <ProjectActions actions={project.actions} projectId={project.id} />
                 </div>
               </div>
             </article>
