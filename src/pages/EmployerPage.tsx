@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import { reachMetrikaGoal } from "../analytics/yandexMetrika";
 import styles from "./PageStyles";
 
 export function EmployerPage() {
@@ -75,8 +76,22 @@ export function EmployerPage() {
           <section className={styles.employerContacts} aria-labelledby="employer-contacts">
             <h2 id="employer-contacts">Профили</h2>
             <p>
-              <a href="https://github.com/kirillarz" target="_blank" rel="noreferrer">GitHub ↗</a>
-              <a href="https://t.me/kirillarz" target="_blank" rel="noreferrer">Telegram ↗</a>
+              <a
+                href="https://github.com/kirillarz"
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => reachMetrikaGoal("github_profile_open")}
+              >
+                GitHub ↗
+              </a>
+              <a
+                href="https://t.me/kirillarz"
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => reachMetrikaGoal("contact_telegram")}
+              >
+                Telegram ↗
+              </a>
             </p>
           </section>
         </div>
