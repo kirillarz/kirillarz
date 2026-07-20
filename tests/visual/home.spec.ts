@@ -596,14 +596,24 @@ test("skills section renders its groups without viewport overflow", async ({ pag
   const animatedPanelStyles = await developmentPanel.evaluate((element) => {
     const style = window.getComputedStyle(element);
     return {
-      transitionDuration: style.transitionDuration,
+      animationDuration: style.animationDuration,
+      animationName: style.animationName,
       transitionProperty: style.transitionProperty,
+      tapHighlight: window
+        .getComputedStyle(element.previousElementSibling as Element)
+        .getPropertyValue("-webkit-tap-highlight-color"),
     };
   });
-  expect(animatedPanelStyles.transitionProperty).toContain("grid-template-rows");
-  expect(animatedPanelStyles.transitionDuration).not.toBe("0s");
+  expect(animatedPanelStyles.transitionProperty).not.toContain("grid-template-rows");
+  expect(animatedPanelStyles.animationName).toContain("skillPanelReveal");
+  expect(animatedPanelStyles.animationDuration).toBe("0.3s");
+  expect(animatedPanelStyles.tapHighlight).toBe("rgba(0, 0, 0, 0)");
 
   await managementToggle.click();
+  const movingCardCount = await skillsSection
+    .getByRole("article")
+    .evaluateAll((articles) => articles.filter((article) => article.getAnimations().length > 0).length);
+  expect(movingCardCount).toBeGreaterThan(0);
   await expect(developmentToggle).toHaveAttribute("aria-expanded", "false");
   await expect(managementToggle).toHaveAttribute("aria-expanded", "true");
   await expect(developmentPanel).toHaveAttribute("aria-hidden", "true");
@@ -615,11 +625,20 @@ test("skills section renders its groups without viewport overflow", async ({ pag
     .toBe(true);
   await captureScreenshot(page, `${artifactsDir}/skills-mobile.png`);
 
+  const communicationToggle = skillsSection.getByRole("button", { name: /^Коммуникация/ });
+  await communicationToggle.click();
+  await developmentToggle.click();
+  await expect(developmentToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(managementToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(communicationToggle).toHaveAttribute("aria-expanded", "false");
+  await developmentToggle.click();
+  await expect(developmentToggle).toHaveAttribute("aria-expanded", "true");
+
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload();
   await scrollToSection(skillsSection);
   await expect(developmentPanel).toBeVisible();
-  await expect(developmentPanel).toHaveCSS("transition-duration", "0s");
+  await expect(developmentPanel).toHaveCSS("animation-duration", "0s");
   await expect(developmentPanel.locator("ul")).toHaveCSS("transition-duration", "0s");
   const reducedMotionIconDuration = await developmentToggle
     .locator("span")

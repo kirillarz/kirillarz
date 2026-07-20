@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import canbanImage from "../assets/canban-cutout.webp";
 import communicationImage from "../assets/communication-cutout.webp";
@@ -251,6 +251,9 @@ export function SkillsSection() {
   const [isMobileAccordion, setIsMobileAccordion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches,
   );
+  const cardElementsRef = useRef(new Map<string, HTMLElement>());
+  const previousCardTopsRef = useRef<Map<string, number> | null>(null);
+  const cardAnimationsRef = useRef<Animation[]>([]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 640px)");
@@ -260,6 +263,50 @@ export function SkillsSection() {
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
+
+  useEffect(
+    () => () => {
+      cardAnimationsRef.current.forEach((animation) => animation.cancel());
+    },
+    [],
+  );
+
+  useLayoutEffect(() => {
+    const previousCardTops = previousCardTopsRef.current;
+    previousCardTopsRef.current = null;
+    if (!previousCardTops) return;
+
+    cardAnimationsRef.current.forEach((animation) => animation.cancel());
+    cardAnimationsRef.current = [];
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    cardElementsRef.current.forEach((element, id) => {
+      const previousTop = previousCardTops.get(id);
+      if (previousTop === undefined || typeof element.animate !== "function") return;
+
+      const offsetY = previousTop - element.getBoundingClientRect().top;
+      if (Math.abs(offsetY) < 0.5) return;
+
+      const animation = element.animate(
+        [{ transform: `translate3d(0, ${offsetY}px, 0)` }, { transform: "translate3d(0, 0, 0)" }],
+        {
+          duration: 300,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        },
+      );
+      cardAnimationsRef.current.push(animation);
+    });
+  }, [activeGroupId]);
+
+  const selectGroup = (groupId: string) => {
+    if (groupId === activeGroupId) return;
+
+    previousCardTopsRef.current = new Map(
+      Array.from(cardElementsRef.current, ([id, element]) => [id, element.getBoundingClientRect().top]),
+    );
+    setActiveGroupId(groupId);
+  };
 
   return (
     <section id="skills" className={styles.skillsSection} aria-labelledby="skills-title">
@@ -290,6 +337,13 @@ export function SkillsSection() {
                 activeGroupId === group.id ? styles.skillCardExpanded : ""
               }`}
               key={group.id}
+              ref={(element) => {
+                if (element) {
+                  cardElementsRef.current.set(group.id, element);
+                } else {
+                  cardElementsRef.current.delete(group.id);
+                }
+              }}
               aria-labelledby={`${group.id}-title`}
               {...motionReveal("card", index)}
             >
@@ -310,7 +364,7 @@ export function SkillsSection() {
                 type="button"
                 aria-expanded={activeGroupId === group.id}
                 aria-controls={`${group.id}-skills`}
-                onClick={() => setActiveGroupId(group.id)}
+                onClick={() => selectGroup(group.id)}
               >
                 <span>{group.title}</span>
                 <span className={styles.skillAccordionIcon} aria-hidden="true" />
