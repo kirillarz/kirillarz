@@ -11,7 +11,7 @@ const navigationItems = [
   { id: "contacts", label: "Контакты" },
 ] as const;
 
-export function MobileNavigation() {
+export function PageNavigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState("top");
   const navigationRef = useRef<HTMLElement>(null);
@@ -59,7 +59,24 @@ export function MobileNavigation() {
   const activeLabel = navigationItems.find((item) => item.id === activeSectionId)?.label ?? "Начало";
 
   return (
-    <nav className={styles.mobileNavigation} ref={navigationRef} aria-label="Навигация по странице">
+    <nav className={styles.pageNavigation} ref={navigationRef} aria-label="Навигация по странице">
+      <div className={styles.desktopNavigationBar}>
+        <a className={styles.desktopNavigationBrand} href="#top">
+          Кирилл
+        </a>
+        <div className={styles.desktopNavigationLinks}>
+          {navigationItems.map((item) => (
+            <a
+              href={`#${item.id}`}
+              aria-current={activeSectionId === item.id ? "location" : undefined}
+              key={item.id}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
       <div className={styles.mobileNavigationBar}>
         <a className={styles.mobileNavigationBrand} href="#top" onClick={() => setIsOpen(false)}>
           Кирилл

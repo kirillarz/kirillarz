@@ -239,8 +239,11 @@ test("hero CTA falls back to anchor navigation when the animation cannot load", 
   await expect(page).toHaveURL(/#about$/);
   await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
   await expect
-    .poll(() => aboutSection.evaluate((element) => Math.abs(element.getBoundingClientRect().top)))
-    .toBeLessThanOrEqual(2);
+    .poll(() => aboutSection.evaluate((element) => element.getBoundingClientRect().top))
+    .toBeGreaterThanOrEqual(72);
+  await expect
+    .poll(() => aboutSection.evaluate((element) => element.getBoundingClientRect().top))
+    .toBeLessThanOrEqual(94);
 });
 
 test("hero role marquee loops continuously and respects reduced motion", async ({ page }) => {
@@ -505,7 +508,26 @@ test("mobile navigation exposes section anchors and closes predictably", async (
   }
 
   await page.setViewportSize({ width: 1200, height: 800 });
-  await expect(navigation).toBeHidden();
+  await page.goto("/");
+  await expect(navigation).toBeVisible();
+  await expect(navigation).toHaveCSS("position", "fixed");
+  await expect(toggle).toBeHidden();
+  await expect(navigation.getByRole("link")).toHaveCount(7);
+
+  const projectsLink = navigation.getByRole("link", { name: "Проекты", exact: true });
+  await projectsLink.click();
+  await expect(page).toHaveURL(/#projects$/);
+  await expect(projectsLink).toHaveAttribute("aria-current", "location");
+  await expect
+    .poll(async () => {
+      const navigationBox = await navigation.boundingBox();
+      const headingBox = await page
+        .getByRole("heading", { name: "Проекты, которыми я особенно горжусь" })
+        .boundingBox();
+      return navigationBox !== null && headingBox !== null && headingBox.y > navigationBox.y + navigationBox.height;
+    })
+    .toBe(true);
+  await captureScreenshot(page, `${artifactsDir}/navigation-desktop.png`);
 });
 
 test("about section switches inline highlights and respects interaction pauses", async ({ page }) => {

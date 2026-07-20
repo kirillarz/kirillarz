@@ -5,7 +5,7 @@ import heroMinifigureAnimation from "../assets/hero-minifigure-animate-clean.web
 import { AboutSection } from "./AboutSection";
 import { ContactsSection } from "./ContactsSection";
 import { HobbySection } from "./HobbySection";
-import { MobileNavigation } from "./MobileNavigation";
+import { PageNavigation } from "./MobileNavigation";
 import styles from "./Page.module.css";
 import { ProjectsSection } from "./ProjectsSection";
 import { SectionTransition } from "./SectionTransition";
@@ -180,7 +180,7 @@ export function HomePage() {
 
   return (
     <main className={`${styles.page} ${styles.homePage}`}>
-      <MobileNavigation />
+      <PageNavigation />
       <section id="top" className={styles.homeHero} aria-labelledby="home-title">
         <div className={styles.heroVisual}>
           <div className={styles.heroImageFrame}>
