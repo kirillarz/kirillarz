@@ -693,9 +693,16 @@
   }
 
   .contactsInner {
-    grid-template-columns: minmax(0, 1fr);
     gap: 38px;
     width: min(calc(100% - 48px), 720px);
+  }
+
+  .contactsList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .contactCard {
+    min-height: 210px;
   }
 
   .employerProjects ul {
@@ -718,20 +725,30 @@
     font-size: clamp(2.5rem, 13vw, 3.4rem);
   }
 
-  .contactsList a {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 6px 14px;
-    min-height: 92px;
-    padding: 16px 18px;
+  .contactCard {
+    min-height: 172px;
+    padding: 22px;
   }
 
-  .contactsList a > span:first-child {
-    grid-column: 1 / -1;
+  .contactCardArrow {
+    width: 42px;
+    height: 42px;
+    font-size: 1.25rem;
   }
 
-  .contactsList a > span:last-child {
-    grid-column: 2;
-    grid-row: 2;
+  .contactCardHandle {
+    margin-top: 34px;
+    font-size: clamp(1.75rem, 9vw, 2.35rem);
+  }
+
+  .contactCardStuds {
+    right: 22px;
+    bottom: 20px;
+  }
+
+  .contactsPrivacyLink {
+    margin-top: -14px;
+    text-align: left;
   }
 
   .page.employerPage {
