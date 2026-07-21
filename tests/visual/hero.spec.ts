@@ -187,6 +187,85 @@ test("hero CTA falls back to anchor navigation when the animation cannot load", 
     .toBeLessThanOrEqual(94);
 });
 
+test("first visit treats playback stalled before the flash as temporarily unavailable", async ({ page }) => {
+  await page.setViewportSize({ width: 1680, height: 838 });
+  await page.goto("/");
+
+  const main = page.locator("main");
+  const video = page.getByTestId("hero-animation");
+  await expectVideoMetadataReady(video);
+  await page.getByRole("link", { name: /Узнать обо мне/ }).click();
+  await expect(main).toHaveAttribute("data-hero-phase", "playing");
+
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.pause();
+    element.currentTime = 1;
+  });
+
+  await expect(main).toHaveAttribute("data-hero-phase", "unlocked", { timeout: 7_000 });
+  await expect(page).toHaveURL(/#about$/);
+  await expect.poll(() => page.evaluate(() => sessionStorage.getItem("hero-intro:unavailable:v1"))).toBe("true");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("hero-intro:completed:v1"))).toBe(null);
+  await expect.poll(() => page.evaluate(() => history.scrollRestoration)).toBe("auto");
+});
+
+test("first visit keeps gated sections out of keyboard focus until the intro reveals them", async ({ page }) => {
+  await page.setViewportSize({ width: 1680, height: 838 });
+  await page.goto("/");
+
+  const gatedContent = page.getByTestId("hero-gated-content");
+  const aboutControl = page.locator("#about button").first();
+  await expect(gatedContent).toHaveAttribute("inert", "");
+
+  await aboutControl.evaluate((element: HTMLButtonElement) => element.focus());
+  await expect.poll(() => gatedContent.evaluate((element) => !element.contains(document.activeElement))).toBe(true);
+
+  for (let index = 0; index < 10; index += 1) {
+    await page.keyboard.press("Tab");
+    await expect.poll(() => gatedContent.evaluate((element) => !element.contains(document.activeElement))).toBe(true);
+  }
+
+  const video = page.getByTestId("hero-animation");
+  await expectVideoMetadataReady(video);
+  await page.getByRole("link", { name: /Узнать обо мне/ }).click();
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.currentTime = 4.01;
+  });
+
+  await expect(gatedContent).not.toHaveAttribute("inert", "");
+  await aboutControl.evaluate((element: HTMLButtonElement) => element.focus());
+  await expect(aboutControl).toBeFocused();
+});
+
+test("first visit restores browser scroll restoration after the hero gate unlocks", async ({ page }) => {
+  await page.setViewportSize({ width: 1680, height: 838 });
+  await page.goto("/");
+
+  await expect.poll(() => page.evaluate(() => history.scrollRestoration)).toBe("manual");
+
+  const video = page.getByTestId("hero-animation");
+  await expectVideoMetadataReady(video);
+  await page.getByRole("link", { name: /Узнать обо мне/ }).click();
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.currentTime = 4.01;
+  });
+
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "unlocked");
+  await expect.poll(() => page.evaluate(() => history.scrollRestoration)).toBe("auto");
+
+  await page.getByRole("navigation").getByRole("link", { name: "Навыки" }).click();
+  await expect(page).toHaveURL(/#skills$/);
+  await expect
+    .poll(() => page.locator("#skills").evaluate((element) => element.getBoundingClientRect().top))
+    .toBeLessThanOrEqual(100);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/#about$/);
+  await expect
+    .poll(() => page.locator("#about").evaluate((element) => element.getBoundingClientRect().top))
+    .toBeLessThanOrEqual(100);
+});
+
 test("first visit blocks downward scrolling and points to the hero CTA", async ({ page }) => {
   await page.setViewportSize({ width: 1680, height: 838 });
   await page.goto("/");

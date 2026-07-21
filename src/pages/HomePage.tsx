@@ -72,6 +72,10 @@ function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function hasReachedFlashPoint(video: HTMLVideoElement) {
+  return video.currentTime >= FLASH_START_SECONDS || video.ended;
+}
+
 function markIntroCompleted() {
   writeStorage("localStorage", HERO_INTRO_COMPLETED_KEY, HERO_INTRO_COMPLETED_VALUE);
 }
@@ -221,8 +225,10 @@ export function HomePage() {
     [changeHeroPhase, completeIntroWithoutMotion, fallBackToNavigation],
   );
 
+  const isScrollLocked = heroPhase !== "unlocked" && heroPhase !== "revealing";
+
   useLayoutEffect(() => {
-    if (heroPhaseRef.current !== "locked") return;
+    if (!isScrollLocked) return;
 
     const previousScrollRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = "manual";
@@ -231,7 +237,7 @@ export function HomePage() {
     return () => {
       window.history.scrollRestoration = previousScrollRestoration;
     };
-  }, []);
+  }, [isScrollLocked]);
 
   useLayoutEffect(() => {
     const sectionId = window.location.hash.slice(1) as NavigationSectionId;
@@ -240,8 +246,6 @@ export function HomePage() {
     const animationFrameId = window.requestAnimationFrame(() => navigateToSection(sectionId, "auto"));
     return () => window.cancelAnimationFrame(animationFrameId);
   }, []);
-
-  const isScrollLocked = heroPhase !== "unlocked" && heroPhase !== "revealing";
 
   useEffect(() => {
     if (!isScrollLocked) return;
@@ -359,7 +363,12 @@ export function HomePage() {
     let animationFrameId = 0;
     const trackPlayback = () => {
       const video = videoRef.current;
-      if (!video || video.currentTime >= FLASH_START_SECONDS || video.ended) {
+      if (!video) {
+        fallBackToNavigation();
+        return;
+      }
+
+      if (hasReachedFlashPoint(video)) {
         changeHeroPhase("covering");
         return;
       }
@@ -369,13 +378,20 @@ export function HomePage() {
 
     animationFrameId = window.requestAnimationFrame(trackPlayback);
     const safetyTimeoutId = window.setTimeout(() => {
-      if (heroPhaseRef.current === "playing") changeHeroPhase("covering");
+      if (heroPhaseRef.current !== "playing") return;
+
+      const video = videoRef.current;
+      if (video && hasReachedFlashPoint(video)) {
+        changeHeroPhase("covering");
+      } else {
+        fallBackToNavigation();
+      }
     }, PLAYBACK_SAFETY_TIMEOUT_MS);
     return () => {
       window.cancelAnimationFrame(animationFrameId);
       window.clearTimeout(safetyTimeoutId);
     };
-  }, [changeHeroPhase, heroPhase]);
+  }, [changeHeroPhase, fallBackToNavigation, heroPhase]);
 
   useEffect(() => {
     if (heroPhase !== "covering") return;
@@ -561,15 +577,17 @@ export function HomePage() {
         </div>
       </section>
 
-      <AboutSection />
-      <SectionTransition id="about-skills" variant="brick-wipe" palette="dark" />
-      <SkillsSection />
-      <SectionTransition id="skills-projects" variant="brick-wipe" palette="light" direction="reverse" />
-      <ProjectsSection />
-      <SectionTransition id="projects-hobby" variant="scatter" palette="hobby" />
-      <HobbySection />
-      <SectionTransition id="hobby-contacts" variant="brick-wipe" palette="night" compact />
-      <ContactsSection />
+      <div data-testid="hero-gated-content" inert={isScrollLocked || undefined}>
+        <AboutSection />
+        <SectionTransition id="about-skills" variant="brick-wipe" palette="dark" />
+        <SkillsSection />
+        <SectionTransition id="skills-projects" variant="brick-wipe" palette="light" direction="reverse" />
+        <ProjectsSection />
+        <SectionTransition id="projects-hobby" variant="scatter" palette="hobby" />
+        <HobbySection />
+        <SectionTransition id="hobby-contacts" variant="brick-wipe" palette="night" compact />
+        <ContactsSection />
+      </div>
       <div
         className={`${styles.heroFlashOverlay} ${
           heroPhase === "covering"
