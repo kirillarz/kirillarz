@@ -137,10 +137,20 @@ test("hero CTA plays the figure animation and reveals the about section through 
 
   await page.goto("/");
   await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "unlocked");
+  await expectVideoMetadataReady(video);
   await page.getByRole("link", { name: /Узнать обо мне/ }).click();
+  await expect(overlay).toHaveAttribute("data-transition-phase", "playing");
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => !element.paused)).toBe(true);
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeLessThan(1);
+
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.currentTime = 4.01;
+  });
+
   await expect(page).toHaveURL(/#about$/);
-  await expect(video).toHaveJSProperty("paused", true);
   await expect(overlay).toHaveAttribute("data-transition-phase", "unlocked");
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeLessThan(0.1);
 });
 
 test("hero CTA skips video and flash when reduced motion is requested", async ({ page }) => {

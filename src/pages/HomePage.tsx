@@ -157,6 +157,7 @@ function isEditableOrInteractive(target: EventTarget | null) {
 
 export function HomePage() {
   const [heroPhase, setHeroPhase] = useState<HeroPhase>(getInitialHeroPhase);
+  const [isIntroRequired, setIsIntroRequired] = useState(() => heroPhase === "locked");
   const [isVideoVisible, setIsVideoVisible] = useState(false);
   const [ctaPulseCount, setCtaPulseCount] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -186,11 +187,13 @@ export function HomePage() {
   const unlockForUnavailableVideo = useCallback(() => {
     isVideoUnavailableRef.current = true;
     writeStorage("sessionStorage", HERO_INTRO_UNAVAILABLE_KEY, "true");
+    setIsIntroRequired(false);
     resetTransition();
   }, [resetTransition]);
 
   const completeIntroWithoutMotion = useCallback(() => {
     markIntroCompleted();
+    setIsIntroRequired(false);
     resetTransition();
   }, [resetTransition]);
 
@@ -198,6 +201,7 @@ export function HomePage() {
     if (heroPhaseRef.current !== "covering") return;
 
     markIntroCompleted();
+    setIsIntroRequired(false);
     navigateToSection(pendingTargetRef.current, "auto");
     changeHeroPhase("revealing");
   }, [changeHeroPhase]);
@@ -228,7 +232,7 @@ export function HomePage() {
   const startIntro = useCallback(
     (target: NavigationSectionId) => {
       const phase = heroPhaseRef.current;
-      if (phase !== "locked" && phase !== "prompting") return;
+      if (phase !== "locked" && phase !== "prompting" && phase !== "unlocked") return;
 
       pendingTargetRef.current = target;
       if (prefersReducedMotion()) {
@@ -258,7 +262,7 @@ export function HomePage() {
     [changeHeroPhase, completeIntroWithoutMotion, fallBackToNavigation],
   );
 
-  const isScrollLocked = heroPhase !== "unlocked" && heroPhase !== "revealing";
+  const isScrollLocked = isIntroRequired && heroPhase !== "revealing";
 
   useLayoutEffect(() => {
     if (!isScrollLocked) return;
@@ -477,7 +481,10 @@ export function HomePage() {
     const handleStorage = (event: StorageEvent) => {
       if (event.key !== HERO_INTRO_COMPLETED_KEY || event.newValue !== HERO_INTRO_COMPLETED_VALUE) return;
       const phase = heroPhaseRef.current;
-      if (phase === "locked" || phase === "prompting") resetTransition();
+      if (phase === "locked" || phase === "prompting") {
+        setIsIntroRequired(false);
+        resetTransition();
+      }
     };
 
     window.addEventListener("storage", handleStorage);
@@ -493,10 +500,10 @@ export function HomePage() {
 
   const handleCtaClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     const phase = heroPhaseRef.current;
-    if (phase === "locked" || phase === "prompting") {
+    if (phase === "locked" || phase === "prompting" || phase === "unlocked") {
       event.preventDefault();
       startIntro("about");
-    } else if (phase !== "unlocked") {
+    } else {
       event.preventDefault();
     }
   };
