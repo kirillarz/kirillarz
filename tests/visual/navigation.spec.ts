@@ -1,8 +1,8 @@
-import { expect, test } from "@playwright/test";
-
 import {
   artifactsDir,
   captureScreenshot,
+  expect,
+  test,
 } from "./helpers";
 test("mobile navigation exposes section anchors and closes predictably", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });

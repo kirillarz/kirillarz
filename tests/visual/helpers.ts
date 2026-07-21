@@ -1,6 +1,43 @@
 import { mkdir } from "node:fs/promises";
 
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, test as base, type Locator, type Page } from "@playwright/test";
+
+export { expect };
+
+export const test = base.extend<{ pageSetup: void }>({
+  pageSetup: [
+    async ({ page }, use, testInfo) => {
+      const needsFreshHeroIntro =
+        testInfo.title.includes("first visit") ||
+        testInfo.title.includes("hero CTA plays the figure animation") ||
+        testInfo.title.includes("hero CTA skips video") ||
+        testInfo.title.includes("hero CTA falls back") ||
+        testInfo.title.includes("navigation waits for hero intro");
+
+      await page.addInitScript(
+        ({ disableAnalyticsNotice, completeHeroIntro }) => {
+          if (disableAnalyticsNotice) window.localStorage.setItem("kirillarz.analyticsConsent", "denied");
+          if (completeHeroIntro) window.localStorage.setItem("hero-intro:completed:v1", "completed");
+        },
+        {
+          disableAnalyticsNotice: !testInfo.title.includes("cookie notice"),
+          completeHeroIntro: !needsFreshHeroIntro,
+        },
+      );
+
+      if (
+        !testInfo.title.includes("first visit") &&
+        !testInfo.title.includes("hero CTA plays the figure animation") &&
+        !testInfo.title.includes("navigation waits for hero intro")
+      ) {
+        await page.route("**/hero-minifigure-animate-clean.webm", (route) => route.abort());
+      }
+
+      await use();
+    },
+    { auto: true },
+  ],
+});
 
 export const artifactsDir = "artifacts/visual-smoke";
 const transitionStartViewportRatio = 1;
@@ -19,17 +56,13 @@ test.beforeAll(async () => {
   await mkdir(artifactsDir, { recursive: true });
 });
 
-test.beforeEach(async ({ page }, testInfo) => {
-  if (!testInfo.title.includes("cookie notice")) {
-    await page.addInitScript(() => localStorage.setItem("kirillarz.analyticsConsent", "denied"));
+export async function scrollToSection(section: Locator) {
+  const page = section.page();
+  const heroState = page.locator("main[data-hero-phase]");
+  if (await heroState.count()) {
+    await expect(heroState).not.toHaveAttribute("data-hero-phase", /^(locked|prompting)$/);
   }
 
-  if (testInfo.title.includes("hero CTA plays the figure animation")) return;
-
-  await page.route("**/hero-minifigure-animate-clean.webm", (route) => route.abort());
-});
-
-export async function scrollToSection(section: Locator) {
   await section.evaluate((element) => {
     const root = document.documentElement;
     root.style.scrollBehavior = "auto";

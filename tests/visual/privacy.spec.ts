@@ -1,6 +1,4 @@
-import { expect, test } from "@playwright/test";
-
-import { artifactsDir, captureScreenshot } from "./helpers";
+import { artifactsDir, captureScreenshot, expect, test } from "./helpers";
 
 test("cookie notice stores a privacy-preserving choice", async ({ page }) => {
   await page.goto("/");

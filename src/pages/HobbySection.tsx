@@ -21,7 +21,8 @@ const hobbies: readonly Hobby[] = [
   {
     id: "skiing",
     name: "Горнолыжка",
-    description: "Здесь появится короткое описание хобби.",
+    description:
+      "Горные лыжи учат быстро принимать решения. Особенно когда уже разогнался, а поворачивать только учишься",
     x: 31,
     mobileX: 31,
     y: 27,
@@ -30,7 +31,8 @@ const hobbies: readonly Hobby[] = [
   {
     id: "fishing",
     name: "Рыбалка",
-    description: "Здесь появится короткое описание хобби.",
+    description:
+      "Рыбалка для меня — способ замедлиться, отключиться от суеты и спокойно провести время у воды",
     x: 17,
     mobileX: 17,
     y: 51,
@@ -39,7 +41,8 @@ const hobbies: readonly Hobby[] = [
   {
     id: "travel",
     name: "Путешествия",
-    description: "Здесь появится короткое описание хобби.",
+    description:
+      "Люблю путешествия, особенно когда маршрут построен, билеты куплены, а чемодан всё-таки закрылся",
     x: 72,
     mobileX: 72,
     y: 25,
@@ -48,7 +51,8 @@ const hobbies: readonly Hobby[] = [
   {
     id: "events",
     name: "Мероприятия",
-    description: "Здесь появится короткое описание хобби.",
+    description:
+      "Микрофон, аудитория и внезапное изменение программы — вполне комфортная рабочая обстановка",
     x: 50,
     mobileX: 50,
     y: 66,
@@ -57,7 +61,8 @@ const hobbies: readonly Hobby[] = [
   {
     id: "swimming",
     name: "Плавание",
-    description: "Здесь появится короткое описание хобби.",
+    description:
+      "В воде остаются только дыхание, ритм и дистанция — отличный способ перезагрузить голову",
     x: 78,
     mobileX: 76,
     y: 61,
@@ -115,12 +120,9 @@ export function HobbySection() {
               { text: "и проектами", accent: true, breakBefore: true },
             ]}
           />
-          <p {...motionReveal("content", 1)}>
-            Рыбалка, плавание, путешествия, горные лыжи и ведение мероприятий.
-          </p>
         </header>
 
-        <div className={styles.hobbyTabs} aria-label="Выберите хобби" {...motionReveal("content", 2)}>
+        <div className={styles.hobbyTabs} aria-label="Выберите хобби" {...motionReveal("content", 1)}>
           {hobbies.map((hobby) => (
             <button
               type="button"
