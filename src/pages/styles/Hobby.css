@@ -33,6 +33,7 @@
 
 .hobbyIntro {
   position: relative;
+  top: -24px;
   z-index: 4;
   width: min(100%, 720px);
 }
@@ -62,13 +63,6 @@
 .hobbyIntro h2 .motionHeadingAccent {
   color: #087cff;
   text-shadow: 0 10px 30px rgb(8 124 255 / 0.2);
-}
-
-.hobbyIntro > p:last-child {
-  margin: 14px 0 0;
-  color: #e2e8f0;
-  font-size: clamp(1rem, 1.25vw, 1.18rem);
-  line-height: 1.5;
 }
 
 .hobbyStageViewport {
@@ -287,4 +281,3 @@
 .hobbyScrollHint {
   display: none;
 }
-

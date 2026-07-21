@@ -414,6 +414,7 @@
   }
 
   .hobbyIntro {
+    top: auto;
     width: min(calc(100% - 48px), 720px);
     margin: 0 auto;
   }
@@ -630,12 +631,6 @@
     line-height: 1;
   }
 
-  .hobbyIntro > p:last-child {
-    margin-top: 16px;
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
   .hobbyStageViewport {
     padding-right: 20px;
     padding-left: 20px;
@@ -770,4 +765,3 @@
 }
 
 /* Adaptive navigation and mobile-first composition overrides. */
-
