@@ -1,10 +1,10 @@
-import { expect, test } from "@playwright/test";
-
 import {
   artifactsDir,
   scrollToSection,
   expectImagesReady,
   captureScreenshot,
+  expect,
+  test,
 } from "./helpers";
 test("about section switches inline highlights and respects interaction pauses", async ({ page }) => {
   await page.clock.install();

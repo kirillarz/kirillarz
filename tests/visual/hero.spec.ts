@@ -1,11 +1,10 @@
-import { expect, test } from "@playwright/test";
-
 import {
   artifactsDir,
-  scrollToSection,
   expectImagesReady,
   expectVideoMetadataReady,
   captureScreenshot,
+  expect,
+  test,
 } from "./helpers";
 test("home renders on desktop and mobile", async ({ page }) => {
   await page.setViewportSize({ width: 1680, height: 838 });
@@ -75,11 +74,13 @@ test("hero CTA plays the figure animation and reveals the about section through 
   await expect(video).toHaveAttribute("preload", "auto");
   await expectVideoMetadataReady(video);
   await expect(video).toHaveJSProperty("paused", true);
-  await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
+  await expect(overlay).toHaveAttribute("data-transition-phase", "locked");
 
   await cta.click();
   await expect(overlay).toHaveAttribute("data-transition-phase", "playing");
   await expect.poll(() => video.evaluate((element: HTMLVideoElement) => !element.paused)).toBe(true);
+  await page.mouse.wheel(0, 720);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
   await expect(video).toHaveCSS("opacity", "1");
   await expect(image).toHaveCSS("opacity", "0");
   await expect(page.getByRole("heading", { name: "Кирилл Арзамасцев" })).toBeVisible();
@@ -127,16 +128,19 @@ test("hero CTA plays the figure animation and reveals the about section through 
   await expect(page).toHaveURL(/#about$/);
   await expect
     .poll(() => aboutSection.evaluate((element) => Math.abs(element.getBoundingClientRect().top)))
-    .toBeLessThanOrEqual(2);
-  await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
+    .toBeLessThanOrEqual(94);
+  await expect(overlay).toHaveAttribute("data-transition-phase", "unlocked");
   await expect(video).toHaveJSProperty("paused", true);
   await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeLessThan(0.1);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("hero-intro:completed:v1"))).toBe("completed");
   await captureScreenshot(page, `${artifactsDir}/hero-animation-about-revealed.png`);
 
-  await scrollToSection(page.locator("#top"));
-  await cta.click();
-  await expect(overlay).toHaveAttribute("data-transition-phase", "playing");
-  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeLessThan(0.5);
+  await page.goto("/");
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "unlocked");
+  await page.getByRole("link", { name: /Узнать обо мне/ }).click();
+  await expect(page).toHaveURL(/#about$/);
+  await expect(video).toHaveJSProperty("paused", true);
+  await expect(overlay).toHaveAttribute("data-transition-phase", "unlocked");
 });
 
 test("hero CTA skips video and flash when reduced motion is requested", async ({ page }) => {
@@ -150,9 +154,10 @@ test("hero CTA skips video and flash when reduced motion is requested", async ({
 
   await page.getByRole("link", { name: /Узнать обо мне/ }).click();
   await expect(page).toHaveURL(/#about$/);
-  await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
+  await expect(overlay).toHaveAttribute("data-transition-phase", "unlocked");
   await expect(overlay).toHaveCSS("display", "none");
   await expect(video).toHaveJSProperty("paused", true);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("hero-intro:completed:v1"))).toBe("completed");
   await expect
     .poll(() => aboutSection.evaluate((element) => Math.abs(element.getBoundingClientRect().top)))
     .toBeLessThanOrEqual(80);
@@ -171,13 +176,147 @@ test("hero CTA falls back to anchor navigation when the animation cannot load", 
 
   await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.error !== null)).toBe(true);
   await expect(page).toHaveURL(/#about$/);
-  await expect(overlay).toHaveAttribute("data-transition-phase", "idle");
+  await expect(overlay).toHaveAttribute("data-transition-phase", "unlocked");
+  await expect.poll(() => page.evaluate(() => sessionStorage.getItem("hero-intro:unavailable:v1"))).toBe("true");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("hero-intro:completed:v1"))).toBe(null);
   await expect
     .poll(() => aboutSection.evaluate((element) => element.getBoundingClientRect().top))
     .toBeGreaterThanOrEqual(72);
   await expect
     .poll(() => aboutSection.evaluate((element) => element.getBoundingClientRect().top))
     .toBeLessThanOrEqual(94);
+});
+
+test("first visit blocks downward scrolling and points to the hero CTA", async ({ page }) => {
+  await page.setViewportSize({ width: 1680, height: 838 });
+  await page.goto("/");
+
+  const main = page.locator("main");
+  const hero = page.locator("#top");
+  const prompt = page.getByTestId("hero-scroll-prompt");
+
+  await expect(main).toHaveAttribute("data-hero-phase", "locked");
+  await expect(hero).toHaveAttribute("data-hero-gate", "locked");
+  await page.mouse.wheel(0, 720);
+
+  await expect(main).toHaveAttribute("data-hero-phase", "prompting");
+  await expect(prompt).toHaveAttribute("data-visible", "true");
+  await expect(prompt).toHaveText("Сначала запусти сцену");
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
+
+  const cta = page.getByRole("link", { name: /Узнать обо мне/ });
+  await expect(cta).toHaveAttribute("data-pulse-count", "1");
+  for (let index = 0; index < 6; index += 1) {
+    await page.mouse.wheel(0, 120);
+    await page.waitForTimeout(100);
+  }
+  await expect(cta).toHaveAttribute("data-pulse-count", "1");
+  await page.waitForTimeout(300);
+  await page.mouse.wheel(0, 720);
+  await expect(cta).toHaveAttribute("data-pulse-count", "2");
+  await captureScreenshot(page, `${artifactsDir}/hero-first-visit-scroll-prompt-desktop.png`);
+
+  await page.keyboard.press("PageDown");
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
+});
+
+test("first visit blocks a vertical mobile swipe but leaves horizontal intent alone", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await page.evaluate(() => {
+    const start = new Touch({ identifier: 1, target: document.body, clientX: 190, clientY: 680 });
+    const move = new Touch({ identifier: 1, target: document.body, clientX: 188, clientY: 420 });
+    window.dispatchEvent(new TouchEvent("touchstart", { cancelable: true, touches: [start] }));
+    window.dispatchEvent(new TouchEvent("touchmove", { cancelable: true, touches: [move] }));
+  });
+
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "prompting");
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
+  await captureScreenshot(page, `${artifactsDir}/hero-first-visit-scroll-prompt-mobile.png`);
+
+  await page.waitForTimeout(2700);
+  await page.evaluate(() => {
+    const start = new Touch({ identifier: 2, target: document.body, clientX: 320, clientY: 500 });
+    const move = new Touch({ identifier: 2, target: document.body, clientX: 90, clientY: 495 });
+    window.dispatchEvent(new TouchEvent("touchstart", { cancelable: true, touches: [start] }));
+    window.dispatchEvent(new TouchEvent("touchmove", { cancelable: true, touches: [move] }));
+  });
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "locked");
+});
+
+test("navigation waits for hero intro and then opens the requested section", async ({ page }) => {
+  await page.setViewportSize({ width: 1680, height: 838 });
+  await page.goto("/");
+
+  const video = page.getByTestId("hero-animation");
+  await expectVideoMetadataReady(video);
+  await page.getByRole("navigation").getByRole("link", { name: "Проекты" }).click();
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "playing");
+  await expect(page).not.toHaveURL(/#projects$/);
+
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.currentTime = 4.01;
+  });
+
+  await expect(page).toHaveURL(/#projects$/);
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "unlocked");
+  await expect
+    .poll(() => page.locator("#projects").evaluate((element) => element.getBoundingClientRect().top))
+    .toBeGreaterThanOrEqual(70);
+  await expect
+    .poll(() => page.locator("#projects").evaluate((element) => element.getBoundingClientRect().top))
+    .toBeLessThanOrEqual(100);
+});
+
+test("direct hash on a first visit bypasses the gate without recording a view", async ({ page }) => {
+  await page.goto("/#projects");
+
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "unlocked");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("hero-intro:completed:v1"))).toBe(null);
+  await expect
+    .poll(() => page.locator("#projects").evaluate((element) => element.getBoundingClientRect().top))
+    .toBeLessThanOrEqual(100);
+});
+
+test("first visit completion in another tab unlocks the current hero", async ({ page }) => {
+  await page.goto("/");
+  const secondPage = await page.context().newPage();
+
+  try {
+    await secondPage.goto("/");
+    await expect(secondPage.locator("main")).toHaveAttribute("data-hero-phase", "locked");
+
+    await page.evaluate(() => localStorage.setItem("hero-intro:completed:v1", "completed"));
+    await expect(secondPage.locator("main")).toHaveAttribute("data-hero-phase", "unlocked");
+  } finally {
+    await secondPage.close();
+  }
+});
+
+test("first visit works when hero storage is unavailable for the page", async ({ page }) => {
+  await page.addInitScript(() => {
+    const getItem = Storage.prototype.getItem;
+    const setItem = Storage.prototype.setItem;
+    Storage.prototype.getItem = function (key: string) {
+      if (key.startsWith("hero-intro:")) throw new Error("storage unavailable");
+      return getItem.call(this, key);
+    };
+    Storage.prototype.setItem = function (key: string, value: string) {
+      if (key.startsWith("hero-intro:")) throw new Error("storage unavailable");
+      return setItem.call(this, key, value);
+    };
+  });
+  await page.goto("/");
+
+  const video = page.getByTestId("hero-animation");
+  await expectVideoMetadataReady(video);
+  await page.getByRole("link", { name: /Узнать обо мне/ }).click();
+  await video.evaluate((element: HTMLVideoElement) => {
+    element.currentTime = 4.01;
+  });
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "unlocked");
+  await expect(page).toHaveURL(/#about$/);
 });
 
 test("hero role marquee loops continuously and respects reduced motion", async ({ page }) => {

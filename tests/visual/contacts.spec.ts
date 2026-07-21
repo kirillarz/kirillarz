@@ -1,9 +1,9 @@
-import { expect, test } from "@playwright/test";
-
 import {
   artifactsDir,
   captureScreenshot,
   placeTransitionAt,
+  expect,
+  test,
 } from "./helpers";
 test("contacts and employer page contain only confirmed public contact actions", async ({ page }) => {
   test.slow();

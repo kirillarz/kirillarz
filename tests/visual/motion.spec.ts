@@ -1,5 +1,3 @@
-import { expect, test } from "@playwright/test";
-
 import {
   artifactsDir,
   transitionMidpointViewportRatio,
@@ -8,6 +6,8 @@ import {
   placeTransitionAt,
   expectImagesReady,
   captureScreenshot,
+  expect,
+  test,
 } from "./helpers";
 test("section motion follows scrolling, reveals once, and respects reduced motion", async ({ page }) => {
   test.slow();

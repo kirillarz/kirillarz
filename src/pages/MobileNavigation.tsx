@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 import styles from "./PageStyles";
 
@@ -11,7 +11,13 @@ const navigationItems = [
   { id: "contacts", label: "Контакты" },
 ] as const;
 
-export function PageNavigation() {
+export type NavigationSectionId = (typeof navigationItems)[number]["id"];
+
+type PageNavigationProps = {
+  onNavigate?: (sectionId: NavigationSectionId, event: MouseEvent<HTMLAnchorElement>) => void;
+};
+
+export function PageNavigation({ onNavigate }: PageNavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState("top");
   const navigationRef = useRef<HTMLElement>(null);
@@ -69,6 +75,7 @@ export function PageNavigation() {
             <a
               href={`#${item.id}`}
               aria-current={activeSectionId === item.id ? "location" : undefined}
+              onClick={(event) => onNavigate?.(item.id, event)}
               key={item.id}
             >
               {item.label}
@@ -105,7 +112,10 @@ export function PageNavigation() {
           <a
             href={`#${item.id}`}
             aria-current={activeSectionId === item.id ? "location" : undefined}
-            onClick={() => setIsOpen(false)}
+            onClick={(event) => {
+              setIsOpen(false);
+              onNavigate?.(item.id, event);
+            }}
             key={item.id}
           >
             <span>{item.label}</span>

@@ -652,6 +652,16 @@
 
 @media (prefers-reduced-motion: reduce) {
   .homeHero .primaryLink {
+    animation: none;
+    transition: none;
+  }
+
+  .homeHero .heroCtaPrompting::before,
+  .heroCtaPrompting .heroCtaArrow {
+    animation: none;
+  }
+
+  .heroActionPrompt {
     transition: none;
   }
 

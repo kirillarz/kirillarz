@@ -1,10 +1,10 @@
-import { expect, test } from "@playwright/test";
-
 import {
   artifactsDir,
   scrollToSection,
   expectImagesReady,
   captureScreenshot,
+  expect,
+  test,
 } from "./helpers";
 test("hobby section reveals descriptions without page overflow", async ({ page }) => {
   await page.setViewportSize({ width: 1680, height: 838 });

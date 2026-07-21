@@ -1,5 +1,3 @@
-import { expect, test } from "@playwright/test";
-
 import {
   artifactsDir,
   scrollToSection,
@@ -7,6 +5,8 @@ import {
   preparePausedVideoScreenshot,
   expectLightboxGeometry,
   captureScreenshot,
+  expect,
+  test,
 } from "./helpers";
 test("projects section renders confirmed media and working actions", async ({ page }) => {
   test.setTimeout(30_000);
