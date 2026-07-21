@@ -107,6 +107,23 @@ function setSectionHash(sectionId: NavigationSectionId) {
   window.history.pushState(null, "", nextHash);
 }
 
+function runWithInstantScroll(action: () => void) {
+  const root = document.documentElement;
+  const previousBehavior = root.style.getPropertyValue("scroll-behavior");
+  const previousPriority = root.style.getPropertyPriority("scroll-behavior");
+  root.style.setProperty("scroll-behavior", "auto");
+
+  try {
+    action();
+  } finally {
+    if (previousBehavior) {
+      root.style.setProperty("scroll-behavior", previousBehavior, previousPriority);
+    } else {
+      root.style.removeProperty("scroll-behavior");
+    }
+  }
+}
+
 function navigateToSection(sectionId: NavigationSectionId, behavior: ScrollBehavior) {
   const section = document.getElementById(sectionId);
   if (!section) {
@@ -114,8 +131,24 @@ function navigateToSection(sectionId: NavigationSectionId, behavior: ScrollBehav
     return;
   }
 
-  section.scrollIntoView({ behavior, block: "start" });
+  if (behavior === "auto") {
+    runWithInstantScroll(() => section.scrollIntoView({ behavior, block: "start" }));
+  } else {
+    section.scrollIntoView({ behavior, block: "start" });
+  }
   setSectionHash(sectionId);
+}
+
+function getHeroScrollLimit() {
+  const hero = document.getElementById("top");
+  if (!hero) return 0;
+
+  const bounds = hero.getBoundingClientRect();
+  return Math.max(0, window.scrollY + bounds.bottom - window.innerHeight);
+}
+
+function scrollToInstantly(top: number) {
+  runWithInstantScroll(() => window.scrollTo({ top, behavior: "auto" }));
 }
 
 function isEditableOrInteractive(target: EventTarget | null) {
@@ -232,7 +265,7 @@ export function HomePage() {
 
     const previousScrollRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = "manual";
-    window.scrollTo({ top: 0, behavior: "auto" });
+    scrollToInstantly(0);
 
     return () => {
       window.history.scrollRestoration = previousScrollRestoration;
@@ -252,6 +285,7 @@ export function HomePage() {
 
     let touchStartX = 0;
     let touchStartY = 0;
+    let touchLastY = 0;
     let touchGesturePrompted = false;
     let wheelGestureActive = false;
     let scrollbarGestureActive = false;
@@ -262,10 +296,14 @@ export function HomePage() {
     const handleWheel = (event: WheelEvent) => {
       if (heroPhaseRef.current === "unlocked" || heroPhaseRef.current === "revealing") return;
       if (event.deltaY <= 0 || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-      event.preventDefault();
       if (!wheelGestureActive) {
         wheelGestureActive = true;
         showScrollPrompt();
+      }
+      const scrollLimit = getHeroScrollLimit();
+      if (window.scrollY + event.deltaY >= scrollLimit) {
+        event.preventDefault();
+        scrollToInstantly(scrollLimit);
       }
       window.clearTimeout(wheelGestureTimeoutId);
       wheelGestureTimeoutId = window.setTimeout(() => {
@@ -277,6 +315,7 @@ export function HomePage() {
       if (!touch) return;
       touchStartX = touch.clientX;
       touchStartY = touch.clientY;
+      touchLastY = touch.clientY;
       touchGesturePrompted = false;
     };
     const handleTouchMove = (event: TouchEvent) => {
@@ -289,6 +328,10 @@ export function HomePage() {
       if (upwardDistance <= 8 || upwardDistance <= horizontalDistance) return;
 
       event.preventDefault();
+      const scrollLimit = getHeroScrollLimit();
+      const nextScrollTop = Math.min(scrollLimit, window.scrollY + Math.max(0, touchLastY - touch.clientY));
+      scrollToInstantly(nextScrollTop);
+      touchLastY = touch.clientY;
       if (!touchGesturePrompted) {
         touchGesturePrompted = true;
         showScrollPrompt();
@@ -310,6 +353,10 @@ export function HomePage() {
 
       event.preventDefault();
       showScrollPrompt();
+      const scrollLimit = getHeroScrollLimit();
+      const step = event.key === "ArrowDown" ? 40 : window.innerHeight;
+      const nextScrollTop = event.key === "End" ? scrollLimit : Math.min(scrollLimit, window.scrollY + step);
+      scrollToInstantly(nextScrollTop);
     };
     const handleScroll = () => {
       if (heroPhaseRef.current === "unlocked" || heroPhaseRef.current === "revealing") return;
@@ -324,7 +371,8 @@ export function HomePage() {
       }, SCROLL_GESTURE_END_MS);
       scrollFrameId = window.requestAnimationFrame(() => {
         scrollFrameId = 0;
-        window.scrollTo({ top: 0, behavior: "auto" });
+        const scrollLimit = getHeroScrollLimit();
+        if (window.scrollY > scrollLimit) scrollToInstantly(scrollLimit);
       });
     };
 

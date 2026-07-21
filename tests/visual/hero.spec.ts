@@ -299,29 +299,60 @@ test("first visit blocks downward scrolling and points to the hero CTA", async (
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
 });
 
-test("first visit blocks a vertical mobile swipe but leaves horizontal intent alone", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+test("first visit lets a compact mobile hero scroll to its CTA but not into the next section", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
   await page.goto("/");
 
+  const cta = page.getByRole("link", { name: /Узнать обо мне/ });
+  const aboutSection = page.locator("#about");
+  const video = page.getByTestId("hero-animation");
+  await expectVideoMetadataReady(video);
+  await expect
+    .poll(async () => {
+      const box = await cta.boundingBox();
+      return box !== null && box.y + box.height > 568;
+    })
+    .toBe(true);
+
   await page.evaluate(() => {
-    const start = new Touch({ identifier: 1, target: document.body, clientX: 190, clientY: 680 });
-    const move = new Touch({ identifier: 1, target: document.body, clientX: 188, clientY: 420 });
+    const start = new Touch({ identifier: 1, target: document.body, clientX: 280, clientY: 420 });
+    const move = new Touch({ identifier: 1, target: document.body, clientX: 80, clientY: 416 });
+    window.dispatchEvent(new TouchEvent("touchstart", { cancelable: true, touches: [start] }));
+    window.dispatchEvent(new TouchEvent("touchmove", { cancelable: true, touches: [move] }));
+  });
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "locked");
+
+  await page.evaluate(() => {
+    const start = new Touch({ identifier: 2, target: document.body, clientX: 160, clientY: 520 });
+    const move = new Touch({ identifier: 2, target: document.body, clientX: 158, clientY: 80 });
     window.dispatchEvent(new TouchEvent("touchstart", { cancelable: true, touches: [start] }));
     window.dispatchEvent(new TouchEvent("touchmove", { cancelable: true, touches: [move] }));
   });
 
   await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "prompting");
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
-  await captureScreenshot(page, `${artifactsDir}/hero-first-visit-scroll-prompt-mobile.png`);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(1);
+  await expect
+    .poll(async () => {
+      const box = await cta.boundingBox();
+      return box !== null && box.y >= 0 && box.y + box.height <= 568;
+    })
+    .toBe(true);
+  await expect.poll(() => aboutSection.evaluate((element) => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(568);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const hero = document.getElementById("top");
+        if (!hero) return false;
+        const bounds = hero.getBoundingClientRect();
+        const limit = Math.max(0, window.scrollY + bounds.bottom - window.innerHeight);
+        return window.scrollY <= limit + 1;
+      }),
+    )
+    .toBe(true);
+  await captureScreenshot(page, `${artifactsDir}/hero-first-visit-scroll-prompt-mobile-compact.png`);
 
-  await page.waitForTimeout(2700);
-  await page.evaluate(() => {
-    const start = new Touch({ identifier: 2, target: document.body, clientX: 320, clientY: 500 });
-    const move = new Touch({ identifier: 2, target: document.body, clientX: 90, clientY: 495 });
-    window.dispatchEvent(new TouchEvent("touchstart", { cancelable: true, touches: [start] }));
-    window.dispatchEvent(new TouchEvent("touchmove", { cancelable: true, touches: [move] }));
-  });
-  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "locked");
+  await cta.click();
+  await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "playing");
 });
 
 test("navigation waits for hero intro and then opens the requested section", async ({ page }) => {
@@ -334,10 +365,36 @@ test("navigation waits for hero intro and then opens the requested section", asy
   await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "playing");
   await expect(page).not.toHaveURL(/#projects$/);
 
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "smooth";
+  });
+  const revealingFrame = page.locator("main").evaluate(
+    (element) =>
+      new Promise<{ sectionTop: number; inlineScrollBehavior: string }>((resolve) => {
+        const capture = () => {
+          if ((element as HTMLElement).dataset.heroPhase !== "revealing") return false;
+          observer.disconnect();
+          resolve({
+            sectionTop: document.getElementById("projects")?.getBoundingClientRect().top ?? Number.NaN,
+            inlineScrollBehavior: document.documentElement.style.scrollBehavior,
+          });
+          return true;
+        };
+        const observer = new MutationObserver(capture);
+        if (!capture()) observer.observe(element, { attributes: true, attributeFilter: ["data-hero-phase"] });
+      }),
+  );
+
   await video.evaluate((element: HTMLVideoElement) => {
     element.currentTime = 4.01;
   });
 
+  await expect(revealingFrame).resolves.toEqual({
+    sectionTop: expect.any(Number),
+    inlineScrollBehavior: "smooth",
+  });
+  expect((await revealingFrame).sectionTop).toBeGreaterThanOrEqual(70);
+  expect((await revealingFrame).sectionTop).toBeLessThanOrEqual(100);
   await expect(page).toHaveURL(/#projects$/);
   await expect(page.locator("main")).toHaveAttribute("data-hero-phase", "unlocked");
   await expect
